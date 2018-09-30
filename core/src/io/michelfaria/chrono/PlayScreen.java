@@ -11,17 +11,17 @@ import io.michelfaria.chrono.actor.Crono;
 
 public class PlayScreen implements Screen {
 
-    private final ChronoTrigger game;
+    private final Game game;
 
     private final OrthographicCamera camera;
     private final Viewport viewport;
     private final Stage stage;
 
-    public PlayScreen(ChronoTrigger game) {
+    public PlayScreen(Game game) {
         this.game = game;
 
         camera = new OrthographicCamera();
-        viewport = new FitViewport(ChronoTrigger.V_WIDTH, ChronoTrigger.V_HEIGHT, camera);
+        viewport = new FitViewport(Game.V_WIDTH, Game.V_HEIGHT, camera);
         stage = new Stage(viewport);
     }
 
@@ -33,7 +33,7 @@ public class PlayScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
-        stage.addActor(new Crono(game.asmgr));
+        stage.addActor(new Crono(game));
     }
 
     @Override

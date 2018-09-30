@@ -1,5 +1,5 @@
 package io.michelfaria.chrono.actor;
 
-public enum Facing {
+public enum Direction {
     SOUTH, EAST, NORTH, WEST
 }

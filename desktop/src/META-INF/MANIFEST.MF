@@ -1,3 +1,13 @@
 Manifest-Version: 1.0
+Class-Path: jutils-1.0.0.jar jorbis-0.0.17.jar lwjgl-2.9.2.jar gdx-pla
+ tform-1.9.8-natives-desktop.jar gdx-backend-headless-1.9.8.jar jinput
+ -2.0.5.jar jinput-platform-2.0.5-natives-osx.jar gdx-controllers-1.9.
+ 8.jar lwjgl-platform-2.9.2-natives-windows.jar gdx-freetype-platform-
+ 1.9.8-natives-desktop.jar lwjgl-platform-2.9.2-natives-linux.jar gdx-
+ backend-lwjgl-1.9.8.jar gdx-1.9.8.jar jlayer-1.0.1-gdx.jar gdx-contro
+ llers-platform-1.9.8-natives-desktop.jar gdx-controllers-desktop-1.9.
+ 8.jar lwjgl_util-2.9.2.jar jinput-platform-2.0.5-natives-windows.jar 
+ gdx-tools-1.9.8.jar jinput-platform-2.0.5-natives-linux.jar gdx-freet
+ ype-1.9.8.jar lwjgl-platform-2.9.2-natives-osx.jar
 Main-Class: io.michelfaria.chrono.desktop.DesktopLauncher
 

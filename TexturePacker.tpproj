@@ -31,7 +31,7 @@ limitMemory=true
 useIndexes=true
 
 scaleFactors=[{suffix:"",factor:1,resampling:bicubic}]
-inputFiles=[{path:img/crono-idle-south.png,type:Input,regionName:null},{path:img/crono-idle-east.png,type:Input,regionName:null},{path:img/crono-idle-west.png,type:Input,regionName:null},{path:img/crono-idle-north.png,type:Input,regionName:null}]
+inputFiles=[{path:img/crono-idle-south.png,type:Input,regionName:null},{path:img/crono-idle-east.png,type:Input,regionName:null},{path:img/crono-idle-west.png,type:Input,regionName:null},{path:img/crono-idle-north.png,type:Input,regionName:null},{path:img/crono-walk-north.png,type:Input,regionName:null},{path:img/crono-walk-south.png,type:Input,regionName:null},{path:img/crono-walk-east.png,type:Input,regionName:null},{path:img/crono-walk-west.png,type:Input,regionName:null}]
 
 
 -PROJ-

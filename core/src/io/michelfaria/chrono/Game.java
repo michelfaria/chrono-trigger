@@ -1,15 +1,10 @@
 package io.michelfaria.chrono;
 
-import com.badlogic.gdx.ApplicationAdapter;
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 
-public class ChronoTrigger extends Game {
+public class Game extends com.badlogic.gdx.Game {
 
     public static final int V_WIDTH = 256;
     public static final int V_HEIGHT = 224;
