@@ -1,0 +1,13 @@
+
+chrono.png
+size: 64,64
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+crono-idle-south
+  rotate: false
+  xy: 4, 4
+  size: 48, 35
+  orig: 48, 35
+  offset: 0, 0
+  index: -1
