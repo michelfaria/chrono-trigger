@@ -1,14 +1,21 @@
 
 chrono.png
-size: 128,64
+size: 256,64
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
 crono-idle-east
   rotate: false
-  xy: 56, 5
+  xy: 102, 5
   size: 42, 34
   orig: 42, 34
+  offset: 0, 0
+  index: -1
+crono-idle-north
+  rotate: false
+  xy: 148, 6
+  size: 16, 33
+  orig: 16, 33
   offset: 0, 0
   index: -1
 crono-idle-south
@@ -16,5 +23,12 @@ crono-idle-south
   xy: 4, 4
   size: 48, 35
   orig: 48, 35
+  offset: 0, 0
+  index: -1
+crono-idle-west
+  rotate: false
+  xy: 56, 5
+  size: 42, 34
+  orig: 42, 34
   offset: 0, 0
   index: -1
