@@ -11,14 +11,19 @@ public class Game extends com.badlogic.gdx.Game {
 
     public SpriteBatch batch;
     public AssetManager asmgr;
+    public TextureAtlas atlas;
 
     @Override
     public void create() {
         asmgr = new AssetManager();
-        asmgr.load(Assets.ASSET_TXATLAS, TextureAtlas.class);
-        batch = new SpriteBatch();
+        // Load assets
+        asmgr.load(Assets.CHRONO_ATLAS, TextureAtlas.class);
 
-       asmgr.finishLoading();
+
+        asmgr.finishLoading();
+
+        atlas = asmgr.get(Assets.CHRONO_ATLAS, TextureAtlas.class);
+        batch = new SpriteBatch();
 
         setScreen(new PlayScreen(this));
     }

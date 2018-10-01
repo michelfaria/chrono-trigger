@@ -25,11 +25,6 @@ public class PlayScreen implements Screen {
         stage = new Stage(viewport);
     }
 
-    private void update(float dt) {
-        stage.act();
-        camera.update();
-    }
-
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
@@ -51,6 +46,11 @@ public class PlayScreen implements Screen {
         stage.draw();
 
         game.batch.end();
+    }
+
+    private void update(float dt) {
+        stage.act();
+        camera.update();
     }
 
     @Override

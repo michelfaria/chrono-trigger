@@ -1,7 +1,6 @@
 package io.michelfaria.chrono.animation;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
 import java.lang.reflect.Field;
@@ -36,7 +35,7 @@ public class ExtendedAnimation<T> extends Animation<T> {
             throw new IllegalArgumentException("Key frame durations array length does not match key frame array length");
         }
 
-        durationFrameMap = new TreeMap<>();
+        durationFrameMap = new TreeMap<Float, Integer>();
         float sum = 0;
         for (int i = 0; i < frameDurations.length; i++) {
             durationFrameMap.put(sum, i);
