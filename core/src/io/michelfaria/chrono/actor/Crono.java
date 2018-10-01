@@ -1,108 +1,93 @@
 package io.michelfaria.chrono.actor;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.controllers.Controllers;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Array;
 import io.michelfaria.chrono.Assets;
 import io.michelfaria.chrono.Game;
+import io.michelfaria.chrono.animation.ExtendedAnimation;
 import io.michelfaria.chrono.controller.Buttons;
 import io.michelfaria.chrono.controller.Ctrl;
 
+import static com.badlogic.gdx.graphics.g2d.Animation.PlayMode.LOOP;
+import static com.badlogic.gdx.graphics.g2d.Animation.PlayMode.LOOP_PINGPONG;
+
 public class Crono extends Actor {
 
-    private final Game game;
+    private Game game;
 
-    private static final String REG_IDLE_SOUTH = "crono-idle-south",
-            REG_IDLE_WEST = "crono-idle-west",
-            REG_IDLE_EAST = "crono-idle-east",
-            REG_IDLE_NORTH = "crono-idle-north",
-            REG_WALK_NORTH = "crono-walk-north",
-            REG_WALK_SOUTH = "crono-walk-south",
-            REG_WALK_EAST = "crono-walk-east",
-            REG_WALK_WEST = "crono-walk-west";
+    private static final float WALK_MOVEMENT_SPEED = 1f;
+    private static final float RUN_SPEED_MULTIPLIER = 2f;
 
-    private static final short IDLE_SOUTH_FRAME_COLS = 3,
-            IDLE_SOUTH_FRAME_ROWS = 1,
-            IDLE_WEST_FRAME_COLS = 3,
-            IDLE_WEST_FRAME_ROWS = 1,
-            IDLE_EAST_FRAME_COLS = 3,
-            IDLE_EAST_FRAME_ROWS = 1,
-            IDLE_NORTH_FRAME_COLS = 1,
-            IDLE_NORTH_FRAME_ROWS = 1,
-            WALK_NORTH_FRAME_COLS = 6,
-            WALK_NORTH_FRAME_ROWS = 1,
-            WALK_SOUTH_FRAME_COLS = 6,
-            WALK_SOUTH_FRAME_ROWS = 1,
-            WALK_EAST_FRAME_COLS = 6,
-            WALK_EAST_FRAME_ROWS = 1,
-            WALK_WEST_FRAME_COLS = 6,
-            WALK_WEST_FRAME_ROWS = 1;
+    private Animation<TextureRegion> idleNorth;
+    private Animation<TextureRegion> idleSouth;
+    private Animation<TextureRegion> idleWest;
+    private Animation<TextureRegion> idleEast;
+    private Animation<TextureRegion> walkNorth;
+    private Animation<TextureRegion> walkSouth;
+    private Animation<TextureRegion> walkWest;
+    private Animation<TextureRegion> walkEast;
+    private Animation<TextureRegion> runWest;
+    private Animation<TextureRegion> runEast;
 
-    private static final float WALK_ANIMATION_SPEED = 0.125f,
-            WALK_MOVEMENT_SPEED = 0.75f;
-
-    private final Animation<TextureRegion> idleSouthAni, idleWestAni, idleEastAni,
-            idleNorthAni, walkNorthAni, walkSouthAni, walkEastAni, walkWestAni;
-
-    // Mutable variables
     private Direction facing = Direction.SOUTH;
-    private boolean moving = false,
-            running = false;
-    private Animation<? extends TextureRegion> animation;
+    private boolean moving = false;
+    private boolean running = false;
     private float stateTime = 0;
+    private Animation<TextureRegion> animation;
 
     public Crono(Game game) {
         this.game = game;
 
-        final TextureAtlas atlas = game.asmgr.get(Assets.ASSET_TXATLAS, TextureAtlas.class);
+        TextureAtlas atlas = game.asmgr.get(Assets.ASSET_TXATLAS, TextureAtlas.class);
 
-        idleSouthAni = createAnimation(atlas, REG_IDLE_SOUTH, IDLE_SOUTH_FRAME_COLS, IDLE_SOUTH_FRAME_ROWS, 0.3f);
-        idleWestAni = createAnimation(atlas, REG_IDLE_WEST, IDLE_WEST_FRAME_COLS, IDLE_WEST_FRAME_ROWS, 0.3f);
-        idleEastAni = createAnimation(atlas, REG_IDLE_EAST, IDLE_EAST_FRAME_COLS, IDLE_EAST_FRAME_ROWS, 0.3f);
-        idleNorthAni = createAnimation(atlas, REG_IDLE_NORTH, IDLE_NORTH_FRAME_COLS, IDLE_NORTH_FRAME_ROWS, 0);
-        walkNorthAni = createAnimation(atlas, REG_WALK_NORTH, WALK_NORTH_FRAME_COLS, WALK_NORTH_FRAME_ROWS, WALK_ANIMATION_SPEED);
-        walkSouthAni = createAnimation(atlas, REG_WALK_SOUTH, WALK_SOUTH_FRAME_COLS, WALK_SOUTH_FRAME_ROWS, WALK_ANIMATION_SPEED);
-        walkEastAni = createAnimation(atlas, REG_WALK_EAST, WALK_EAST_FRAME_COLS, WALK_EAST_FRAME_ROWS, WALK_ANIMATION_SPEED);
-        walkWestAni = createAnimation(atlas, REG_WALK_WEST, WALK_WEST_FRAME_COLS, WALK_WEST_FRAME_ROWS, WALK_ANIMATION_SPEED);
+        // Idle
+        idleNorth = new Animation<TextureRegion>(0, atlas.findRegion("crono-idle-north"));
+        idleSouth = new Animation<TextureRegion>(0, atlas.findRegion("crono-idle-south"));
+        idleWest = new Animation<TextureRegion>(0, atlas.findRegion("crono-idle-west"));
+        idleEast = new Animation<TextureRegion>(0, atlas.findRegion("crono-idle-east"));
+
+        // Walk
+        walkNorth = new Animation<>(0.125f, splitTexSeq(atlas, "crono-walk-north", 6, 1), LOOP);
+        walkSouth = new Animation<>(0.125f, splitTexSeq(atlas, "crono-walk-south", 6, 1), LOOP);
+        walkEast = new Animation<>(0.125f, splitTexSeq(atlas, "crono-walk-east", 6, 1), LOOP);
+        walkWest = new Animation<>(0.125f, splitTexSeq(atlas, "crono-walk-west", 6, 1), LOOP);
+
+        // Run
+        runWest = new Animation<>(0.1f, splitTexSeq(atlas, "crono-run-west", 6, 1), LOOP_PINGPONG);
+        runEast = new Animation<>(0.1f, splitTexSeq(atlas, "crono-run-east", 6, 1), LOOP_PINGPONG);
     }
 
     /**
-     * Assumes a left-to-right up-down animation sequence.
+     * Splits a texture sequence (spritesheet) into individual TextureRegions in a 1-dimension array.
+     * The textures are ordered left-to-right, up-to-down.
      *
      * @param atlas      Atlas containing texture regions
      * @param regionName Name of the atlas region
      * @param frameCols  Amount of columns in animation
      * @param frameRows  Amount of rows in animation
-     * @return Animation
      */
-    protected Animation<TextureRegion> createAnimation(final TextureAtlas atlas, final String regionName, final int frameCols, final int frameRows, final float frameDuration) {
-        // Load the sheet
-        final AtlasRegion reg = atlas.findRegion(regionName);
+    public Array<TextureRegion> splitTexSeq(TextureAtlas atlas, String regionName, int frameCols, int frameRows) {
+        AtlasRegion reg = atlas.findRegion(regionName);
         assert reg != null : regionName;
 
         // Use the split utility method to create a 2D array of TextureRegions.
-        final TextureRegion[][] tmp = reg.split(reg.getRegionWidth() / frameCols,
+        TextureRegion[][] tmp = reg.split(reg.getRegionWidth() / frameCols,
                 reg.getRegionHeight() / frameRows);
 
         // Place the regions into a 1D array in the correct order, starting from the top
         // left, going across first. The Animation constructor requires a 1D array.
-        TextureRegion[] regIdleSouthFrames = new TextureRegion[frameRows * frameCols];
+        Array<TextureRegion> textures = new Array<>(frameRows * frameCols);
         int index = 0;
         for (int i = 0; i < frameRows; i++) {
             for (int j = 0; j < frameCols; j++) {
-                regIdleSouthFrames[index++] = tmp[i][j];
+                textures.add(tmp[i][j]);
             }
         }
 
-        // Initialize the Animation with the frame interval and array of frames
-        return new Animation<>(frameDuration, regIdleSouthFrames);
+        return textures;
     }
 
     @Override
@@ -136,6 +121,11 @@ public class Crono extends Actor {
             yMoveSpeed = -WALK_MOVEMENT_SPEED;
             facing = Direction.SOUTH;
         }
+        running = Ctrl.isButtonPressed(0, Buttons.B);
+        if (running) {
+            xMoveSpeed *= RUN_SPEED_MULTIPLIER;
+            yMoveSpeed *= RUN_SPEED_MULTIPLIER;
+        }
         if (xMoveSpeed == 0 && yMoveSpeed == 0) {
             moving = false;
         } else {
@@ -145,38 +135,53 @@ public class Crono extends Actor {
 
     protected void updateAnimations() {
         if (animation == null) {
-            animation = idleSouthAni;
+            animation = idleSouth;
         }
-        if (moving) {
+        if (running && moving) {
+            // Running
+            switch (facing) {
+                case NORTH:
+                    break;
+                case SOUTH:
+                    break;
+                case WEST:
+                    animation = runWest;
+                    break;
+                case EAST:
+                    animation = runEast;
+                    break;
+            }
+        } else if (moving) {
+            assert !running;
             // Walking
             switch (facing) {
                 case NORTH:
-                    animation = walkNorthAni;
+                    animation = walkNorth;
                     break;
                 case SOUTH:
-                    animation = walkSouthAni;
+                    animation = walkSouth;
                     break;
                 case WEST:
-                    animation = walkWestAni;
+                    animation = walkWest;
                     break;
                 case EAST:
-                    animation = walkEastAni;
+                    animation = walkEast;
                     break;
             }
         } else {
             // Standing still
             switch (facing) {
                 case NORTH:
-                    animation = idleNorthAni;
+                    animation = idleNorth;
                     break;
                 case SOUTH:
-                    animation = idleSouthAni;
+                    animation = idleSouth;
                     break;
                 case WEST:
-                    animation = idleWestAni;
+                    animation = idleWest;
                     break;
                 case EAST:
-                    animation = idleEastAni;
+                    animation = idleEast;
                     break;
             }
         }
@@ -191,7 +196,8 @@ public class Crono extends Actor {
         super.draw(batch, parentAlpha);
         stateTime += Gdx.graphics.getDeltaTime();
 
-        final TextureRegion currentFrame = animation.getKeyFrame(stateTime, true);
+        TextureRegion currentFrame = animation.getKeyFrame(stateTime);
+
         batch.draw(currentFrame, getX(), getY());
     }
 }

@@ -11,11 +11,11 @@ import io.michelfaria.chrono.actor.Crono;
 
 public class PlayScreen implements Screen {
 
-    private final Game game;
+    private Game game;
 
-    private final OrthographicCamera camera;
-    private final Viewport viewport;
-    private final Stage stage;
+    private OrthographicCamera camera;
+    private Viewport viewport;
+    private Stage stage;
 
     public PlayScreen(Game game) {
         this.game = game;
