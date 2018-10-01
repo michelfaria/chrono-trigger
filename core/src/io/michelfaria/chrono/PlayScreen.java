@@ -33,7 +33,9 @@ public class PlayScreen implements Screen {
     @Override
     public void show() {
         Gdx.input.setInputProcessor(stage);
-        stage.addActor(new Crono(game));
+        Crono crono = new Crono(game);
+        stage.addActor(crono);
+        crono.setHandleInput(true);
     }
 
     @Override
