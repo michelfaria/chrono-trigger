@@ -22,8 +22,8 @@ public final class DialogBoxes {
     /**
      * Retrieves a dialog box.
      *
-     * @apiNote Standard dialog boxes are cached!
      * @param height - use STANDARD_HEIGHT for default
+     * @apiNote Standard dialog boxes are cached!
      */
     public static Table get(float height) {
         if (height == STANDARD_HEIGHT && stdDialogBox != null) {
