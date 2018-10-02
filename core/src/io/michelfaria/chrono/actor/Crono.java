@@ -2,21 +2,17 @@ package io.michelfaria.chrono.actor;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import io.michelfaria.chrono.Game;
-import io.michelfaria.chrono.hud.IPlayHud;
+import io.michelfaria.chrono.Core;
 import io.michelfaria.chrono.util.TxUtil;
-import org.jetbrains.annotations.Nullable;
 
 import static com.badlogic.gdx.graphics.g2d.Animation.PlayMode.LOOP;
-import static io.michelfaria.chrono.values.TxRegions.CronoTxRegions.*;
+import static io.michelfaria.chrono.values.TxRegs.CronoTxRegs.*;
 
 public class Crono extends PartyCharacter {
 
     @SuppressWarnings("unchecked")
-    public Crono(Game game, @Nullable IPlayHud hud) {
-        super(game, hud);
-
-        TextureAtlas atlas = game.atlas;
+    public Crono() {
+        TextureAtlas atlas = Core.atlas;
 
         // Idle
         idleNorth = new Animation(0, atlas.findRegion(CRONO_IDLE_NORTH));

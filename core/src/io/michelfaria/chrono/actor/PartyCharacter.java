@@ -7,16 +7,11 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
-import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.controller.Buttons;
 import io.michelfaria.chrono.controller.Ctrl;
-import io.michelfaria.chrono.hud.IPlayHud;
-import org.jetbrains.annotations.Nullable;
 
 
 public abstract class PartyCharacter extends Actor {
-
-    protected Game game;
 
     protected float walkSpeed = 1f;
     protected float runSpeedMultiplier = 2f;
@@ -38,21 +33,16 @@ public abstract class PartyCharacter extends Actor {
     protected boolean moving = false;
     protected boolean running = false;
     protected float stateTime = 0f;
-    protected Animation animation;
+    protected Animation animation = null;
     protected boolean handleInput = false;
 
     // Runnables that run in the act() method
-    protected Array<Runnable> acts = new Array<>();
-
-    @Nullable
-    protected IPlayHud hud;
+    protected Array<Runnable> actionRunnables = new Array<>();
 
     /**
      * Describes a generic Chrono Trigger playable/party member
      */
-    public PartyCharacter(Game game, @Nullable IPlayHud hud) {
-        this.game = game;
-        this.hud = hud;
+    public PartyCharacter() {
     }
 
     @Override
@@ -71,8 +61,8 @@ public abstract class PartyCharacter extends Actor {
     @Override
     public void act(float delta) {
         super.act(delta);
-        for (Runnable act : acts) {
-            act.run();
+        for (Runnable runnable : actionRunnables) {
+            runnable.run();
         }
         if (handleInput) {
             handleInput(delta);
@@ -82,7 +72,6 @@ public abstract class PartyCharacter extends Actor {
 
     protected void handleInput(float delta) {
         assert handleInput;
-        assert hud != null;
 
         float xMoveSpeed = 0;
         float yMoveSpeed = 0;
@@ -116,11 +105,6 @@ public abstract class PartyCharacter extends Actor {
             moving = false;
         } else {
             addAction(Actions.moveBy(xMoveSpeed, yMoveSpeed));
-        }
-
-        // Test
-        if (Ctrl.isButtonPressed(0, Buttons.A)) {
-            hud.openTestDialogBox();
         }
     }
 
@@ -176,9 +160,6 @@ public abstract class PartyCharacter extends Actor {
     }
 
     public void setHandleInput(boolean handleInput) {
-        if (hud == null) {
-            throw new IllegalStateException("Cannot enable input handling without a hud");
-        }
         this.handleInput = handleInput;
     }
 }

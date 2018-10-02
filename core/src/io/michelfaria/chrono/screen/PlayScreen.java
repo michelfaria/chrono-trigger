@@ -1,4 +1,4 @@
-package io.michelfaria.chrono;
+package io.michelfaria.chrono.screen;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -8,12 +8,11 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import io.michelfaria.chrono.Core;
 import io.michelfaria.chrono.actor.Crono;
 import io.michelfaria.chrono.hud.PlayHud;
 
 public class PlayScreen implements Screen {
-
-    private Game game;
 
     private InputMultiplexer multiplexer;
     private OrthographicCamera camera;
@@ -22,24 +21,23 @@ public class PlayScreen implements Screen {
 
     private PlayHud hud;
 
-    public PlayScreen(Game game) {
-        this.game = game;
-
+    public PlayScreen() {
         multiplexer = new InputMultiplexer();
         camera = new OrthographicCamera();
-        viewport = new FitViewport(Game.V_WIDTH, Game.V_HEIGHT, camera);
+        viewport = new FitViewport(Core.V_WIDTH, Core.V_HEIGHT, camera);
         stage = new Stage(viewport);
 
-        hud = new PlayHud(game);
+        hud = new PlayHud();
     }
 
     @Override
     public void show() {
         Gdx.input.setInputProcessor(multiplexer);
         multiplexer.addProcessor(stage);
+        multiplexer.addProcessor(hud.stage);
 
         // Add the character (Testing)
-        Crono crono = new Crono(game, hud);
+        Crono crono = new Crono();
         stage.addActor(crono);
         crono.setHandleInput(true);
     }
@@ -54,24 +52,23 @@ public class PlayScreen implements Screen {
 
         // Stage drawings
         // (Unfortunately, Stages open the batch and close it again)
-        game.batch.setProjectionMatrix(camera.combined);
+        Core.batch.setProjectionMatrix(camera.combined);
         stage.draw();
 
-        game.batch.begin();
+        Core.batch.begin();
         // All screen's drawing activities below
 
 
         // End drawing
-        game.batch.end();
+        Core.batch.end();
 
-        // PlayHud always drawn on top
-        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        // Hud always drawn on top
+        Core.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.stage.draw();
     }
 
     private void update(float dt) {
-        hud.update(dt);
-
+        hud.update();
         stage.act();
         camera.update();
     }

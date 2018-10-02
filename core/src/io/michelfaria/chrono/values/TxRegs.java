@@ -1,8 +1,8 @@
 package io.michelfaria.chrono.values;
 
-public final class TxRegions {
+public final class TxRegs {
 
-    public static final class CronoTxRegions {
+    public static final class CronoTxRegs {
         public static final String CRONO_IDLE_NORTH = "crono-idle-north";
         public static final String CRONO_IDLE_SOUTH = "crono-idle-south";
         public static final String CRONO_IDLE_WEST = "crono-idle-west";
@@ -34,12 +34,15 @@ public final class TxRegions {
         public static final int CRONO_RUN_EAST_ROWS = 1;
     }
 
-    public static final class HudTxRegions {
-        public static final String DIALOG_BOX_1 = "dialog-box-1";
-
-        public static final int DIALOG_BOX_1_PATCH_1 = 8;
-        public static final int DIALOG_BOX_1_PATCH_2 = 8;
-        public static final int DIALOG_BOX_1_PATCH_3 = 8;
-        public static final int DIALOG_BOX_1_PATCH_4 = 8;
+    public static final class DialogBoxTxRegs {
+        public static final String DIALOG_BOX_1_TOP_LEFT = "dialog-box-1-top-left";
+        public static final String DIALOG_BOX_1_TOP = "dialog-box-1-top";
+        public static final String DIALOG_BOX_1_TOP_RIGHT = "dialog-box-1-top-right";
+        public static final String DIALOG_BOX_1_LEFT = "dialog-box-1-left";
+        public static final String DIALOG_BOX_1_FILLING = "dialog-box-1-filling";
+        public static final String DIALOG_BOX_1_RIGHT = "dialog-box-1-right";
+        public static final String DIALOG_BOX_1_BOTTOM_LEFT = "dialog-box-1-bottom-left";
+        public static final String DIALOG_BOX_1_BOTTOM = "dialog-box-1-bottom";
+        public static final String DIALOG_BOX_1_BOTTOM_RIGHT = "dialog-box-1-bottom-right";
     }
 }

@@ -1,18 +1,22 @@
 package io.michelfaria.chrono;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import io.michelfaria.chrono.screen.PlayScreen;
 import io.michelfaria.chrono.values.Assets;
 
-public class Game extends com.badlogic.gdx.Game {
+public class Core extends Game {
 
     public static final int V_WIDTH = 256;
     public static final int V_HEIGHT = 224;
 
-    public SpriteBatch batch;
-    public AssetManager asmgr;
-    public TextureAtlas atlas;
+    public static boolean debug = false;
+
+    public static SpriteBatch batch;
+    public static AssetManager asmgr;
+    public static TextureAtlas atlas;
 
     @Override
     public void create() {
@@ -26,12 +30,13 @@ public class Game extends com.badlogic.gdx.Game {
         atlas = asmgr.get(Assets.CHRONO_ATLAS, TextureAtlas.class);
         batch = new SpriteBatch();
 
-        setScreen(new PlayScreen(this));
+        setScreen(new PlayScreen());
     }
 
     @Override
     public void dispose() {
         asmgr.dispose();
+        atlas.dispose();
         batch.dispose();
     }
 }
