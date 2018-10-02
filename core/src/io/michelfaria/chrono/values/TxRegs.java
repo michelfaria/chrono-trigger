@@ -34,15 +34,17 @@ public final class TxRegs {
         public static final int CRONO_RUN_EAST_ROWS = 1;
     }
 
-    public static final class DialogBoxTxRegs {
-        public static final String DIALOG_BOX_1_TOP_LEFT = "dialog-box-1-top-left";
-        public static final String DIALOG_BOX_1_TOP = "dialog-box-1-top";
-        public static final String DIALOG_BOX_1_TOP_RIGHT = "dialog-box-1-top-right";
-        public static final String DIALOG_BOX_1_LEFT = "dialog-box-1-left";
-        public static final String DIALOG_BOX_1_FILLING = "dialog-box-1-filling";
-        public static final String DIALOG_BOX_1_RIGHT = "dialog-box-1-right";
-        public static final String DIALOG_BOX_1_BOTTOM_LEFT = "dialog-box-1-bottom-left";
-        public static final String DIALOG_BOX_1_BOTTOM = "dialog-box-1-bottom";
-        public static final String DIALOG_BOX_1_BOTTOM_RIGHT = "dialog-box-1-bottom-right";
+    public static final class UiBoxTxRegs {
+//        public static final String UI_BOX_0_TOP_LEFT = "ui-box-0-top-left";
+//        public static final String UI_BOX_0_TOP = "ui-box-0-top";
+//        public static final String UI_BOX_0_TOP_RIGHT = "ui-box-0-top-right";
+//        public static final String UI_BOX_0_LEFT = "ui-box-0-left";
+//        public static final String UI_BOX_0_FILLING = "ui-box-0-filling";
+//        public static final String UI_BOX_0_RIGHT = "ui-box-0-right";
+//        public static final String UI_BOX_0_BOTTOM_LEFT = "ui-box-0-bottom-left";
+//        public static final String UI_BOX_0_BOTTOM = "ui-box-0-bottom";
+//        public static final String UI_BOX_0_BOTTOM_RIGHT = "ui-box-0-bottom-right";
+
+        public static final String UI_DIALOGBOX_0 = "ui-dialogbox-0";
     }
 }

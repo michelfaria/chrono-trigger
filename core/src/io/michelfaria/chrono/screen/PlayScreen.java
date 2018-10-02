@@ -64,7 +64,7 @@ public class PlayScreen implements Screen {
 
         // Hud always drawn on top
         Core.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-        hud.stage.draw();
+        hud.draw();
     }
 
     private void update(float dt) {
@@ -75,6 +75,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public void resize(int width, int height) {
+        hud.viewport.update(width, height);
         viewport.update(width, height);
     }
 
