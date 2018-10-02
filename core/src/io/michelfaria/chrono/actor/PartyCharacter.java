@@ -3,7 +3,6 @@ package io.michelfaria.chrono.actor;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
-import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
@@ -11,8 +10,11 @@ import com.badlogic.gdx.utils.Array;
 import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.controller.Buttons;
 import io.michelfaria.chrono.controller.Ctrl;
+import io.michelfaria.chrono.hud.IPlayHud;
+import org.jetbrains.annotations.Nullable;
 
-public abstract class GenericPartyCharacter extends Actor {
+
+public abstract class PartyCharacter extends Actor {
 
     protected Game game;
 
@@ -39,20 +41,28 @@ public abstract class GenericPartyCharacter extends Actor {
     protected Animation animation;
     protected boolean handleInput = false;
 
+    // Runnables that run in the act() method
+    protected Array<Runnable> acts = new Array<>();
+
+    @Nullable
+    protected IPlayHud hud;
+
     /**
      * Describes a generic Chrono Trigger playable/party member
      */
-    public GenericPartyCharacter(Game game) {
+    public PartyCharacter(Game game, @Nullable IPlayHud hud) {
         this.game = game;
+        this.hud = hud;
     }
-
-
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
         stateTime += Gdx.graphics.getDeltaTime();
 
+        if (animation == null) {
+            throw new IllegalStateException("No animation");
+        }
         TextureRegion currentFrame = (TextureRegion) animation.getKeyFrame(stateTime);
 
         batch.draw(currentFrame, getX(), getY());
@@ -61,6 +71,9 @@ public abstract class GenericPartyCharacter extends Actor {
     @Override
     public void act(float delta) {
         super.act(delta);
+        for (Runnable act : acts) {
+            act.run();
+        }
         if (handleInput) {
             handleInput(delta);
         }
@@ -68,6 +81,9 @@ public abstract class GenericPartyCharacter extends Actor {
     }
 
     protected void handleInput(float delta) {
+        assert handleInput;
+        assert hud != null;
+
         float xMoveSpeed = 0;
         float yMoveSpeed = 0;
 
@@ -100,6 +116,11 @@ public abstract class GenericPartyCharacter extends Actor {
             moving = false;
         } else {
             addAction(Actions.moveBy(xMoveSpeed, yMoveSpeed));
+        }
+
+        // Test
+        if (Ctrl.isButtonPressed(0, Buttons.A)) {
+            hud.openTestDialogBox();
         }
     }
 
@@ -155,6 +176,9 @@ public abstract class GenericPartyCharacter extends Actor {
     }
 
     public void setHandleInput(boolean handleInput) {
+        if (hud == null) {
+            throw new IllegalStateException("Cannot enable input handling without a hud");
+        }
         this.handleInput = handleInput;
     }
 }

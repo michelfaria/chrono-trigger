@@ -1,5 +1,6 @@
 package io.michelfaria.chrono.util;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
@@ -36,5 +37,13 @@ public final class TxUtil {
         }
 
         return textures;
+    }
+
+    public static TextureRegion findRegion(TextureAtlas atlas, String name) {
+        TextureAtlas.AtlasRegion region = atlas.findRegion(name);
+        if (region == null) {
+            throw new RuntimeException("Region not found");
+        }
+        return region;
     }
 }

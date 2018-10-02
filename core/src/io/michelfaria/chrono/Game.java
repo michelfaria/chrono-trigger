@@ -3,6 +3,7 @@ package io.michelfaria.chrono;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import io.michelfaria.chrono.values.Assets;
 
 public class Game extends com.badlogic.gdx.Game {
 

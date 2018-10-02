@@ -6,7 +6,7 @@ filter: Nearest,Nearest
 repeat: none
 crono-idle-east
   rotate: false
-  xy: 196, 201
+  xy: 136, 46
   size: 14, 34
   orig: 14, 34
   offset: 0, 0
@@ -20,14 +20,14 @@ crono-idle-north
   index: -1
 crono-idle-south
   rotate: false
-  xy: 176, 200
+  xy: 228, 200
   size: 16, 35
   orig: 16, 35
   offset: 0, 0
   index: -1
 crono-idle-west
   rotate: false
-  xy: 176, 162
+  xy: 116, 10
   size: 14, 34
   orig: 14, 34
   offset: 0, 0
@@ -86,5 +86,12 @@ crono-walk-west
   xy: 4, 123
   size: 132, 34
   orig: 132, 34
+  offset: 0, 0
+  index: -1
+dialog-box-1
+  rotate: false
+  xy: 176, 187
+  size: 48, 48
+  orig: 48, 48
   offset: 0, 0
   index: -1
