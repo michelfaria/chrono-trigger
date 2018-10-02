@@ -1,6 +1,8 @@
 package io.michelfaria.chrono;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -12,7 +14,7 @@ public class Core extends Game {
     public static final int V_WIDTH = 256;
     public static final int V_HEIGHT = 224;
 
-    public static boolean debug = false;
+    public static boolean debug = true;
 
     public static SpriteBatch batch;
     public static AssetManager asmgr;
@@ -20,6 +22,9 @@ public class Core extends Game {
 
     @Override
     public void create() {
+        if (debug) {
+            Gdx.app.setLogLevel(Application.LOG_DEBUG);
+        }
         asmgr = new AssetManager();
         // Load assets
         asmgr.load(Assets.CHRONO_ATLAS, TextureAtlas.class);
