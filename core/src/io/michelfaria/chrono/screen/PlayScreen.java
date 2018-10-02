@@ -5,12 +5,18 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.michelfaria.chrono.Core;
 import io.michelfaria.chrono.actor.Crono;
 import io.michelfaria.chrono.hud.PlayHud;
+import io.michelfaria.chrono.util.TxUtil;
+import io.michelfaria.chrono.values.Assets;
 
 public class PlayScreen implements Screen {
 
@@ -20,6 +26,8 @@ public class PlayScreen implements Screen {
     private Stage stage;
 
     private PlayHud hud;
+
+    private float stateTime;
 
     public PlayScreen() {
         multiplexer = new InputMultiplexer();
@@ -59,6 +67,8 @@ public class PlayScreen implements Screen {
         // All screen's drawing activities below
 
 
+        // ...
+
         // End drawing
         Core.batch.end();
 
@@ -68,6 +78,7 @@ public class PlayScreen implements Screen {
     }
 
     private void update(float dt) {
+        stateTime += Gdx.graphics.getDeltaTime();
         hud.update();
         stage.act();
         camera.update();

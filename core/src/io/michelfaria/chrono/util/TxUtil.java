@@ -2,12 +2,13 @@ package io.michelfaria.chrono.util;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.viewport.Viewport;
+import io.michelfaria.chrono.Core;
 
 public final class TxUtil {
     /**
-     * Utility.
-     * <p>
      * Splits a texture sequence (spritesheet) into individual TextureRegions in a 1-dimension array.
      * The textures are ordered left-to-right, up-to-down.
      *
@@ -21,7 +22,19 @@ public final class TxUtil {
         if (reg == null) {
             throw new IllegalStateException("Texture region is null: " + regionName);
         }
+        return splitTextureRegion(reg, frameCols, frameRows);
 
+    }
+
+    /**
+     * Splits a texture sequence (spritesheet) into individual TextureRegions in a 1-dimension array.
+     * The textures are ordered left-to-right, up-to-down.
+     *
+     * @param reg       The region to split
+     * @param frameCols Amount of columns in animation
+     * @param frameRows Amount of rows in animation
+     */
+    public static Array<TextureRegion> splitTextureRegion(TextureRegion reg, int frameCols, int frameRows) {
         // Use the split utility method to create a 2D array of TextureRegions.
         TextureRegion[][] tmp = reg.split(reg.getRegionWidth() / frameCols,
                 reg.getRegionHeight() / frameRows);
@@ -38,11 +51,20 @@ public final class TxUtil {
         return textures;
     }
 
+    /**
+     * Null-safe find-region
+     */
     public static TextureRegion findRegion(TextureAtlas atlas, String name) {
         TextureAtlas.AtlasRegion region = atlas.findRegion(name);
         if (region == null) {
             throw new RuntimeException("Region not found");
         }
         return region;
+    }
+
+    public static Vector2 getRealSize(Viewport vp, TextureRegion txReg) {
+        return new Vector2(
+                txReg.getRegionWidth() * ((float) vp.getScreenWidth() / Core.V_WIDTH),
+                txReg.getRegionHeight() * ((float) vp.getScreenHeight() / Core.V_HEIGHT));
     }
 }

@@ -4,8 +4,10 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import io.michelfaria.chrono.screen.PlayScreen;
 import io.michelfaria.chrono.values.Assets;
 
@@ -28,7 +30,6 @@ public class Core extends Game {
         asmgr = new AssetManager();
         // Load assets
         asmgr.load(Assets.CHRONO_ATLAS, TextureAtlas.class);
-
 
         asmgr.finishLoading();
 

@@ -35,16 +35,6 @@ public final class TxRegs {
     }
 
     public static final class UiBoxTxRegs {
-//        public static final String UI_BOX_0_TOP_LEFT = "ui-box-0-top-left";
-//        public static final String UI_BOX_0_TOP = "ui-box-0-top";
-//        public static final String UI_BOX_0_TOP_RIGHT = "ui-box-0-top-right";
-//        public static final String UI_BOX_0_LEFT = "ui-box-0-left";
-//        public static final String UI_BOX_0_FILLING = "ui-box-0-filling";
-//        public static final String UI_BOX_0_RIGHT = "ui-box-0-right";
-//        public static final String UI_BOX_0_BOTTOM_LEFT = "ui-box-0-bottom-left";
-//        public static final String UI_BOX_0_BOTTOM = "ui-box-0-bottom";
-//        public static final String UI_BOX_0_BOTTOM_RIGHT = "ui-box-0-bottom-right";
-
         public static final String UI_DIALOGBOX_0 = "ui-dialogbox-0";
     }
 }
