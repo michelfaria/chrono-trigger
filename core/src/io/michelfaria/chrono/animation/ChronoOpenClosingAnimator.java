@@ -3,6 +3,7 @@ package io.michelfaria.chrono.animation;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.michelfaria.chrono.Core;
 import io.michelfaria.chrono.util.TxUtil;
@@ -77,9 +78,6 @@ public class ChronoOpenClosingAnimator {
         if (isAnimating) {
             Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
         }
-
-        System.out.println("scissor = " + scissor);
-        System.out.println("spriteState = " + spriteState);
     }
 
     public void open() {
