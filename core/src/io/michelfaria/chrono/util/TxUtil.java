@@ -2,12 +2,7 @@ package io.michelfaria.chrono.util;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.viewport.Viewport;
-import io.michelfaria.chrono.Core;
-
-import java.security.acl.Group;
 
 public final class TxUtil {
     /**

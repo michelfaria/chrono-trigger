@@ -26,7 +26,7 @@ public class GroupUtil {
             float childMinAV = getActorAxisValue.apply(child);
             float childMaxAV;
             if (child instanceof Group) {
-                childMaxAV = childMinAV + getGroupLength(group, getActorAxisValue, getActorLength);
+                childMaxAV = childMinAV + getGroupLength((Group) child, getActorAxisValue, getActorLength);
             } else {
                 childMaxAV = childMinAV + getActorLength.apply(child);
             }

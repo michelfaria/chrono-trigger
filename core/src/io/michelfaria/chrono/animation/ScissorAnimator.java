@@ -2,37 +2,30 @@ package io.michelfaria.chrono.animation;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.scenes.scene2d.Group;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import io.michelfaria.chrono.Core;
 import io.michelfaria.chrono.util.GLUtil;
-import io.michelfaria.chrono.util.GroupUtil;
 
-import static io.michelfaria.chrono.animation.ChronoOpenClosingAnimator.AnimationState.*;
+import static io.michelfaria.chrono.animation.ScissorAnimator.AnimationState.*;
 
-public class ChronoOpenClosingAnimator {
-
-    public enum AnimationState {
-        OPENED, CLOSED, OPENING, CLOSING
-    }
-
-    public Group group;
-    public Viewport vp;
+/**
+ * Creates a scissoring animation for a Scene2D group.
+ */
+public class ScissorAnimator {
 
     private static final int SCISSOR_MULTIPLE = 12;
+    public Rectangle rectangle;
+    public Viewport vp;
     private int scissor;
     private AnimationState spriteState;
-
-    public ChronoOpenClosingAnimator(Group group, Viewport vp) {
-        this.group = group;
+    public ScissorAnimator(Rectangle rectangle, Viewport vp) {
+        this.rectangle = rectangle;
         this.vp = vp;
 
         spriteState = AnimationState.CLOSED;
     }
 
-    public void draw() {
-        updateGroupSize();
-
+    public void scissor(Runnable draw) {
         // Update the view port
         Gdx.gl.glViewport(0, 0, vp.getScreenWidth(), vp.getScreenHeight());
 
@@ -40,7 +33,7 @@ public class ChronoOpenClosingAnimator {
             /*
             Open dialog box
              */
-            if (scissor < GLUtil.getRealSize(vp, group).y / 2) {
+            if (scissor < GLUtil.getRealSize(vp, rectangle).height / 2) {
                 scissor += SCISSOR_MULTIPLE;
             } else {
                 // Scissor has covered the sprite
@@ -67,24 +60,12 @@ public class ChronoOpenClosingAnimator {
         }
 
         if (spriteState != CLOSED) {
-            Core.batch.begin();
-            /*
-            Draw dialog box
-             */
-            if (group == null) throw new IllegalStateException("No group set");
-            group.draw(Core.batch, 1);
-
-            Core.batch.end();
+            draw.run();
         }
 
         if (isAnimating) {
             Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
         }
-    }
-
-    private void updateGroupSize() {
-        group.setWidth(GroupUtil.getWidth(group));
-        group.setHeight(GroupUtil.getHeight(group));
     }
 
     public void open() {
@@ -94,13 +75,17 @@ public class ChronoOpenClosingAnimator {
 
     public void close() {
         spriteState = CLOSING;
-        scissor = (int) GLUtil.getRealSize(vp, group).y / 2;
+        scissor = (int) GLUtil.getRealSize(vp, rectangle).height / 2;
     }
 
     /**
      * Returns the real (non-virtual) Y coordinate of the center of the group.
      */
     private int getRealYCenter() {
-        return (int) (GLUtil.getRealSize(vp, group).y / 2);
+        return (int) (GLUtil.getRealSize(vp, rectangle).height / 2);
+    }
+
+    public enum AnimationState {
+        OPENED, CLOSED, OPENING, CLOSING
     }
 }

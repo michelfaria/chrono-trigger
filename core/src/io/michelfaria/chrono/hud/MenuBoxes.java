@@ -8,15 +8,6 @@ import static io.michelfaria.chrono.values.TxRegs.UiBoxTxRegs.UI_DIALOGBOX_0;
 
 public final class MenuBoxes {
 
-    private static class UiElement {
-        public String regionName;
-        public TextureRegion txReg;
-
-        public UiElement(String regionName) {
-            this.regionName = regionName;
-        }
-    }
-
     // Dialog box cache (index is type)
     public static UiElement[] dialogBoxes = new UiElement[10];
     // Type of UI for the game
@@ -42,6 +33,15 @@ public final class MenuBoxes {
             ue.txReg = TxUtil.findRegion(Core.atlas, ue.regionName);
         }
         return ue.txReg;
+    }
+
+    private static class UiElement {
+        public String regionName;
+        public TextureRegion txReg;
+
+        public UiElement(String regionName) {
+            this.regionName = regionName;
+        }
     }
 }
 

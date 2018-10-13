@@ -1,14 +1,14 @@
-package io.michelfaria.chrono.hud;
+package io.michelfaria.chrono.hud.actor;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import io.michelfaria.chrono.hud.MenuBoxes;
 
-public class DialogBox extends Actor {
-
+public class BoxActor extends Actor {
     private TextureRegion txReg;
 
-    public DialogBox() {
+    public BoxActor() {
         refresh();
     }
 
@@ -20,7 +20,6 @@ public class DialogBox extends Actor {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
         batch.draw(txReg, getX(), getY());
     }
 }
