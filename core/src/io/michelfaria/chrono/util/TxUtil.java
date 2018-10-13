@@ -7,6 +7,8 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.michelfaria.chrono.Core;
 
+import java.security.acl.Group;
+
 public final class TxUtil {
     /**
      * Splits a texture sequence (spritesheet) into individual TextureRegions in a 1-dimension array.
@@ -60,11 +62,5 @@ public final class TxUtil {
             throw new RuntimeException("Region not found");
         }
         return region;
-    }
-
-    public static Vector2 getRealSize(Viewport vp, TextureRegion txReg) {
-        return new Vector2(
-                txReg.getRegionWidth() * ((float) vp.getScreenWidth() / Core.V_WIDTH),
-                txReg.getRegionHeight() * ((float) vp.getScreenHeight() / Core.V_HEIGHT));
     }
 }

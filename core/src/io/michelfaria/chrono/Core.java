@@ -5,6 +5,7 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -30,6 +31,7 @@ public class Core extends Game {
         asmgr = new AssetManager();
         // Load assets
         asmgr.load(Assets.CHRONO_ATLAS, TextureAtlas.class);
+        asmgr.load(Assets.FONT, BitmapFont.class);
 
         asmgr.finishLoading();
 
