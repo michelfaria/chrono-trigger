@@ -9,11 +9,12 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.michelfaria.chrono.Core;
+import io.michelfaria.chrono.State;
 import io.michelfaria.chrono.animation.ScissorAnimator;
 import io.michelfaria.chrono.hud.actor.DialogBox;
 import io.michelfaria.chrono.util.GroupUtil;
 
-public class PlayHud implements Disposable {
+public class WalkHud implements Disposable {
 
     public OrthographicCamera camera;
     public Viewport viewport;
@@ -22,7 +23,7 @@ public class PlayHud implements Disposable {
     private DialogBox dialogBox;
     private ScissorAnimator scissorAnimator;
 
-    public PlayHud() {
+    public WalkHud() {
         camera = new OrthographicCamera();
         viewport = new FitViewport(Core.V_WIDTH, Core.V_HEIGHT);
         stage = new Stage(viewport, Core.batch);
@@ -61,9 +62,11 @@ public class PlayHud implements Disposable {
         dialogBox.act(delta);
 
         if (Gdx.input.isKeyPressed(Input.Keys.P)) {
+            State.hudPause = true;
             scissorAnimator.open();
         }
         if (Gdx.input.isKeyPressed(Input.Keys.O)) {
+            State.hudPause = false;
             scissorAnimator.close();
         }
     }

@@ -5,8 +5,10 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
+import io.michelfaria.chrono.State;
 import io.michelfaria.chrono.controller.Buttons;
 import io.michelfaria.chrono.controller.Ctrl;
 
@@ -73,6 +75,12 @@ public abstract class PartyCharacter extends Actor {
     protected void handleInput(float delta) {
         assert handleInput;
 
+        if (!State.hudPause) {
+            handleWalking(delta);
+        }
+    }
+
+    private void handleWalking(float delta) {
         float xMoveSpeed = 0;
         float yMoveSpeed = 0;
 
@@ -112,7 +120,7 @@ public abstract class PartyCharacter extends Actor {
         if (animation == null) {
             animation = idleSouth;
         }
-        if (running && moving) {
+        if (running && moving && !State.hudPause) {
             // Running
             if (facing == Direction.NORTH) {
                 animation = runNorth;
@@ -125,7 +133,7 @@ public abstract class PartyCharacter extends Actor {
                 animation = runEast;
 
             }
-        } else if (moving) {
+        } else if (moving && !State.hudPause) {
             assert !running;
             // Walking
             if (facing == Direction.NORTH) {
@@ -139,7 +147,6 @@ public abstract class PartyCharacter extends Actor {
 
             } else if (facing == Direction.EAST) {
                 animation = walkEast;
-
             }
         } else {
             // Standing still
@@ -154,7 +161,6 @@ public abstract class PartyCharacter extends Actor {
 
             } else if (facing == Direction.EAST) {
                 animation = idleEast;
-
             }
         }
     }

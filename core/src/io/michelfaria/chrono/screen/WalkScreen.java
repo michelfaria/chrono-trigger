@@ -10,26 +10,27 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.michelfaria.chrono.Core;
 import io.michelfaria.chrono.actor.Crono;
-import io.michelfaria.chrono.hud.PlayHud;
+import io.michelfaria.chrono.hud.WalkHud;
 
-public class PlayScreen implements Screen {
+
+public class WalkScreen implements Screen {
 
     private InputMultiplexer multiplexer;
     private OrthographicCamera camera;
     private Viewport viewport;
     private Stage stage;
 
-    private PlayHud hud;
+    private WalkHud hud;
 
     private float stateTime;
 
-    public PlayScreen() {
+    public WalkScreen() {
         multiplexer = new InputMultiplexer();
         camera = new OrthographicCamera();
         viewport = new FitViewport(Core.V_WIDTH, Core.V_HEIGHT, camera);
         stage = new Stage(viewport);
 
-        hud = new PlayHud();
+        hud = new WalkHud();
     }
 
     @Override
