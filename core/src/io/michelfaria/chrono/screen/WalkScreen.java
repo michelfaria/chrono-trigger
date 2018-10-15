@@ -1,15 +1,15 @@
 package io.michelfaria.chrono.screen;
 
+import static io.michelfaria.chrono.values.LayerNames.FOREGROUND_1;
+import static io.michelfaria.chrono.values.LayerNames.FOREGROUND_2;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -61,7 +61,7 @@ public class WalkScreen implements Screen {
 		multiplexer.addProcessor(hud.stage);
 
 		// Add the character (Testing)
-		this.crono = new Crono(core);
+		this.crono = new Crono(core, tiledMap);
 		stage.addActor(crono);
 		crono.setHandleInput(true);
 	}
@@ -75,7 +75,7 @@ public class WalkScreen implements Screen {
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
 		// Render the foreground that goes behind the Sprite(s)
-		renderTileLayer("fg-2");
+		renderTileLayer(FOREGROUND_2);
 		
 		// Stage drawings
 		// (Stages open the batch and close it again)
@@ -83,27 +83,11 @@ public class WalkScreen implements Screen {
 		stage.draw();
 
 		// Render the foreground that goes in front of the Sprite(s)
-		renderTileLayer("fg-1");
+		renderTileLayer(FOREGROUND_1);
 		
 		// HUD always drawn on top
 		core.getBatch().setProjectionMatrix(hud.stage.getCamera().combined);
 		hud.draw();
-	}
-
-	/**
-	 * Render a tiled tile layer.
-	 * 
-	 * @param name Name of the layer to render
-	 * @throws IllegalStateException If the layer doesn't exist
-	 */
-	private void renderTileLayer(String name) {
-		TiledMapTileLayer tileLayer = (TiledMapTileLayer) tiledMap.getLayers().get(name);
-		if (tileLayer == null) {
-			throw new IllegalStateException("Layer not found: " + name);
-		}
-		tiledMapRenderer.getBatch().begin();
-		tiledMapRenderer.renderTileLayer(tileLayer);
-		tiledMapRenderer.getBatch().end();
 	}
 
 	private void update(float dt) {
@@ -118,6 +102,22 @@ public class WalkScreen implements Screen {
 		camera.position.x = crono.getX();
 		camera.position.y = crono.getY();
 		camera.update();
+	}
+	
+	/**
+	 * Render a tiled tile layer.
+	 * 
+	 * @param name Name of the layer to render
+	 * @throws IllegalStateException If the layer doesn't exist
+	 */
+	private void renderTileLayer(String name) {
+		TiledMapTileLayer tileLayer = (TiledMapTileLayer) tiledMap.getLayers().get(name);
+		if (tileLayer == null) {
+			throw new IllegalStateException("Layer not found: " + name);
+		}
+		tiledMapRenderer.getBatch().begin();
+		tiledMapRenderer.renderTileLayer(tileLayer);
+		tiledMapRenderer.getBatch().end();
 	}
 
 	@Override

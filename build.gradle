@@ -74,7 +74,7 @@ project(":core") {
     dependencies {
         compile "com.badlogicgames.gdx:gdx:$gdxVersion"
         compile "com.badlogicgames.gdx:gdx-controllers:$gdxVersion"
-        compile 'org.jetbrains:annotations:16.0.2'
+		compile group: 'org.eclipse.jdt', name: 'org.eclipse.jdt.annotation', version: '2.2.100'
     }
 }
 

@@ -32,14 +32,15 @@ import static io.michelfaria.chrono.values.TxRegs.CronoTxRegs.CRONO_WALK_WEST_RO
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.tiled.TiledMap;
 
 import io.michelfaria.chrono.Core;
 import io.michelfaria.chrono.util.TxUtil;
 
 public class Crono extends PartyCharacter {
 
-	public Crono(Core core) {
-		super(core);
+	public Crono(Core core, TiledMap tiledMap) {
+		super(core, tiledMap);
 		TextureAtlas atlas = core.getAtlas();
 
 		// Idle

@@ -43,7 +43,7 @@ public class Core extends Game {
 
 		// Done loading assets
 		
-		atlas = getAsmgr().get(Assets.CHRONO_ATLAS, TextureAtlas.class);
+		atlas = asmgr.get(Assets.CHRONO_ATLAS, TextureAtlas.class);
 		batch = new SpriteBatch();
 		menuBoxes = new MenuBoxes(this);
 		tmxMapLoader = new TmxMapLoader();

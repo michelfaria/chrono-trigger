@@ -46,7 +46,7 @@ public class ExtendedAnimation<T> extends Animation<T> {
 
 		// Calculate the total duration of the animation
 		sum = 0;
-		for (Float e : frameDurations) {
+		for (float e : frameDurations) {
 			sum += e;
 		}
 		totalTime = sum;
