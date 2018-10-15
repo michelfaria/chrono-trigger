@@ -6,36 +6,39 @@ import io.michelfaria.chrono.util.TxUtil;
 
 import static io.michelfaria.chrono.values.TxRegs.UiBoxTxRegs.UI_DIALOGBOX_0;
 
-public final class MenuBoxes {
+public class MenuBoxes {
 
+	private Core core;
+	
 	// Dialog box cache (index is type)
-	public static UiElement[] dialogBoxes = new UiElement[10];
-	// Type of UI for the game
-	private static int type = 0;
+	public UiElement[] dialogBoxes = new UiElement[10];
+	// Current type of UI
+	private int type = 0;
 
-	static {
+	public MenuBoxes(Core core) {
+		this.core = core;
 		dialogBoxes[0] = new UiElement(UI_DIALOGBOX_0);
 	}
 
-	public static void setUiType(int type) {
+	public void setUiType(int type) {
 		if (type < 0) {
-			throw new IllegalArgumentException("type_ must be >= 0");
+			throw new IllegalArgumentException("type must be >= 0");
 		}
-		MenuBoxes.type = type;
+		this.type = type;
 	}
 
-	public static TextureRegion getDialogBox() {
+	public TextureRegion getDialogBox() {
 		if (dialogBoxes[type] == null) {
 			throw new IllegalStateException("No dialog box for type " + type);
 		}
 		UiElement ue = dialogBoxes[type];
 		if (ue.txReg == null) {
-			ue.txReg = TxUtil.findRegion(Core.atlas, ue.regionName);
+			ue.txReg = TxUtil.findRegion(core.getAtlas(), ue.regionName);
 		}
 		return ue.txReg;
 	}
 
-	private static class UiElement {
+	private class UiElement {
 		public String regionName;
 		public TextureRegion txReg;
 

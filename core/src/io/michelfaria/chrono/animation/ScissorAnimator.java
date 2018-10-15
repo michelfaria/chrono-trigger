@@ -1,26 +1,38 @@
 package io.michelfaria.chrono.animation;
 
+import static io.michelfaria.chrono.animation.ScissorAnimator.AnimationState.CLOSED;
+import static io.michelfaria.chrono.animation.ScissorAnimator.AnimationState.CLOSING;
+import static io.michelfaria.chrono.animation.ScissorAnimator.AnimationState.OPENING;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
+import io.michelfaria.chrono.Core;
 import io.michelfaria.chrono.util.GLUtil;
 
-import static io.michelfaria.chrono.animation.ScissorAnimator.AnimationState.*;
-
-/**
- * Creates a scissoring animation for a Scene2D group.
- */
 public class ScissorAnimator {
 
 	private static final int SCISSOR_MULTIPLE = 12;
-	public Rectangle rectangle;
+	
+	private Core core;
+	
+	public Rectangle vRectangle;
 	public Viewport vp;
+	
 	private int scissor;
 	private AnimationState spriteState;
 
-	public ScissorAnimator(Rectangle rectangle, Viewport vp) {
-		this.rectangle = rectangle;
+	/**
+	 * 
+	 * @param core Class containing the virtual width and virtual height of the game
+	 * @param vRectangle Virtual rectangle region to animate
+	 * @param vp Viewport
+	 */
+	public ScissorAnimator(Core core, Rectangle vRectangle, Viewport vp) {
+		this.core = core;
+		this.vRectangle = vRectangle;
 		this.vp = vp;
 
 		spriteState = AnimationState.CLOSED;
@@ -34,7 +46,7 @@ public class ScissorAnimator {
 			/*
 			 * Open dialog box
 			 */
-			if (scissor < GLUtil.getRealSize(vp, rectangle).height / 2) {
+			if (scissor < getRealYCenter()) {
 				scissor += SCISSOR_MULTIPLE;
 			} else {
 				// Scissor has covered the sprite
@@ -76,14 +88,14 @@ public class ScissorAnimator {
 
 	public void close() {
 		spriteState = CLOSING;
-		scissor = (int) GLUtil.getRealSize(vp, rectangle).height / 2;
+		scissor = getRealYCenter();
 	}
 
 	/**
-	 * Returns the real (non-virtual) Y coordinate of the center of the group.
+	 * Returns the real (non-virtual) Y coordinate of the center of the rectangle.
 	 */
 	private int getRealYCenter() {
-		return (int) (GLUtil.getRealSize(vp, rectangle).height / 2);
+		return (int) (GLUtil.getRealSize(vp, vRectangle, core.getVirtualWidth(), core.getVirtualHeight()).height / 2);
 	}
 
 	public enum AnimationState {

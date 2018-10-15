@@ -8,12 +8,15 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
 import io.michelfaria.chrono.Core;
 import io.michelfaria.chrono.actor.Crono;
 import io.michelfaria.chrono.hud.WalkHud;
 
 public class WalkScreen implements Screen {
 
+	private Core core;
+	
 	private InputMultiplexer multiplexer;
 	private OrthographicCamera camera;
 	private Viewport viewport;
@@ -23,13 +26,15 @@ public class WalkScreen implements Screen {
 
 	private float stateTime;
 
-	public WalkScreen() {
+	public WalkScreen(Core core) {
+		this.core = core;
+		
 		multiplexer = new InputMultiplexer();
 		camera = new OrthographicCamera();
-		viewport = new FitViewport(Core.V_WIDTH, Core.V_HEIGHT, camera);
+		viewport = new FitViewport(core.getVirtualWidth(), core.getVirtualHeight(), camera);
 		stage = new Stage(viewport);
 
-		hud = new WalkHud();
+		hud = new WalkHud(core);
 	}
 
 	@Override
@@ -39,7 +44,7 @@ public class WalkScreen implements Screen {
 		multiplexer.addProcessor(hud.stage);
 
 		// Add the character (Testing)
-		Crono crono = new Crono();
+		Crono crono = new Crono(core);
 		stage.addActor(crono);
 		crono.setHandleInput(true);
 	}
@@ -54,19 +59,19 @@ public class WalkScreen implements Screen {
 
 		// Stage drawings
 		// (Unfortunately, Stages open the batch and close it again)
-		Core.batch.setProjectionMatrix(camera.combined);
+		core.getBatch().setProjectionMatrix(camera.combined);
 		stage.draw();
 
-		Core.batch.begin();
+		core.getBatch().begin();
 		// All screen's drawing activities below
 
 		// ...
 
 		// End drawing
-		Core.batch.end();
+		core.getBatch().end();
 
 		// Hud always drawn on top
-		Core.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+		core.getBatch().setProjectionMatrix(hud.stage.getCamera().combined);
 		hud.draw();
 	}
 

@@ -38,8 +38,9 @@ import io.michelfaria.chrono.util.TxUtil;
 
 public class Crono extends PartyCharacter {
 
-	public Crono() {
-		TextureAtlas atlas = Core.atlas;
+	public Crono(Core core) {
+		super(core);
+		TextureAtlas atlas = core.getAtlas();
 
 		// Idle
 		idleNorth = new Animation<>(0, atlas.findRegion(CRONO_IDLE_NORTH));

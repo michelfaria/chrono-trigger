@@ -8,32 +8,37 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+
 import io.michelfaria.chrono.Core;
-import io.michelfaria.chrono.State;
 import io.michelfaria.chrono.animation.ScissorAnimator;
 import io.michelfaria.chrono.hud.actor.DialogBox;
 import io.michelfaria.chrono.util.GroupUtil;
 
 public class WalkHud implements Disposable {
 
+	private Core core;
+	
 	public OrthographicCamera camera;
 	public Viewport viewport;
 	public Stage stage;
 
-	private DialogBox dialogBox;
+	public DialogBox dialogBox;
+	
 	private ScissorAnimator scissorAnimator;
 
-	public WalkHud() {
+	public WalkHud(Core core) {
+		this.core = core;
+		
 		camera = new OrthographicCamera();
-		viewport = new FitViewport(Core.V_WIDTH, Core.V_HEIGHT);
-		stage = new Stage(viewport, Core.batch);
+		viewport = new FitViewport(core.getVirtualWidth(), core.getVirtualHeight());
+		stage = new Stage(viewport, core.getBatch());
 
 		// Set up dialog box
 		setDialogBoxType(0);
-		dialogBox = new DialogBox();
+		dialogBox = new DialogBox(core);
 
 		// Set up animator for the dialog box
-		scissorAnimator = new ScissorAnimator(new Rectangle(dialogBox.getX(), dialogBox.getY(),
+		scissorAnimator = new ScissorAnimator(core, new Rectangle(dialogBox.getX(), dialogBox.getY(),
 				GroupUtil.getWidth(dialogBox), GroupUtil.getHeight(dialogBox)), viewport);
 	}
 
@@ -44,13 +49,13 @@ public class WalkHud implements Disposable {
 
 	public void draw() {
 		stage.draw();
-		Core.batch.begin();
+		core.getBatch().begin();
 
 		scissorAnimator.scissor(() -> {
-			dialogBox.draw(Core.batch, 1);
+			dialogBox.draw(core.getBatch(), 1);
 		});
 
-		Core.batch.end();
+		core.getBatch().end();
 	}
 
 	public void update(float delta) {
@@ -58,11 +63,11 @@ public class WalkHud implements Disposable {
 		dialogBox.act(delta);
 
 		if (Gdx.input.isKeyPressed(Input.Keys.P)) {
-			State.hudPause = true;
+			core.getState().setHudPause(true);
 			scissorAnimator.open();
 		}
 		if (Gdx.input.isKeyPressed(Input.Keys.O)) {
-			State.hudPause = false;
+			core.getState().setHudPause(false);
 			scissorAnimator.close();
 		}
 	}
@@ -74,6 +79,6 @@ public class WalkHud implements Disposable {
 		if (type < 0) {
 			throw new IllegalArgumentException("type must be >= 0");
 		}
-		MenuBoxes.setUiType(type);
+		core.getMenuBoxes().setUiType(type);
 	}
 }

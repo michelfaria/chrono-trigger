@@ -7,34 +7,45 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+
+import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.screen.WalkScreen;
 import io.michelfaria.chrono.values.Assets;
 
 public class Core extends Game {
 
-	public static final int V_WIDTH = 256;
-	public static final int V_HEIGHT = 224;
+	private final int V_WIDTH = 256;
+	private final int V_HEIGHT = 224;
 
-	public static SpriteBatch batch;
-	public static AssetManager asmgr;
-	public static TextureAtlas atlas;
-
+	private AssetManager asmgr;
+	private TextureAtlas atlas;
+	private SpriteBatch batch;
+	
+	private State state;
+	private MenuBoxes menuBoxes;
+	
 	@Override
 	public void create() {
-		if (State.debug) {
+		state = new State();
+		if (state.isDebug()) {
 			Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		}
-		asmgr = new AssetManager();
+		
 		// Load assets
-		asmgr.load(Assets.CHRONO_ATLAS, TextureAtlas.class);
-		asmgr.load(Assets.FONT, BitmapFont.class);
+		asmgr = new AssetManager();
+		getAsmgr().load(Assets.CHRONO_ATLAS, TextureAtlas.class);
+		getAsmgr().load(Assets.FONT, BitmapFont.class);
 
-		asmgr.finishLoading();
+		// Wait until done loading assets
+		getAsmgr().finishLoading();
 
-		atlas = asmgr.get(Assets.CHRONO_ATLAS, TextureAtlas.class);
+		// Done loading assets
+		
+		atlas = getAsmgr().get(Assets.CHRONO_ATLAS, TextureAtlas.class);
 		batch = new SpriteBatch();
+		menuBoxes = new MenuBoxes(this);
 
-		setScreen(new WalkScreen());
+		setScreen(new WalkScreen(this));
 	}
 
 	@Override
@@ -42,5 +53,33 @@ public class Core extends Game {
 		asmgr.dispose();
 		atlas.dispose();
 		batch.dispose();
+	}
+
+	public int getVirtualWidth() {
+		return V_WIDTH;
+	}
+
+	public int getVirtualHeight() {
+		return V_HEIGHT;
+	}
+
+	public AssetManager getAsmgr() {
+		return asmgr;
+	}
+	
+	public TextureAtlas getAtlas() {
+		return atlas;
+	}
+
+	public SpriteBatch getBatch() {
+		return batch;
+	}
+
+	public MenuBoxes getMenuBoxes() {
+		return menuBoxes;
+	}
+
+	public State getState() {
+		return state;
 	}
 }

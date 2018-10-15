@@ -6,6 +6,11 @@ import com.badlogic.gdx.utils.SnapshotArray;
 
 import java.util.function.Function;
 
+/**
+ * Utility class for calculating the boundaries of a Scene2D Group.
+ * 
+ * @author wilde
+ */
 public class GroupUtil {
 
 	public static float getWidth(Group group) {

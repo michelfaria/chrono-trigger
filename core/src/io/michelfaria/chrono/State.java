@@ -1,6 +1,25 @@
 package io.michelfaria.chrono;
 
-public final class State {
-	public static boolean debug = true;
-	public static boolean hudPause = false;
+public class State {
+	private boolean debug = true;
+	private boolean hudPause = false;
+
+	public State() {
+	}
+
+	public boolean isDebug() {
+		return debug;
+	}
+
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+	}
+
+	public boolean isHudPause() {
+		return hudPause;
+	}
+
+	public void setHudPause(boolean hudPause) {
+		this.hudPause = hudPause;
+	}
 }

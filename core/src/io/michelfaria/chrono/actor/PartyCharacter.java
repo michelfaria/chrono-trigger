@@ -8,12 +8,14 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
 
-import io.michelfaria.chrono.State;
+import io.michelfaria.chrono.Core;
 import io.michelfaria.chrono.controller.Buttons;
 import io.michelfaria.chrono.controller.Ctrl;
 
 public abstract class PartyCharacter extends Actor {
 
+	protected Core core;
+	
 	protected float walkSpeed = 1f;
 	protected float runSpeedMultiplier = 2f;
 
@@ -43,7 +45,8 @@ public abstract class PartyCharacter extends Actor {
 	/**
 	 * Describes a generic Chrono Trigger playable/party member
 	 */
-	public PartyCharacter() {
+	public PartyCharacter(Core core) {
+		this.core = core;
 	}
 
 	@Override
@@ -74,7 +77,7 @@ public abstract class PartyCharacter extends Actor {
 	protected void handleInput(float delta) {
 		assert handleInput;
 
-		if (!State.hudPause) {
+		if (!core.getState().isDebug()) {
 			handleWalking(delta);
 		}
 	}
@@ -119,7 +122,7 @@ public abstract class PartyCharacter extends Actor {
 		if (animation == null) {
 			animation = idleSouth;
 		}
-		if (running && moving && !State.hudPause) {
+		if (running && moving && !core.getState().isHudPause()) {
 			// Running
 			if (facing == Direction.NORTH) {
 				animation = runNorth;
@@ -132,7 +135,7 @@ public abstract class PartyCharacter extends Actor {
 				animation = runEast;
 
 			}
-		} else if (moving && !State.hudPause) {
+		} else if (moving && !core.getState().isHudPause()) {
 			assert !running;
 			// Walking
 			if (facing == Direction.NORTH) {

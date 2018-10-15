@@ -5,11 +5,14 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
+
 import io.michelfaria.chrono.Core;
 import io.michelfaria.chrono.values.Assets;
 
 public class DialogBox extends Group {
 
+	private Core core;
+	
 	private BoxActor boxActor;
 
 	private String text = "Hello world!";
@@ -17,13 +20,15 @@ public class DialogBox extends Group {
 	private Label.LabelStyle labelStyle;
 	private Label label;
 
-	public DialogBox() {
-		boxActor = new BoxActor();
+	public DialogBox(Core core) {
+		this.core = core;
+		
+		boxActor = new BoxActor(core);
 		addActor(boxActor);
 
 		// Set up label style
 		labelStyle = new Label.LabelStyle();
-		labelStyle.font = Core.asmgr.get(Assets.FONT);
+		labelStyle.font = core.getAsmgr().get(Assets.FONT);
 		labelStyle.font.getData().setScale(0.5f);
 		labelStyle.fontColor = Color.WHITE;
 
