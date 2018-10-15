@@ -12,35 +12,35 @@ import io.michelfaria.chrono.values.Assets;
 
 public class Core extends Game {
 
-    public static final int V_WIDTH = 256;
-    public static final int V_HEIGHT = 224;
+	public static final int V_WIDTH = 256;
+	public static final int V_HEIGHT = 224;
 
-    public static SpriteBatch batch;
-    public static AssetManager asmgr;
-    public static TextureAtlas atlas;
+	public static SpriteBatch batch;
+	public static AssetManager asmgr;
+	public static TextureAtlas atlas;
 
-    @Override
-    public void create() {
-        if (State.debug) {
-            Gdx.app.setLogLevel(Application.LOG_DEBUG);
-        }
-        asmgr = new AssetManager();
-        // Load assets
-        asmgr.load(Assets.CHRONO_ATLAS, TextureAtlas.class);
-        asmgr.load(Assets.FONT, BitmapFont.class);
+	@Override
+	public void create() {
+		if (State.debug) {
+			Gdx.app.setLogLevel(Application.LOG_DEBUG);
+		}
+		asmgr = new AssetManager();
+		// Load assets
+		asmgr.load(Assets.CHRONO_ATLAS, TextureAtlas.class);
+		asmgr.load(Assets.FONT, BitmapFont.class);
 
-        asmgr.finishLoading();
+		asmgr.finishLoading();
 
-        atlas = asmgr.get(Assets.CHRONO_ATLAS, TextureAtlas.class);
-        batch = new SpriteBatch();
+		atlas = asmgr.get(Assets.CHRONO_ATLAS, TextureAtlas.class);
+		batch = new SpriteBatch();
 
-        setScreen(new WalkScreen());
-    }
+		setScreen(new WalkScreen());
+	}
 
-    @Override
-    public void dispose() {
-        asmgr.dispose();
-        atlas.dispose();
-        batch.dispose();
-    }
+	@Override
+	public void dispose() {
+		asmgr.dispose();
+		atlas.dispose();
+		batch.dispose();
+	}
 }

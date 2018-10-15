@@ -12,97 +12,95 @@ import io.michelfaria.chrono.Core;
 import io.michelfaria.chrono.actor.Crono;
 import io.michelfaria.chrono.hud.WalkHud;
 
-
 public class WalkScreen implements Screen {
 
-    private InputMultiplexer multiplexer;
-    private OrthographicCamera camera;
-    private Viewport viewport;
-    private Stage stage;
+	private InputMultiplexer multiplexer;
+	private OrthographicCamera camera;
+	private Viewport viewport;
+	private Stage stage;
 
-    private WalkHud hud;
+	private WalkHud hud;
 
-    private float stateTime;
+	private float stateTime;
 
-    public WalkScreen() {
-        multiplexer = new InputMultiplexer();
-        camera = new OrthographicCamera();
-        viewport = new FitViewport(Core.V_WIDTH, Core.V_HEIGHT, camera);
-        stage = new Stage(viewport);
+	public WalkScreen() {
+		multiplexer = new InputMultiplexer();
+		camera = new OrthographicCamera();
+		viewport = new FitViewport(Core.V_WIDTH, Core.V_HEIGHT, camera);
+		stage = new Stage(viewport);
 
-        hud = new WalkHud();
-    }
+		hud = new WalkHud();
+	}
 
-    @Override
-    public void show() {
-        Gdx.input.setInputProcessor(multiplexer);
-        multiplexer.addProcessor(stage);
-        multiplexer.addProcessor(hud.stage);
+	@Override
+	public void show() {
+		Gdx.input.setInputProcessor(multiplexer);
+		multiplexer.addProcessor(stage);
+		multiplexer.addProcessor(hud.stage);
 
-        // Add the character (Testing)
-        Crono crono = new Crono();
-        stage.addActor(crono);
-        crono.setHandleInput(true);
-    }
+		// Add the character (Testing)
+		Crono crono = new Crono();
+		stage.addActor(crono);
+		crono.setHandleInput(true);
+	}
 
-    @Override
-    public void render(float dt) {
-        update(dt);
+	@Override
+	public void render(float dt) {
+		update(dt);
 
-        // Clean canvas
-        Gdx.gl.glClearColor(0, 0, 0, 1);
-        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		// Clean canvas
+		Gdx.gl.glClearColor(0, 0, 0, 1);
+		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        // Stage drawings
-        // (Unfortunately, Stages open the batch and close it again)
-        Core.batch.setProjectionMatrix(camera.combined);
-        stage.draw();
+		// Stage drawings
+		// (Unfortunately, Stages open the batch and close it again)
+		Core.batch.setProjectionMatrix(camera.combined);
+		stage.draw();
 
-        Core.batch.begin();
-        // All screen's drawing activities below
+		Core.batch.begin();
+		// All screen's drawing activities below
 
+		// ...
 
-        // ...
+		// End drawing
+		Core.batch.end();
 
-        // End drawing
-        Core.batch.end();
+		// Hud always drawn on top
+		Core.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+		hud.draw();
+	}
 
-        // Hud always drawn on top
-        Core.batch.setProjectionMatrix(hud.stage.getCamera().combined);
-        hud.draw();
-    }
+	private void update(float dt) {
+		stateTime += Gdx.graphics.getDeltaTime();
+		hud.update(dt);
+		stage.act();
+		camera.update();
+	}
 
-    private void update(float dt) {
-        stateTime += Gdx.graphics.getDeltaTime();
-        hud.update(dt);
-        stage.act();
-        camera.update();
-    }
+	@Override
+	public void resize(int width, int height) {
+		hud.viewport.update(width, height);
+		viewport.update(width, height);
+	}
 
-    @Override
-    public void resize(int width, int height) {
-        hud.viewport.update(width, height);
-        viewport.update(width, height);
-    }
+	@Override
+	public void pause() {
 
-    @Override
-    public void pause() {
+	}
 
-    }
+	@Override
+	public void resume() {
 
-    @Override
-    public void resume() {
+	}
 
-    }
+	@Override
+	public void hide() {
 
-    @Override
-    public void hide() {
+	}
 
-    }
-
-    @Override
-    public void dispose() {
-        hud.dispose();
-        stage.dispose();
-    }
+	@Override
+	public void dispose() {
+		hud.dispose();
+		stage.dispose();
+	}
 }

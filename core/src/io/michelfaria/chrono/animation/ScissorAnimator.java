@@ -13,79 +13,80 @@ import static io.michelfaria.chrono.animation.ScissorAnimator.AnimationState.*;
  */
 public class ScissorAnimator {
 
-    private static final int SCISSOR_MULTIPLE = 12;
-    public Rectangle rectangle;
-    public Viewport vp;
-    private int scissor;
-    private AnimationState spriteState;
-    public ScissorAnimator(Rectangle rectangle, Viewport vp) {
-        this.rectangle = rectangle;
-        this.vp = vp;
+	private static final int SCISSOR_MULTIPLE = 12;
+	public Rectangle rectangle;
+	public Viewport vp;
+	private int scissor;
+	private AnimationState spriteState;
 
-        spriteState = AnimationState.CLOSED;
-    }
+	public ScissorAnimator(Rectangle rectangle, Viewport vp) {
+		this.rectangle = rectangle;
+		this.vp = vp;
 
-    public void scissor(Runnable draw) {
-        // Update the view port
-        Gdx.gl.glViewport(0, 0, vp.getScreenWidth(), vp.getScreenHeight());
+		spriteState = AnimationState.CLOSED;
+	}
 
-        if (spriteState.equals(OPENING)) {
-            /*
-            Open dialog box
-             */
-            if (scissor < GLUtil.getRealSize(vp, rectangle).height / 2) {
-                scissor += SCISSOR_MULTIPLE;
-            } else {
-                // Scissor has covered the sprite
-                spriteState = AnimationState.OPENED;
-            }
-        } else if (spriteState.equals(CLOSING)) {
-            /*
-            Close dialog box
-             */
-            if (scissor > 0) {
-                scissor -= SCISSOR_MULTIPLE;
-            }
-            if (scissor <= 0) {
-                scissor = 0;
-                spriteState = AnimationState.CLOSED;
-            }
-        }
+	public void scissor(Runnable draw) {
+		// Update the view port
+		Gdx.gl.glViewport(0, 0, vp.getScreenWidth(), vp.getScreenHeight());
 
-        boolean isAnimating = spriteState == OPENING || spriteState == CLOSING;
+		if (spriteState.equals(OPENING)) {
+			/*
+			 * Open dialog box
+			 */
+			if (scissor < GLUtil.getRealSize(vp, rectangle).height / 2) {
+				scissor += SCISSOR_MULTIPLE;
+			} else {
+				// Scissor has covered the sprite
+				spriteState = AnimationState.OPENED;
+			}
+		} else if (spriteState.equals(CLOSING)) {
+			/*
+			 * Close dialog box
+			 */
+			if (scissor > 0) {
+				scissor -= SCISSOR_MULTIPLE;
+			}
+			if (scissor <= 0) {
+				scissor = 0;
+				spriteState = AnimationState.CLOSED;
+			}
+		}
 
-        if (isAnimating) {
-            Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
-            Gdx.gl.glScissor(0, getRealYCenter() - scissor, vp.getScreenWidth(), scissor * 2);
-        }
+		boolean isAnimating = spriteState == OPENING || spriteState == CLOSING;
 
-        if (spriteState != CLOSED) {
-            draw.run();
-        }
+		if (isAnimating) {
+			Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
+			Gdx.gl.glScissor(0, getRealYCenter() - scissor, vp.getScreenWidth(), scissor * 2);
+		}
 
-        if (isAnimating) {
-            Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
-        }
-    }
+		if (spriteState != CLOSED) {
+			draw.run();
+		}
 
-    public void open() {
-        spriteState = OPENING;
-        scissor = 0;
-    }
+		if (isAnimating) {
+			Gdx.gl.glDisable(GL20.GL_SCISSOR_TEST);
+		}
+	}
 
-    public void close() {
-        spriteState = CLOSING;
-        scissor = (int) GLUtil.getRealSize(vp, rectangle).height / 2;
-    }
+	public void open() {
+		spriteState = OPENING;
+		scissor = 0;
+	}
 
-    /**
-     * Returns the real (non-virtual) Y coordinate of the center of the group.
-     */
-    private int getRealYCenter() {
-        return (int) (GLUtil.getRealSize(vp, rectangle).height / 2);
-    }
+	public void close() {
+		spriteState = CLOSING;
+		scissor = (int) GLUtil.getRealSize(vp, rectangle).height / 2;
+	}
 
-    public enum AnimationState {
-        OPENED, CLOSED, OPENING, CLOSING
-    }
+	/**
+	 * Returns the real (non-virtual) Y coordinate of the center of the group.
+	 */
+	private int getRealYCenter() {
+		return (int) (GLUtil.getRealSize(vp, rectangle).height / 2);
+	}
+
+	public enum AnimationState {
+		OPENED, CLOSED, OPENING, CLOSING
+	}
 }
