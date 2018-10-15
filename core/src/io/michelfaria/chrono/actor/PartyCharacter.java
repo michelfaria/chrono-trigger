@@ -77,7 +77,7 @@ public abstract class PartyCharacter extends Actor {
 	protected void handleInput(float delta) {
 		assert handleInput;
 
-		if (!core.getState().isDebug()) {
+		if (!core.getState().isHudPause()) {
 			handleWalking(delta);
 		}
 	}

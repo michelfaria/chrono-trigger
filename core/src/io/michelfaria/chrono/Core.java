@@ -7,6 +7,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
 import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.screen.WalkScreen;
@@ -23,6 +24,7 @@ public class Core extends Game {
 	
 	private State state;
 	private MenuBoxes menuBoxes;
+	private TmxMapLoader tmxMapLoader;
 	
 	@Override
 	public void create() {
@@ -44,8 +46,13 @@ public class Core extends Game {
 		atlas = getAsmgr().get(Assets.CHRONO_ATLAS, TextureAtlas.class);
 		batch = new SpriteBatch();
 		menuBoxes = new MenuBoxes(this);
+		tmxMapLoader = new TmxMapLoader();
 
 		setScreen(new WalkScreen(this));
+	}
+
+	public TmxMapLoader getTmxMapLoader() {
+		return tmxMapLoader;
 	}
 
 	@Override
