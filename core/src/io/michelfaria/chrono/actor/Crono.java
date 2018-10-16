@@ -43,13 +43,10 @@ public class Crono extends PartyCharacter {
 		super(core, tiledMap);
 		TextureAtlas atlas = core.getAtlas();
 
-		// Idle
 		idleNorth = new Animation<>(0, atlas.findRegion(CRONO_IDLE_NORTH));
 		idleSouth = new Animation<>(0, atlas.findRegion(CRONO_IDLE_SOUTH));
 		idleWest = new Animation<>(0, atlas.findRegion(CRONO_IDLE_WEST));
 		idleEast = new Animation<>(0, atlas.findRegion(CRONO_IDLE_EAST));
-
-		// Walk
 		walkNorth = new Animation<>(0.125f,
 				TxUtil.splitTextureRegion(atlas, CRONO_WALK_NORTH, CRONO_WALK_NORTH_COLS, CRONO_WALK_NORTH_ROWS), LOOP);
 		walkSouth = new Animation<>(0.125f,
@@ -58,8 +55,6 @@ public class Crono extends PartyCharacter {
 				TxUtil.splitTextureRegion(atlas, CRONO_WALK_EAST, CRONO_WALK_EAST_COLS, CRONO_WALK_EAST_ROWS), LOOP);
 		walkWest = new Animation<>(0.125f,
 				TxUtil.splitTextureRegion(atlas, CRONO_WALK_WEST, CRONO_WALK_WEST_COLS, CRONO_WALK_WEST_ROWS), LOOP);
-
-		// Run
 		runNorth = new Animation<>(0.1f,
 				TxUtil.splitTextureRegion(atlas, CRONO_RUN_NORTH, CRONO_RUN_NORTH_COLS, CRONO_RUN_NORTH_ROWS), LOOP);
 		runSouth = new Animation<>(0.1f,
