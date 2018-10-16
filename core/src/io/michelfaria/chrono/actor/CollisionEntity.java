@@ -1,20 +1,25 @@
 package io.michelfaria.chrono.actor;
 
-import io.michelfaria.chrono.logic.CollisionChecker;
+import com.badlogic.gdx.math.Rectangle;
+import io.michelfaria.chrono.logic.CollisionContext;
 
 public interface CollisionEntity {
 
-	CollisionChecker getCollisionChecker();
+    CollisionContext getCollisionContext();
 
-	float getX();
-	
-	float getY();
-	
-	float getWidth();
-	
-	float getHeight();
-	
-	void setX(float x);
-	
-	void setY(float y);
+    float getX();
+
+    void setX(float x);
+
+    float getY();
+
+    void setY(float y);
+
+    float getWidth();
+
+    float getHeight();
+
+    default Rectangle getRectangle() {
+        return new Rectangle(getX(), getY(), getWidth(), getHeight());
+    }
 }

@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 
 public final class ActorUtil {
 
-	public static Rectangle getActorRectangle(Actor actor) {
-		return new Rectangle(actor.getX(), actor.getY(),actor.getWidth(), actor.getHeight());
-	}
+    public static Rectangle getActorRectangle(Actor actor) {
+        return new Rectangle(actor.getX(), actor.getY(), actor.getWidth(), actor.getHeight());
+    }
 }

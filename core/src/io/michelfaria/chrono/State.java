@@ -1,25 +1,26 @@
 package io.michelfaria.chrono;
 
 public class State {
-	private boolean debug = true;
-	private boolean hudPause = false;
+    private boolean debug = true;
+    private boolean hudPause = false;
 
-	public State() {
-	}
+    public State() {
+    }
 
-	public boolean isDebug() {
-		return debug;
-	}
+    public boolean isDebug() {
+        return debug;
+    }
 
-	public void setDebug(boolean debug) {
-		this.debug = debug;
-	}
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
 
-	public boolean isHudPause() {
-		return hudPause;
-	}
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
+    public boolean isHudPause() {
+        return hudPause;
+    }
 
-	public void setHudPause(boolean hudPause) {
-		this.hudPause = hudPause;
-	}
+    public void setHudPause(boolean hudPause) {
+        this.hudPause = hudPause;
+    }
 }

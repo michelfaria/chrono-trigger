@@ -1,7 +1,7 @@
-package io.michelfaria.chrono;
+package io.michelfaria.chrono.actor;
 
 public interface Positionable {
-	float getX();
+    float getX();
 
-	float getY();
+    float getY();
 }
