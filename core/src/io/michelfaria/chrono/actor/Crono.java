@@ -1,6 +1,7 @@
 package io.michelfaria.chrono.actor;
 
 import static com.badlogic.gdx.graphics.g2d.Animation.PlayMode.LOOP;
+import static io.michelfaria.chrono.animation.AnimationType.*;
 import static io.michelfaria.chrono.values.TxRegs.CronoTxRegs.CRONO_IDLE_EAST;
 import static io.michelfaria.chrono.values.TxRegs.CronoTxRegs.CRONO_IDLE_NORTH;
 import static io.michelfaria.chrono.values.TxRegs.CronoTxRegs.CRONO_IDLE_SOUTH;
@@ -43,26 +44,28 @@ public class Crono extends PartyCharacter {
 		super(core, tiledMap);
 		TextureAtlas atlas = core.getAtlas();
 
-		idleNorth = new Animation<>(0, atlas.findRegion(CRONO_IDLE_NORTH));
-		idleSouth = new Animation<>(0, atlas.findRegion(CRONO_IDLE_SOUTH));
-		idleWest = new Animation<>(0, atlas.findRegion(CRONO_IDLE_WEST));
-		idleEast = new Animation<>(0, atlas.findRegion(CRONO_IDLE_EAST));
-		walkNorth = new Animation<>(0.125f,
-				TxUtil.splitTextureRegion(atlas, CRONO_WALK_NORTH, CRONO_WALK_NORTH_COLS, CRONO_WALK_NORTH_ROWS), LOOP);
-		walkSouth = new Animation<>(0.125f,
-				TxUtil.splitTextureRegion(atlas, CRONO_WALK_SOUTH, CRONO_WALK_SOUTH_COLS, CRONO_WALK_SOUTH_ROWS), LOOP);
-		walkEast = new Animation<>(0.125f,
-				TxUtil.splitTextureRegion(atlas, CRONO_WALK_EAST, CRONO_WALK_EAST_COLS, CRONO_WALK_EAST_ROWS), LOOP);
-		walkWest = new Animation<>(0.125f,
-				TxUtil.splitTextureRegion(atlas, CRONO_WALK_WEST, CRONO_WALK_WEST_COLS, CRONO_WALK_WEST_ROWS), LOOP);
-		runNorth = new Animation<>(0.1f,
-				TxUtil.splitTextureRegion(atlas, CRONO_RUN_NORTH, CRONO_RUN_NORTH_COLS, CRONO_RUN_NORTH_ROWS), LOOP);
-		runSouth = new Animation<>(0.1f,
-				TxUtil.splitTextureRegion(atlas, CRONO_RUN_SOUTH, CRONO_RUN_SOUTH_COLS, CRONO_RUN_SOUTH_ROWS), LOOP);
-		runWest = new Animation<>(0.1f,
-				TxUtil.splitTextureRegion(atlas, CRONO_RUN_WEST, CRONO_RUN_WEST_COLS, CRONO_RUN_WEST_ROWS), LOOP);
-		runEast = new Animation<>(0.1f,
-				TxUtil.splitTextureRegion(atlas, CRONO_RUN_EAST, CRONO_RUN_EAST_COLS, CRONO_RUN_EAST_ROWS), LOOP);
+		animations.put(IDLE_NORTH, new Animation<>(0, atlas.findRegion(CRONO_IDLE_NORTH)));
+		animations.put(IDLE_SOUTH, new Animation<>(0, atlas.findRegion(CRONO_IDLE_SOUTH)));
+		animations.put(IDLE_WEST, new Animation<>(0, atlas.findRegion(CRONO_IDLE_WEST)));
+		animations.put(IDLE_EAST, new Animation<>(0, atlas.findRegion(CRONO_IDLE_EAST)));
+		
+		animations.put(WALK_NORTH, new Animation<>(0.125f,
+				TxUtil.splitTextureRegion(atlas, CRONO_WALK_NORTH, CRONO_WALK_NORTH_COLS, CRONO_WALK_NORTH_ROWS), LOOP));
+		animations.put(WALK_SOUTH, new Animation<>(0.125f,
+				TxUtil.splitTextureRegion(atlas, CRONO_WALK_SOUTH, CRONO_WALK_SOUTH_COLS, CRONO_WALK_SOUTH_ROWS), LOOP));
+		animations.put(WALK_WEST, new Animation<>(0.125f,
+				TxUtil.splitTextureRegion(atlas, CRONO_WALK_EAST, CRONO_WALK_EAST_COLS, CRONO_WALK_EAST_ROWS), LOOP));
+		animations.put(WALK_EAST, new Animation<>(0.125f,
+				TxUtil.splitTextureRegion(atlas, CRONO_WALK_WEST, CRONO_WALK_WEST_COLS, CRONO_WALK_WEST_ROWS), LOOP));
+		
+		animations.put(RUN_NORTH, new Animation<>(0.1f,
+				TxUtil.splitTextureRegion(atlas, CRONO_RUN_NORTH, CRONO_RUN_NORTH_COLS, CRONO_RUN_NORTH_ROWS), LOOP));
+		animations.put(RUN_SOUTH, new Animation<>(0.1f,
+				TxUtil.splitTextureRegion(atlas, CRONO_RUN_SOUTH, CRONO_RUN_SOUTH_COLS, CRONO_RUN_SOUTH_ROWS), LOOP));
+		animations.put(RUN_WEST, new Animation<>(0.1f,
+				TxUtil.splitTextureRegion(atlas, CRONO_RUN_WEST, CRONO_RUN_WEST_COLS, CRONO_RUN_WEST_ROWS), LOOP));
+		animations.put(RUN_EAST, new Animation<>(0.1f,
+				TxUtil.splitTextureRegion(atlas, CRONO_RUN_EAST, CRONO_RUN_EAST_COLS, CRONO_RUN_EAST_ROWS), LOOP));
 
 		// Temporary
 		setX((float) Math.random() * 200);
