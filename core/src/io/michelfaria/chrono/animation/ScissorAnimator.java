@@ -34,8 +34,7 @@ public class ScissorAnimator {
 		this.core = core;
 		this.vRectangle = vRectangle;
 		this.vp = vp;
-
-		spriteState = AnimationState.CLOSED;
+		this.spriteState = AnimationState.CLOSED;
 	}
 
 	public void scissor(Runnable draw) {

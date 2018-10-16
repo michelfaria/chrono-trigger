@@ -17,29 +17,30 @@ import io.michelfaria.chrono.util.GroupUtil;
 public class WalkHud implements Disposable {
 
 	private Core core;
-	
+
 	public OrthographicCamera camera;
 	public Viewport viewport;
 	public Stage stage;
 
 	public DialogBox dialogBox;
-	
+
 	private ScissorAnimator scissorAnimator;
 
 	public WalkHud(Core core) {
 		this.core = core;
-		
-		camera = new OrthographicCamera();
-		viewport = new FitViewport(core.getVirtualWidth(), core.getVirtualHeight());
-		stage = new Stage(viewport, core.getBatch());
+
+		this.camera = new OrthographicCamera();
+		this.viewport = new FitViewport(core.getVirtualWidth(), core.getVirtualHeight());
+		this.stage = new Stage(viewport, core.getBatch());
 
 		// Set up dialog box
 		setDialogBoxType(0);
-		dialogBox = new DialogBox(core);
+		this.dialogBox = new DialogBox(core);
 
 		// Set up animator for the dialog box
-		scissorAnimator = new ScissorAnimator(core, new Rectangle(dialogBox.getX(), dialogBox.getY(),
-				GroupUtil.getWidth(dialogBox), GroupUtil.getHeight(dialogBox)), viewport);
+		this.scissorAnimator = new ScissorAnimator(core, new Rectangle(dialogBox.getX(),
+				dialogBox.getY(), GroupUtil.getWidth(dialogBox), GroupUtil.getHeight(dialogBox)),
+				viewport);
 	}
 
 	@Override

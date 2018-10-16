@@ -17,7 +17,7 @@ public class MenuBoxes {
 
 	public MenuBoxes(Core core) {
 		this.core = core;
-		dialogBoxes[0] = new UiElement(UI_DIALOGBOX_0);
+		this.dialogBoxes[0] = new UiElement(UI_DIALOGBOX_0);
 	}
 
 	public void setUiType(int type) {

@@ -42,28 +42,27 @@ public class WalkScreen implements Screen {
 
 	public WalkScreen(Core core) {
 		this.core = core;
+		this.multiplexer = new InputMultiplexer();
+		this.camera = new OrthographicCamera();
+		this.viewport = new FitViewport(core.getVirtualWidth(), core.getVirtualHeight(), camera);
+		this.stage = new Stage(viewport);
 		
-		multiplexer = new InputMultiplexer();
-		camera = new OrthographicCamera();
-		viewport = new FitViewport(core.getVirtualWidth(), core.getVirtualHeight(), camera);
-		stage = new Stage(viewport);
-
-		tiledMap = core.getTmxMapLoader().load(Assets.EXAMPLE_TMX);
-		tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+		this.tiledMap = core.getTmxMapLoader().load(Assets.EXAMPLE_TMX);
+		this.tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 		
-		hud = new WalkHud(core);
+		this.hud = new WalkHud(core);
 	}
 
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(multiplexer);
-		multiplexer.addProcessor(stage);
-		multiplexer.addProcessor(hud.stage);
+		this.multiplexer.addProcessor(stage);
+		this.multiplexer.addProcessor(hud.stage);
 
 		// Add the character (Testing)
 		this.crono = new Crono(core, tiledMap);
-		stage.addActor(crono);
-		crono.setHandleInput(true);
+		this.stage.addActor(crono);
+		this.crono.setHandleInput(true);
 	}
 
 	@Override

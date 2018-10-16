@@ -18,7 +18,7 @@ public class Core extends Game {
 	private final int V_WIDTH = 256;
 	private final int V_HEIGHT = 224;
 
-	private AssetManager asmgr;
+	private AssetManager assetMan;
 	private TextureAtlas atlas;
 	private SpriteBatch batch;
 	
@@ -28,13 +28,13 @@ public class Core extends Game {
 	
 	@Override
 	public void create() {
-		state = new State();
+		this.state = new State();
 		if (state.isDebug()) {
 			Gdx.app.setLogLevel(Application.LOG_DEBUG);
 		}
 		
 		// Load assets
-		asmgr = new AssetManager();
+		this.assetMan = new AssetManager();
 		getAsmgr().load(Assets.CHRONO_ATLAS, TextureAtlas.class);
 		getAsmgr().load(Assets.FONT, BitmapFont.class);
 
@@ -43,21 +43,21 @@ public class Core extends Game {
 
 		// Done loading assets
 		
-		atlas = asmgr.get(Assets.CHRONO_ATLAS, TextureAtlas.class);
-		batch = new SpriteBatch();
-		menuBoxes = new MenuBoxes(this);
-		tmxMapLoader = new TmxMapLoader();
+		this.atlas = assetMan.get(Assets.CHRONO_ATLAS, TextureAtlas.class);
+		this.batch = new SpriteBatch();
+		this.menuBoxes = new MenuBoxes(this);
+		this.tmxMapLoader = new TmxMapLoader();
 
 		setScreen(new WalkScreen(this));
 	}
 
 	public TmxMapLoader getTmxMapLoader() {
-		return tmxMapLoader;
+		return this.tmxMapLoader;
 	}
 
 	@Override
 	public void dispose() {
-		asmgr.dispose();
+		assetMan.dispose();
 		atlas.dispose();
 		batch.dispose();
 	}
@@ -71,7 +71,7 @@ public class Core extends Game {
 	}
 
 	public AssetManager getAsmgr() {
-		return asmgr;
+		return assetMan;
 	}
 	
 	public TextureAtlas getAtlas() {
