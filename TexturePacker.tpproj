@@ -1,6 +1,6 @@
 name=chrono
 filename=
-output=../Programming/ChronoTriggerGDX/core/assets
+output=../Programming/ChronoTriggerGDX/core/assets/textures
 
 alias=true
 alphaThreshold=0

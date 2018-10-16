@@ -6,28 +6,28 @@ filter: Nearest,Nearest
 repeat: none
 crono-idle-east
   rotate: false
-  xy: 214, 5
+  xy: 458, 51
   size: 14, 34
   orig: 14, 34
   offset: 0, 0
   index: -1
 crono-idle-north
   rotate: false
-  xy: 400, 51
+  xy: 438, 52
   size: 16, 33
   orig: 16, 33
   offset: 0, 0
   index: -1
 crono-idle-south
   rotate: false
-  xy: 176, 4
+  xy: 400, 49
   size: 16, 35
   orig: 16, 35
   offset: 0, 0
   index: -1
 crono-idle-west
   rotate: false
-  xy: 196, 5
+  xy: 420, 50
   size: 14, 34
   orig: 14, 34
   offset: 0, 0
@@ -86,6 +86,13 @@ crono-walk-west
   xy: 264, 50
   size: 132, 34
   orig: 132, 34
+  offset: 0, 0
+  index: -1
+nu-idle-south
+  rotate: false
+  xy: 176, 8
+  size: 93, 31
+  orig: 93, 31
   offset: 0, 0
   index: -1
 ui-dialogbox-0

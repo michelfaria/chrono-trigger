@@ -1,5 +1,7 @@
 package io.michelfaria.chrono.values;
 
+import com.badlogic.gdx.utils.Array;
+
 public enum TxRegs {
 
 	// @formatter:off
@@ -18,22 +20,32 @@ public enum TxRegs {
 	
 	UI_DIALOGBOX_0("ui-dialogbox-0", 1, 1),
 	
-	NU_IDLE_SOUTH("nu-idle-south", 3, 1);
+	NU_IDLE_SOUTH("nu-idle-south", 3, 1, 0.3f, new int[] {0, 1, 0, 2});
 	// @formatter:on
 
 	public final String regionName;
 	public final int columns;
 	public final int rows;
-	public float speed = 0;
+	public final float speed;
+	/**
+	 * Index instructions on how to assemble the animation.
+	 * Null if there is no animation.
+	 */
+	public final int[] assembly;
 
 	private TxRegs(String regionName, int columns, int rows) {
-		this.regionName = regionName;
-		this.columns = columns;
-		this.rows = rows;
+		this(regionName, columns, rows, 0);
 	}
 
 	private TxRegs(String regionName, int columns, int rows, float speed) {
-		this(regionName, columns, rows);
+		this(regionName, columns, rows, speed, null);
+	}
+
+	private TxRegs(String regionName, int columns, int rows, float speed, int[] assembly) {
+		this.regionName = regionName;
+		this.columns = columns;
+		this.rows = rows;
 		this.speed = speed;
+		this.assembly = assembly;
 	}
 }

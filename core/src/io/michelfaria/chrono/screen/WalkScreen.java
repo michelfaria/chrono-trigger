@@ -3,6 +3,8 @@ package io.michelfaria.chrono.screen;
 import static io.michelfaria.chrono.values.LayerNames.FOREGROUND_1;
 import static io.michelfaria.chrono.values.LayerNames.FOREGROUND_2;
 
+import java.util.Random;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
@@ -11,19 +13,27 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Intersector;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 import io.michelfaria.chrono.Core;
 import io.michelfaria.chrono.actor.Crono;
+import io.michelfaria.chrono.actor.Nu;
+import io.michelfaria.chrono.actor.PartyCharacter;
 import io.michelfaria.chrono.hud.WalkHud;
+import io.michelfaria.chrono.logic.ActorYPositionComparator;
+import io.michelfaria.chrono.logic.CollisionChecker;
 import io.michelfaria.chrono.values.Assets;
 
 public class WalkScreen implements Screen {
 
 	private Core core;
-	
+
 	// Scene 2D
 	private InputMultiplexer multiplexer;
 	private OrthographicCamera camera;
@@ -33,12 +43,11 @@ public class WalkScreen implements Screen {
 	// Tiled
 	private TiledMap tiledMap;
 	private OrthogonalTiledMapRenderer tiledMapRenderer;
-	
+
 	// Other
 	private WalkHud hud;
-	private float stateTime;
-	
-	private Crono crono; // (TESTING ONLY)
+	private ActorYPositionComparator yPositionCmp = new ActorYPositionComparator();
+	private PartyCharacter mainCharacter;
 
 	public WalkScreen(Core core) {
 		this.core = core;
@@ -46,23 +55,36 @@ public class WalkScreen implements Screen {
 		this.camera = new OrthographicCamera();
 		this.viewport = new FitViewport(core.getVirtualWidth(), core.getVirtualHeight(), camera);
 		this.stage = new Stage(viewport);
-		
+
 		this.tiledMap = core.getTmxMapLoader().load(Assets.EXAMPLE_TMX);
 		this.tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
-		
+
 		this.hud = new WalkHud(core);
 	}
 
 	@Override
 	public void show() {
 		Gdx.input.setInputProcessor(multiplexer);
-		this.multiplexer.addProcessor(stage);
-		this.multiplexer.addProcessor(hud.stage);
+		multiplexer.addProcessor(stage);
+		multiplexer.addProcessor(hud.stage);
 
 		// Add the character (Testing)
-		this.crono = new Crono(core, tiledMap);
-		this.stage.addActor(crono);
-		this.crono.setHandleInput(true);
+		mainCharacter = new Crono(core, tiledMap);
+		stage.addActor(mainCharacter);
+		mainCharacter.setHandleInput(true);
+
+		for (int i = 0; i < 80; i++) {// TESTING
+			Actor nu = new Nu(core);// TESTING
+			stage.addActor(nu);// TESTING
+			Random random = new Random();// TESTING
+			int x;// TESTING
+			int y;// TESTING
+			do {// TESTING
+				x = random.nextInt(600);// TESTING
+				y = random.nextInt(600);// TESTING
+			} while (new CollisionChecker(tiledMap).collidesWithMap(new Rectangle(x, y, x+16, y+16)));// TESTING
+			nu.setPosition(x, y);// TESTING
+		}// TESTING
 	}
 
 	@Override
@@ -75,7 +97,7 @@ public class WalkScreen implements Screen {
 
 		// Render the foreground that goes behind the Sprite(s)
 		renderTileLayer(FOREGROUND_2);
-		
+
 		// Stage drawings
 		// (Stages open the batch and close it again)
 		core.getBatch().setProjectionMatrix(camera.combined);
@@ -83,26 +105,34 @@ public class WalkScreen implements Screen {
 
 		// Render the foreground that goes in front of the Sprite(s)
 		renderTileLayer(FOREGROUND_1);
-		
+
 		// HUD always drawn on top
 		core.getBatch().setProjectionMatrix(hud.stage.getCamera().combined);
 		hud.draw();
 	}
 
 	private void update(float dt) {
-		stateTime += Gdx.graphics.getDeltaTime();
 		hud.update(dt);
+		updateActorsZIndex();
 		stage.act();
-		updateCamera();	
+		updateCamera();
 		tiledMapRenderer.setView(camera);
 	}
 
 	private void updateCamera() {
-		camera.position.x = crono.getX();
-		camera.position.y = crono.getY();
+		camera.position.x = mainCharacter.getX();
+		camera.position.y = mainCharacter.getY();
 		camera.update();
 	}
-	
+
+	private void updateActorsZIndex() {
+		Array<Actor> actors = stage.getActors();
+		actors.sort(yPositionCmp);
+		for (int i = 0; i < actors.size; i++) {
+			actors.get(i).setZIndex(i);
+		}
+	}
+
 	/**
 	 * Render a tiled tile layer.
 	 * 
