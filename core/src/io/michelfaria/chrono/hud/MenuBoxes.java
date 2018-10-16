@@ -1,10 +1,10 @@
 package io.michelfaria.chrono.hud;
 
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import io.michelfaria.chrono.Core;
-import io.michelfaria.chrono.util.TxUtil;
+import static io.michelfaria.chrono.values.TxRegs.UI_DIALOGBOX_0;
 
-import static io.michelfaria.chrono.values.TxRegs.UiBoxTxRegs.UI_DIALOGBOX_0;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+
+import io.michelfaria.chrono.Core;
 
 public class MenuBoxes {
 
@@ -17,7 +17,7 @@ public class MenuBoxes {
 
 	public MenuBoxes(Core core) {
 		this.core = core;
-		this.dialogBoxes[0] = new UiElement(UI_DIALOGBOX_0);
+		this.dialogBoxes[0] = new UiElement(UI_DIALOGBOX_0.regionName);
 	}
 
 	public void setUiType(int type) {
@@ -33,7 +33,7 @@ public class MenuBoxes {
 		}
 		UiElement ue = dialogBoxes[type];
 		if (ue.txReg == null) {
-			ue.txReg = TxUtil.findRegion(core.getAtlas(), ue.regionName);
+			ue.txReg = core.getTxTools().findRegion(ue.regionName);
 		}
 		return ue.txReg;
 	}

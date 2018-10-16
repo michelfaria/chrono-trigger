@@ -1,40 +1,39 @@
 package io.michelfaria.chrono.values;
 
-public final class TxRegs {
+public enum TxRegs {
 
-	public static final class CronoTxRegs {
-		public static final String CRONO_IDLE_NORTH = "crono-idle-north";
-		public static final String CRONO_IDLE_SOUTH = "crono-idle-south";
-		public static final String CRONO_IDLE_WEST = "crono-idle-west";
-		public static final String CRONO_IDLE_EAST = "crono-idle-east";
-		public static final String CRONO_WALK_NORTH = "crono-walk-north";
-		public static final String CRONO_WALK_SOUTH = "crono-walk-south";
-		public static final String CRONO_WALK_EAST = "crono-walk-east";
-		public static final String CRONO_WALK_WEST = "crono-walk-west";
-		public static final String CRONO_RUN_NORTH = "crono-run-north";
-		public static final String CRONO_RUN_SOUTH = "crono-run-south";
-		public static final String CRONO_RUN_WEST = "crono-run-west";
-		public static final String CRONO_RUN_EAST = "crono-run-east";
+	// @formatter:off
+	CRONO_IDLE_NORTH("crono-idle-north", 1, 1),
+	CRONO_IDLE_SOUTH("crono-idle-south", 1, 1),
+	CRONO_IDLE_WEST("crono-idle-west", 1, 1),
+	CRONO_IDLE_EAST("crono-idle-east", 1, 1),
+	CRONO_WALK_NORTH("crono-walk-north", 6, 1, 0.125f),
+	CRONO_WALK_SOUTH("crono-walk-south", 6, 1, 0.125f),
+	CRONO_WALK_WEST("crono-walk-west", 6, 1, 0.125f),
+	CRONO_WALK_EAST("crono-walk-east", 6, 1, 0.125f),
+	CRONO_RUN_NORTH("crono-run-north", 6, 1, 0.1f),
+	CRONO_RUN_SOUTH("crono-run-south", 6, 1, 0.1f),
+	CRONO_RUN_WEST("crono-run-west", 6, 1, 0.1f),
+	CRONO_RUN_EAST("crono-run-east", 6, 1, 0.1f),
+	
+	UI_DIALOGBOX_0("ui-dialogbox-0", 1, 1),
+	
+	NU_IDLE_SOUTH("nu-idle-south", 3, 1);
+	// @formatter:on
 
-		public static final int CRONO_WALK_NORTH_COLS = 6;
-		public static final int CRONO_WALK_NORTH_ROWS = 1;
-		public static final int CRONO_WALK_SOUTH_COLS = 6;
-		public static final int CRONO_WALK_SOUTH_ROWS = 1;
-		public static final int CRONO_WALK_EAST_COLS = 6;
-		public static final int CRONO_WALK_EAST_ROWS = 1;
-		public static final int CRONO_WALK_WEST_COLS = 6;
-		public static final int CRONO_WALK_WEST_ROWS = 1;
-		public static final int CRONO_RUN_NORTH_COLS = 6;
-		public static final int CRONO_RUN_NORTH_ROWS = 1;
-		public static final int CRONO_RUN_SOUTH_COLS = 6;
-		public static final int CRONO_RUN_SOUTH_ROWS = 1;
-		public static final int CRONO_RUN_WEST_COLS = 6;
-		public static final int CRONO_RUN_WEST_ROWS = 1;
-		public static final int CRONO_RUN_EAST_COLS = 6;
-		public static final int CRONO_RUN_EAST_ROWS = 1;
+	public final String regionName;
+	public final int columns;
+	public final int rows;
+	public float speed = 0;
+
+	private TxRegs(String regionName, int columns, int rows) {
+		this.regionName = regionName;
+		this.columns = columns;
+		this.rows = rows;
 	}
 
-	public static final class UiBoxTxRegs {
-		public static final String UI_DIALOGBOX_0 = "ui-dialogbox-0";
+	private TxRegs(String regionName, int columns, int rows, float speed) {
+		this(regionName, columns, rows);
+		this.speed = speed;
 	}
 }

@@ -1,10 +1,35 @@
 package io.michelfaria.chrono.util;
 
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 
-public final class TxUtil {
+import io.michelfaria.chrono.values.TxRegs;
+
+public final class TextureTools {
+	
+	private TextureAtlas atlas;
+	
+	public TextureTools(TextureAtlas atlas) {
+		this.atlas = atlas;
+	}
+	
+	public Animation<?> makeAnimation(TxRegs txReg) {
+		return new Animation<>(txReg.speed, splitTextureRegion(txReg), PlayMode.LOOP);
+	}
+	
+	/**
+	 * Splits a texture sequence (spritesheet) into individual TextureRegions in a
+	 * 1-dimension array. The textures are ordered left-to-right, up-to-down.
+	 *
+	 * @param txReg Texture region to split
+	 */
+	public Array<TextureRegion> splitTextureRegion(TxRegs txReg) {
+		return splitTextureRegion(txReg.regionName, txReg.columns, txReg.rows);
+	}
+	
 	/**
 	 * Splits a texture sequence (spritesheet) into individual TextureRegions in a
 	 * 1-dimension array. The textures are ordered left-to-right, up-to-down.
@@ -14,7 +39,7 @@ public final class TxUtil {
 	 * @param frameCols  Amount of columns in animation
 	 * @param frameRows  Amount of rows in animation
 	 */
-	public static Array<TextureRegion> splitTextureRegion(TextureAtlas atlas, String regionName, int frameCols,
+	public Array<TextureRegion> splitTextureRegion(String regionName, int frameCols,
 			int frameRows) {
 		TextureAtlas.AtlasRegion reg = atlas.findRegion(regionName);
 		if (reg == null) {
@@ -32,7 +57,7 @@ public final class TxUtil {
 	 * @param frameCols Amount of columns in animation
 	 * @param frameRows Amount of rows in animation
 	 */
-	public static Array<TextureRegion> splitTextureRegion(TextureRegion reg, int frameCols, int frameRows) {
+	public Array<TextureRegion> splitTextureRegion(TextureRegion reg, int frameCols, int frameRows) {
 		// Use the split utility method to create a 2D array of TextureRegions.
 		TextureRegion[][] tmp = reg.split(reg.getRegionWidth() / frameCols, reg.getRegionHeight() / frameRows);
 
@@ -51,7 +76,7 @@ public final class TxUtil {
 	/**
 	 * Null-safe find-region
 	 */
-	public static TextureRegion findRegion(TextureAtlas atlas, String name) {
+	public TextureRegion findRegion(String name) {
 		TextureAtlas.AtlasRegion region = atlas.findRegion(name);
 		if (region == null) {
 			throw new RuntimeException("Region not found");

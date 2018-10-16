@@ -11,6 +11,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
 import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.screen.WalkScreen;
+import io.michelfaria.chrono.util.TextureTools;
 import io.michelfaria.chrono.values.Assets;
 
 public class Core extends Game {
@@ -18,11 +19,13 @@ public class Core extends Game {
 	private final int V_WIDTH = 256;
 	private final int V_HEIGHT = 224;
 
+	private State state;
+	
 	private AssetManager assetMan;
 	private TextureAtlas atlas;
 	private SpriteBatch batch;
 	
-	private State state;
+	private TextureTools txTools;
 	private MenuBoxes menuBoxes;
 	private TmxMapLoader tmxMapLoader;
 	
@@ -45,6 +48,8 @@ public class Core extends Game {
 		
 		this.atlas = assetMan.get(Assets.CHRONO_ATLAS, TextureAtlas.class);
 		this.batch = new SpriteBatch();
+		
+		this.txTools = new TextureTools(atlas);
 		this.menuBoxes = new MenuBoxes(this);
 		this.tmxMapLoader = new TmxMapLoader();
 
@@ -88,5 +93,9 @@ public class Core extends Game {
 
 	public State getState() {
 		return state;
+	}
+
+	public TextureTools getTxTools() {
+		return txTools;
 	}
 }
