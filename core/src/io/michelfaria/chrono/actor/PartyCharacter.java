@@ -43,7 +43,6 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, P
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
         aniMan.draw(batch, parentAlpha);
     }
 

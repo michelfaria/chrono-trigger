@@ -21,6 +21,7 @@ public class Nu extends Actor implements Positionable, CollisionEntity {
         this.collisionContext = collisionContext;
 
         this.aniMan = new AnimationManager(this);
+
         aniMan.xOffset = -8;
         aniMan.anims.put(IDLE_SOUTH, core.getTxTools().makeAnimation(NU_IDLE_SOUTH));
         aniMan.anim = IDLE_SOUTH;
@@ -30,7 +31,6 @@ public class Nu extends Actor implements Positionable, CollisionEntity {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        super.draw(batch, parentAlpha);
         aniMan.draw(batch, parentAlpha);
     }
 

@@ -19,6 +19,13 @@ public class CollisionChecker {
         this.collisionContext = collisionContext;
     }
 
+    /**
+     * Returns true if the specified Actor's rectangle collides with any objects in
+     * "Collision" layer of this class's CollisionContext's TiledMap or other CollisionObjects
+     * in this CollisionContext.
+     *
+     * @param entity     Actor to check for collision
+     */
     public boolean collides(CollisionEntity entity) {
         return collides(entity, null);
     }
