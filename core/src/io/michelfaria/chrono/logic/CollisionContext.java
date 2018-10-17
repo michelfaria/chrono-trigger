@@ -3,19 +3,26 @@ package io.michelfaria.chrono.logic;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.utils.Array;
 import io.michelfaria.chrono.actor.CollisionEntity;
+import org.jetbrains.annotations.Nullable;
 
 public class CollisionContext {
+
+    @Nullable
     public TiledMap map;
     public CollisionChecker collisionChecker;
     public Array<CollisionEntity> collisionEntities;
 
-    public CollisionContext(TiledMap map) {
-        this.map = map;
-        this.collisionChecker = new CollisionChecker(this);
-        this.collisionEntities = new Array<>();
+    public CollisionContext() {
+        this(null);
     }
 
-    public void add(CollisionEntity entity) {
-        this.collisionEntities.add(entity);
+    public CollisionContext(@Nullable TiledMap map) {
+        this.map = map;
+        collisionChecker = new CollisionChecker(this);
+        collisionEntities = new Array<>();
+    }
+
+    public void addEntity(CollisionEntity entity) {
+        collisionEntities.add(entity);
     }
 }

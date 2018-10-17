@@ -25,16 +25,16 @@ public class WalkHud implements Disposable {
     public WalkHud(Core core) {
         this.core = core;
 
-        this.camera = new OrthographicCamera();
-        this.viewport = new FitViewport(core.getVirtualWidth(), core.getVirtualHeight());
-        this.stage = new Stage(viewport, core.getBatch());
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(core.getVirtualWidth(), core.getVirtualHeight());
+        stage = new Stage(viewport, core.getBatch());
 
         // Set up dialog box
         setDialogBoxType(0);
-        this.dialogBox = new DialogBox(core);
+        dialogBox = new DialogBox(core);
 
         // Set up animator for the dialog box
-        this.scissorAnimator = new ScissorAnimator(core, new Rectangle(dialogBox.getX(),
+        scissorAnimator = new ScissorAnimator(core, new Rectangle(dialogBox.getX(),
                 dialogBox.getY(), GroupUtil.getWidth(dialogBox), GroupUtil.getHeight(dialogBox)),
                 viewport);
     }

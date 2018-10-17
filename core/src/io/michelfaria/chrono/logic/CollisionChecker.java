@@ -1,16 +1,18 @@
 package io.michelfaria.chrono.logic;
 
 import com.badlogic.gdx.maps.MapLayer;
-import com.badlogic.gdx.maps.MapObjects;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 import io.michelfaria.chrono.actor.CollisionEntity;
 import io.michelfaria.chrono.values.LayerNames;
-import org.eclipse.jdt.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.badlogic.gdx.math.Intersector.intersectRectangles;
 
+@ParametersAreNonnullByDefault
 public class CollisionChecker {
 
     private CollisionContext collisionContext;
@@ -20,65 +22,80 @@ public class CollisionChecker {
     }
 
     /**
-     * Returns true if the specified Actor's rectangle collides with any objects in
-     * "Collision" layer of this class's CollisionContext's TiledMap or other CollisionObjects
-     * in this CollisionContext.
-     *
-     * @param entity     Actor to check for collision
+     * Returns all collisions made by the specified CollisionEntity with other CollisionEntities and the map's collidable
+     * layer.
      */
-    public boolean collides(CollisionEntity entity) {
-        return collides(entity, null);
+    public Array<CollisionEntity> collisions(CollisionEntity entity) {
+        return collisions(entity, null);
     }
 
     /**
-     * Returns true if the specified Actor's rectangle collides with any objects in
-     * "Collision" layer of this class's CollisionContext's TiledMap or other CollisionObjects
-     * in this CollisionContext.
+     * Returns all collisions made by the specified CollisionEntity with other CollisionEntities in this class's
+     * CollisionContext and the map's collidable layer.
      *
-     * @param entity     Actor to check for collision
-     * @param rectangle (Optional) Rectangle if you don't want to use the entity's rectangle
-     * @return True if there is a collision
+     * If a rectangle is specified, then the Rectangle will be used for checking for collisions instead of the
+     * CollisionEntity's rectangle.
      */
-    public boolean collides(CollisionEntity entity, @Nullable Rectangle rectangle) {
-        Rectangle entityRectangle;
+    public Array<CollisionEntity> collisions(CollisionEntity entity, @Nullable Rectangle rectangle) {
+        if (!entity.isCollisionEnabled()) {
+            return new Array<>();
+        }
         if (rectangle == null) {
-            entityRectangle = entity.getRectangle();
-        } else {
-            entityRectangle = rectangle;
+            rectangle = entity.getRectangle();
         }
 
-        if (collidesWithMap(entityRectangle)) {
-            return true;
-        }
-        for (CollisionEntity otherEntity : collisionContext.collisionEntities) {
-            if (entity != otherEntity) {
-                if (intersectRectangles(entityRectangle, otherEntity.getRectangle(), new Rectangle())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        Array<CollisionEntity> collisions = mapCollisions(rectangle);
+        collisions.addAll(entityCollisions(entity, rectangle));
+
+        return collisions;
     }
 
     /**
-     * Returns true if the specified rectangle collides with any objects in the
-     * "Collision" layer of this class's CollisionContext's TiledMap.
+     * Returns all collisions made by the specified CollisionEntity with other CollisionEntities in this class's
+     * CollisionContext.
      *
-     * @param rectangle Rectangle to check for collision
-     * @return True if there is a collision
+     * If a rectangle is specified, then the Rectangle will be used for checking for collisions instead of the
+     * CollisionEntity's rectangle.
+     *
+     * @implNote The entity parameter is just used to ensure that the entity does not collide with itself.
      */
-    public boolean collidesWithMap(Rectangle rectangle) {
-        MapLayer collisionLayer = collisionContext.map.getLayers().get(LayerNames.COLLISION);
-        MapObjects objects = collisionLayer.getObjects();
-        Array<RectangleMapObject> rectangles = objects.getByType(RectangleMapObject.class);
+    public Array<CollisionEntity> entityCollisions(CollisionEntity entity, @Nullable Rectangle rectangle) {
+        if (rectangle == null) {
+            rectangle = entity.getRectangle();
+        }
 
-        for (RectangleMapObject rectangleMapObject : rectangles) {
-            Rectangle mapRectangle = rectangleMapObject.getRectangle();
+        Array<CollisionEntity> collisionEntities = new Array<>();
+
+        for (CollisionEntity otherEntity : collisionContext.collisionEntities) {
+            if (entity != otherEntity
+                    && otherEntity.isCollisionEnabled()
+                    && intersectRectangles(rectangle, otherEntity.getRectangle(), new Rectangle())) {
+                collisionEntities.add(otherEntity);
+            }
+        }
+        return collisionEntities;
+    }
+
+    /**
+     * Returns all collisions made by the specified Rectangle with the map's collidable layer.
+     */
+    public Array<CollisionEntity> mapCollisions(Rectangle rectangle) {
+        if (collisionContext.map == null) {
+            return new Array<>();
+        }
+        MapLayer collisionLayer = collisionContext.map.getLayers().get(LayerNames.COLLISION);
+        Array<RectangleMapObject> rectangles = collisionLayer.getObjects().getByType(RectangleMapObject.class);
+
+        Array<CollisionEntity> collisionEntities = new Array<>();
+
+        for (RectangleMapObject rmo : rectangles) {
+            Rectangle mapRectangle = rmo.getRectangle();
+
             if (intersectRectangles(rectangle, mapRectangle, new Rectangle())) {
-                return true;
+                collisionEntities.add(new MapCollisionEntity(collisionContext, mapRectangle));
             }
         }
 
-        return false;
+        return collisionEntities;
     }
 }

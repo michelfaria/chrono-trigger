@@ -45,21 +45,24 @@ public class WalkScreen implements Screen {
     // Other
     private WalkHud hud;
     private CollisionContext collisionContext;
-    private ActorYPositionComparator yPositionCmp = new ActorYPositionComparator();
+    private ActorYPositionComparator yPositionCmp;
     private PartyCharacter mainCharacter;
 
     public WalkScreen(Core core) {
         this.core = core;
-        this.multiplexer = new InputMultiplexer();
-        this.camera = new OrthographicCamera();
-        this.viewport = new FitViewport(core.getVirtualWidth(), core.getVirtualHeight(), camera);
-        this.stage = new Stage(viewport);
 
-        this.tiledMap = core.getTmxMapLoader().load(Assets.EXAMPLE_TMX);
-        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        multiplexer = new InputMultiplexer();
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(core.getVirtualWidth(), core.getVirtualHeight(), camera);
+        stage = new Stage(viewport);
 
-        this.hud = new WalkHud(core);
-        this.collisionContext = new CollisionContext(this.tiledMap);
+        tiledMap = core.getTmxMapLoader().load(Assets.EXAMPLE_TMX);
+        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+
+        hud = new WalkHud(core);
+        yPositionCmp = new ActorYPositionComparator();
+        collisionContext = new CollisionContext(this.tiledMap);
+        mainCharacter = new Crono(core, collisionContext);
     }
 
     @Override
@@ -68,10 +71,9 @@ public class WalkScreen implements Screen {
         multiplexer.addProcessor(hud.stage);
         Gdx.input.setInputProcessor(multiplexer);
 
-        mainCharacter = new Crono(core, collisionContext);
         mainCharacter.setHandleInput(true);
         stage.addActor(mainCharacter);
-        collisionContext.add(mainCharacter);
+        collisionContext.addEntity(mainCharacter);
 
         for (int i = 0; i < 80; i++) {// TESTING
             Nu nu = new Nu(core, collisionContext);// TESTING
@@ -82,9 +84,9 @@ public class WalkScreen implements Screen {
             do {// TESTING
                 x = random.nextInt(400);// TESTING
                 y = random.nextInt(400);// TESTING
-            } while (collisionContext.collisionChecker.collidesWithMap(new Rectangle(x, y, x + 16, y + 16)));// TESTING
+            } while (collisionContext.collisionChecker.mapCollisions(new Rectangle(x, y, x + 16, y + 16)).size > 0);// TESTING
             nu.setPosition(x, y);// TESTING
-            collisionContext.add(nu);
+            collisionContext.addEntity(nu);
         }// TESTING
     }
 
@@ -114,10 +116,12 @@ public class WalkScreen implements Screen {
 
     private void update(float dt) {
         hud.update(dt);
-        updateActorsZIndex();
         stage.act();
+
         updateCamera();
         tiledMapRenderer.setView(camera);
+
+        updateActorsZIndex();
     }
 
     private void updateCamera() {

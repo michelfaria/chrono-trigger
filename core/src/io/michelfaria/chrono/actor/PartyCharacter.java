@@ -13,19 +13,24 @@ import io.michelfaria.chrono.logic.CollisionEntityMover;
 
 import static io.michelfaria.chrono.animation.AnimationType.*;
 
-public abstract class PartyCharacter extends Actor implements CollisionEntity, Positionable {
+public class PartyCharacter extends Actor implements CollisionEntity, Positionable {
+
+    protected Core core;
 
     // Runnables that run in the act() method
     public Array<Runnable> actionRunnables = new Array<>();
-    protected Core core;
-    protected CollisionContext collisionContext;
+
     protected Direction facing = Direction.SOUTH;
+    protected boolean moving;
+    protected boolean running;
+    protected boolean handleInput;
+    protected boolean isCollisionEnabled = true;
+
     protected float walkSpeed = 1f;
     protected float runSpeedMultiplier = 2f;
-    protected boolean moving = false;
-    protected boolean running = false;
-    protected boolean handleInput = false;
+
     protected AnimationManager aniMan;
+    protected CollisionContext collisionContext;
     protected CollisionEntityMover entMover;
 
     /**
@@ -35,8 +40,9 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, P
         this.core = core;
         this.collisionContext = collisionContext;
 
-        this.aniMan = new AnimationManager(this);
-        this.entMover = new CollisionEntityMover(this);
+        aniMan = new AnimationManager(this);
+        entMover = new CollisionEntityMover(this);
+
         setWidth(16);
         setHeight(16);
     }
@@ -142,5 +148,10 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, P
     @Override
     public CollisionContext getCollisionContext() {
         return collisionContext;
+    }
+
+    @Override
+    public boolean isCollisionEnabled() {
+        return isCollisionEnabled;
     }
 }

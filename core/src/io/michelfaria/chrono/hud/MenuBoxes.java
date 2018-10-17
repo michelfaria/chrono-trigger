@@ -15,7 +15,7 @@ public class MenuBoxes {
 
     public MenuBoxes(Core core) {
         this.core = core;
-        this.dialogBoxes[0] = new UiElement(UI_DIALOGBOX_0.regionName);
+        dialogBoxes[0] = new UiElement(UI_DIALOGBOX_0.regionName);
     }
 
     public void setUiType(int type) {
@@ -57,32 +57,32 @@ public class MenuBoxes {
  * table.setFillParent(true);
  *
  * // Add top-left TextureRegion topLeft = TxUtil.findRegion(Core.atlas,
- * UI_BOX_0_TOP_LEFT); table.add(new Image(topLeft));
+ * UI_BOX_0_TOP_LEFT); table.addEntity(new Image(topLeft));
  *
  * // Add top TextureRegion top = TxUtil.findRegion(Core.atlas, UI_BOX_0_TOP);
- * table.add(new Image(new TiledDrawable(top))); Cell topCell =
+ * table.addEntity(new Image(new TiledDrawable(top))); Cell topCell =
  * table.getCells().peek(); topCell.fill();
  *
  * // Add top-right TextureRegion topRight = TxUtil.findRegion(Core.atlas,
- * UI_BOX_0_TOP_RIGHT); table.add(new Image(topRight));
+ * UI_BOX_0_TOP_RIGHT); table.addEntity(new Image(topRight));
  *
  *
  * table.row();
  *
  *
  * // Add left TextureRegion left = TxUtil.findRegion(Core.atlas,
- * UI_BOX_0_LEFT); table.add(new Image(left)); Cell leftCell =
+ * UI_BOX_0_LEFT); table.addEntity(new Image(left)); Cell leftCell =
  * table.getCells().peek(); leftCell.fill();
  *
  * // Add filling TextureRegion filling = TxUtil.findRegion(Core.atlas,
- * UI_BOX_0_FILLING); table.add(new Image(new TiledDrawable(filling))); Cell
+ * UI_BOX_0_FILLING); table.addEntity(new Image(new TiledDrawable(filling))); Cell
  * fillingCell = table.getCells().peek(); // Set width of the box
  * fillingCell.width(width); // Set the height of the box
  * fillingCell.height(height); // Make the center texture fill
  * fillingCell.fill();
  *
  * // Add right TextureRegion right = TxUtil.findRegion(Core.atlas,
- * UI_BOX_0_RIGHT); table.add(new Image(new TiledDrawable(right))); Cell
+ * UI_BOX_0_RIGHT); table.addEntity(new Image(new TiledDrawable(right))); Cell
  * rightCell = table.getCells().peek(); rightCell.fill();
  *
  *
@@ -90,14 +90,14 @@ public class MenuBoxes {
  *
  *
  * // Add bottom-left TextureRegion bottomLeft = TxUtil.findRegion(Core.atlas,
- * UI_BOX_0_BOTTOM_LEFT); table.add(new Image(bottomLeft));
+ * UI_BOX_0_BOTTOM_LEFT); table.addEntity(new Image(bottomLeft));
  *
  * // Add bottom TextureRegion bottom = TxUtil.findRegion(Core.atlas,
- * UI_BOX_0_BOTTOM); table.add(new Image(bottom)); Cell bottomCell =
+ * UI_BOX_0_BOTTOM); table.addEntity(new Image(bottom)); Cell bottomCell =
  * table.getCells().peek(); bottomCell.fill();
  *
  * // Add bottom-right TextureRegion bottomRight = TxUtil.findRegion(Core.atlas,
- * UI_BOX_0_BOTTOM_RIGHT); table.add(new Image(bottomRight));
+ * UI_BOX_0_BOTTOM_RIGHT); table.addEntity(new Image(bottomRight));
  *
  * return table; }
  */

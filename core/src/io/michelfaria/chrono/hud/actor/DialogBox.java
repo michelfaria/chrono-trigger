@@ -28,7 +28,7 @@ public class DialogBox extends Group {
 
 		// Set up label style
 		labelStyle = new Label.LabelStyle();
-		labelStyle.font = core.getAsmgr().get(Assets.FONT);
+		labelStyle.font = core.getAssetMan().get(Assets.FONT);
 		labelStyle.font.getData().setScale(0.5f);
 		labelStyle.fontColor = Color.WHITE;
 

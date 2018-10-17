@@ -13,20 +13,30 @@ public class CollisionEntityMover {
 
     /**
      * Moves the entity by the specified numbers.
-     * If the entity moved successfully, it will return true.
+     *
+     * @return If the entity moved successfully, it will return true.
      */
     public boolean moveBy(float xMoveSpeed, float yMoveSpeed) {
-        Rectangle futureX = new Rectangle(entity.getX() + xMoveSpeed, entity.getY(), entity.getWidth(), entity.getHeight());
-        if (entity.getCollisionContext().collisionChecker.collides(entity, futureX)) {
+        final float x = entity.getX();
+        final float y = entity.getY();
+        final float width = entity.getWidth();
+        final float height = entity.getHeight();
+        final CollisionChecker collisionChecker = entity.getCollisionContext().collisionChecker;
+
+        final Rectangle futureXRectangle = new Rectangle(x + xMoveSpeed, y, width, height);
+
+        if (collisionChecker.collisions(entity, futureXRectangle).size > 0) {
             xMoveSpeed = 0;
         }
-        Rectangle futureY = new Rectangle(entity.getX(), entity.getY() + yMoveSpeed, entity.getWidth(), entity.getHeight());
-        if (entity.getCollisionContext().collisionChecker.collides(entity, futureY)) {
+
+        final Rectangle futureYRectangle = new Rectangle(x, y + yMoveSpeed, width, height);
+
+        if (collisionChecker.collisions(entity, futureYRectangle).size > 0) {
             yMoveSpeed = 0;
         }
         if (xMoveSpeed != 0 || yMoveSpeed != 0) {
-            entity.setX(entity.getX() + xMoveSpeed);
-            entity.setY(entity.getY() + yMoveSpeed);
+            entity.setX(x + xMoveSpeed);
+            entity.setY(y + yMoveSpeed);
             return true;
         }
         return false;

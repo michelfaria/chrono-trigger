@@ -22,4 +22,6 @@ public interface CollisionEntity {
     default Rectangle getRectangle() {
         return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
+
+    boolean isCollisionEnabled();
 }
