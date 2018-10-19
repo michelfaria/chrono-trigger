@@ -5,10 +5,14 @@
 *.ear
 hs_err_pid*
 
+## Gradle
 out/
 gradle/
 bin/
 build/
+
+## KDE
+.directory
 
 ## Robovm
 /ios/robovm-build/
