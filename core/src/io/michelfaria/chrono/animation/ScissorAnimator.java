@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import io.michelfaria.chrono.Core;
+import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.util.GLUtil;
 
 import static io.michelfaria.chrono.animation.ScissorAnimator.AnimationState.*;
@@ -14,17 +14,17 @@ public class ScissorAnimator {
     private static final int SCISSOR_MULTIPLE = 12;
     public Rectangle vRectangle;
     public Viewport vp;
-    private Core core;
+    private Game game;
     private int scissor;
     private AnimationState spriteState;
 
     /**
-     * @param core       Class containing the virtual width and virtual height of the game
+     * @param game       Class containing the virtual width and virtual height of the game
      * @param vRectangle Virtual rectangle region to animate
      * @param vp         Viewport
      */
-    public ScissorAnimator(Core core, Rectangle vRectangle, Viewport vp) {
-        this.core = core;
+    public ScissorAnimator(Game game, Rectangle vRectangle, Viewport vp) {
+        this.game = game;
         this.vRectangle = vRectangle;
         this.vp = vp;
         this.spriteState = AnimationState.CLOSED;
@@ -87,7 +87,7 @@ public class ScissorAnimator {
      * Returns the real (non-virtual) Y coordinate of the center of the rectangle.
      */
     private int getRealYCenter() {
-        return (int) (GLUtil.getRealSize(vp, vRectangle, core.getVirtualWidth(), core.getVirtualHeight()).height / 2);
+        return (int) (GLUtil.getRealSize(vp, vRectangle, 256, 224).height / 2);
     }
 
     public enum AnimationState {

@@ -4,46 +4,38 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import io.michelfaria.chrono.actor.Positionable;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * Container for animation map and current playing animation.
- * Draws animation on Positionable's coordinates.
+ * Draws animation on coordinates.
  */
 public class AnimationManager {
 
-    /**
-     * Animations
-     */
-    public Map<AnimationType, Animation<?>> anims = new HashMap<>();
-    /**
-     * Current playing animation
-     */
-    public AnimationType anim = null;
-    public float xOffset = 0;
-    public float yOffset = 0;
-    private Positionable pos;
-    private float stateTime = 0f;
+    public Map<AnimationType, Animation<?>> animations = new HashMap<>();
+    public AnimationType currentAnimation = null;
 
-    /**
-     * @param pos Positionable entity to animate
-     */
-    public AnimationManager(Positionable pos) {
-        this.pos = pos;
+    public AnimationManager() {
     }
 
     /**
-     * Draws the current animation on the Positionable's X and Y location.
+     * Draws the current animation at the X and Y location.
      */
-    public void draw(Batch batch, float parentAlpha) {
+    public void draw(Batch batch, float x, float y, float stateTime) {
+        draw(batch, x, y, stateTime, 0);
+    }
+
+    /**
+     * Draws the current animation at the X and Y location.
+     */
+    public void draw(Batch batch, float x, float y, float stateTime, float parentAlpha) {
         stateTime += Gdx.graphics.getDeltaTime();
-        if (anim == null) {
+        if (currentAnimation == null) {
             throw new IllegalStateException("No animation");
         }
-        TextureRegion currentFrame = (TextureRegion) anims.get(anim).getKeyFrame(stateTime);
-        batch.draw(currentFrame, pos.getX() + xOffset, pos.getY() + yOffset);
+        TextureRegion currentFrame = (TextureRegion) animations.get(currentAnimation).getKeyFrame(stateTime);
+        batch.draw(currentFrame, x , y);
     }
 }

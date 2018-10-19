@@ -3,12 +3,9 @@ package io.michelfaria.chrono.logic;
 import com.badlogic.gdx.math.Rectangle;
 import io.michelfaria.chrono.actor.CollisionEntity;
 
-public class CollisionEntityMover {
+public final class CollisionEntityMover {
 
-    private CollisionEntity entity;
-
-    public CollisionEntityMover(CollisionEntity entity) {
-        this.entity = entity;
+    private CollisionEntityMover() {
     }
 
     /**
@@ -16,7 +13,7 @@ public class CollisionEntityMover {
      *
      * @return If the entity moved successfully, it will return true.
      */
-    public boolean moveBy(float xMoveSpeed, float yMoveSpeed) {
+    public static boolean moveBy(CollisionEntity entity, float xMoveSpeed, float yMoveSpeed) {
         final float x = entity.getX();
         final float y = entity.getY();
         final float width = entity.getWidth();

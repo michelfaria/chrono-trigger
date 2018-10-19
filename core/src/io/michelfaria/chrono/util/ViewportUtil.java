@@ -4,6 +4,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public final class ViewportUtil {
+
+    private ViewportUtil() {
+    }
+
     /**
      * Calculate the scale of the viewport in relation to the game's size.
      *

@@ -6,12 +6,12 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 
-import io.michelfaria.chrono.Core;
+import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.values.Assets;
 
 public class DialogBox extends Group {
 
-	private Core core;
+	private Game game;
 	
 	private BoxActor boxActor;
 
@@ -20,15 +20,15 @@ public class DialogBox extends Group {
 	private Label.LabelStyle labelStyle;
 	private Label label;
 
-	public DialogBox(Core core) {
-		this.core = core;
+	public DialogBox(Game game) {
+		this.game = game;
 		
-		boxActor = new BoxActor(core);
+		boxActor = new BoxActor(game);
 		addActor(boxActor);
 
 		// Set up label style
 		labelStyle = new Label.LabelStyle();
-		labelStyle.font = core.getAssetMan().get(Assets.FONT);
+        labelStyle.font = game.assetManager.get(Assets.FONT);
 		labelStyle.font.getData().setScale(0.5f);
 		labelStyle.fontColor = Color.WHITE;
 

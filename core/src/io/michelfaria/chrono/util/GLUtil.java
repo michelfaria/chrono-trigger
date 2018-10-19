@@ -5,6 +5,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.Viewport;
 
 public final class GLUtil {
+
+    private GLUtil() {
+    }
+
     /**
      * Calculates the real width and height of the Rectangle on the computer screen.
      *

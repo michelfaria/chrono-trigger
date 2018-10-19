@@ -14,7 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import io.michelfaria.chrono.Core;
+import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.actor.Crono;
 import io.michelfaria.chrono.actor.Nu;
 import io.michelfaria.chrono.actor.PartyCharacter;
@@ -30,53 +30,57 @@ import static io.michelfaria.chrono.values.LayerNames.FOREGROUND_2;
 
 public class WalkScreen implements Screen {
 
-    private Core core;
+    private Game game;
 
-    // Scene 2D
-    private InputMultiplexer multiplexer;
-    private OrthographicCamera camera;
-    private Viewport viewport;
-    private Stage stage;
+    /*
+    LibGDX
+     */
+    private InputMultiplexer multiplexer = new InputMultiplexer();
+    
+    /*
+    Scene2D
+     */
+    private OrthographicCamera camera = new OrthographicCamera();
+    private Viewport viewport = new FitViewport(256, 224, camera);
+    private Stage stage = new Stage(viewport);
 
-    // Tiled
+    /*
+    Tiled
+     */
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
 
-    // Other
+    /*
+    Other
+     */
     private WalkHud hud;
     private CollisionContext collisionContext;
-    private ActorYPositionComparator yPositionCmp;
+    private ActorYPositionComparator yPositionCmp = new ActorYPositionComparator();
     private PartyCharacter mainCharacter;
 
-    public WalkScreen(Core core) {
-        this.core = core;
+    public WalkScreen(Game game) {
+        this.game = game;
 
-        multiplexer = new InputMultiplexer();
-        camera = new OrthographicCamera();
-        viewport = new FitViewport(core.getVirtualWidth(), core.getVirtualHeight(), camera);
-        stage = new Stage(viewport);
-
-        tiledMap = core.getTmxMapLoader().load(Assets.EXAMPLE_TMX);
+        tiledMap = game.getTmxMapLoader().load(Assets.EXAMPLE_TMX);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
 
-        hud = new WalkHud(core);
-        yPositionCmp = new ActorYPositionComparator();
+        hud = new WalkHud(game);
         collisionContext = new CollisionContext(this.tiledMap);
-        mainCharacter = new Crono(core, collisionContext);
+        mainCharacter = new Crono(game, collisionContext);
     }
 
     @Override
     public void show() {
+        Gdx.input.setInputProcessor(multiplexer);
         multiplexer.addProcessor(stage);
         multiplexer.addProcessor(hud.stage);
-        Gdx.input.setInputProcessor(multiplexer);
 
         mainCharacter.setHandleInput(true);
         stage.addActor(mainCharacter);
         collisionContext.addEntity(mainCharacter);
 
         for (int i = 0; i < 80; i++) {// TESTING
-            Nu nu = new Nu(core, collisionContext);// TESTING
+            Nu nu = new Nu(game, collisionContext);// TESTING
             stage.addActor(nu);// TESTING
             Random random = new Random();// TESTING
             int x;// TESTING
@@ -103,14 +107,14 @@ public class WalkScreen implements Screen {
 
         // Stage drawings
         // (Stages open the batch and close it again)
-        core.getBatch().setProjectionMatrix(camera.combined);
+        game.batch.setProjectionMatrix(camera.combined);
         stage.draw();
 
         // Render the foreground that goes in front of the Sprite(s)
         renderTileLayer(FOREGROUND_1);
 
         // HUD always drawn on top
-        core.getBatch().setProjectionMatrix(hud.stage.getCamera().combined);
+        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.draw();
     }
 

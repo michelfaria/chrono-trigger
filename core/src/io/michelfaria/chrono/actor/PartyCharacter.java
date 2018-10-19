@@ -3,7 +3,7 @@ package io.michelfaria.chrono.actor;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
-import io.michelfaria.chrono.Core;
+import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.animation.AnimationManager;
 import io.michelfaria.chrono.animation.AnimationType;
 import io.michelfaria.chrono.controller.Buttons;
@@ -13,9 +13,9 @@ import io.michelfaria.chrono.logic.CollisionEntityMover;
 
 import static io.michelfaria.chrono.animation.AnimationType.*;
 
-public class PartyCharacter extends Actor implements CollisionEntity, Positionable {
+public class PartyCharacter extends Actor implements CollisionEntity {
 
-    protected Core core;
+    protected Game game;
 
     // Runnables that run in the act() method
     public Array<Runnable> actionRunnables = new Array<>();
@@ -29,19 +29,18 @@ public class PartyCharacter extends Actor implements CollisionEntity, Positionab
     protected float walkSpeed = 1f;
     protected float runSpeedMultiplier = 2f;
 
-    protected AnimationManager aniMan;
+    protected AnimationManager animationManager;
     protected CollisionContext collisionContext;
-    protected CollisionEntityMover entMover;
+
+    protected float stateTime = 0f;
 
     /**
      * Describes a generic Chrono Trigger playable/party member
      */
-    public PartyCharacter(Core core, CollisionContext collisionContext) {
-        this.core = core;
+    public PartyCharacter(Game game, CollisionContext collisionContext) {
+        this.game = game;
         this.collisionContext = collisionContext;
-
-        aniMan = new AnimationManager(this);
-        entMover = new CollisionEntityMover(this);
+        animationManager = new AnimationManager();
 
         setWidth(16);
         setHeight(16);
@@ -49,12 +48,14 @@ public class PartyCharacter extends Actor implements CollisionEntity, Positionab
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        aniMan.draw(batch, parentAlpha);
+        animationManager.draw(batch, getX(), getY(), stateTime);
     }
 
     @Override
     public void act(float delta) {
         super.act(delta);
+        stateTime += delta;
+
         for (Runnable runnable : actionRunnables) {
             runnable.run();
         }
@@ -66,7 +67,7 @@ public class PartyCharacter extends Actor implements CollisionEntity, Positionab
 
     protected void handleInput(float delta) {
         assert handleInput;
-        if (!core.getState().isHudPause()) {
+        if (!game.state.hudPause) {
             handleMovingInput(delta);
         }
     }
@@ -104,18 +105,18 @@ public class PartyCharacter extends Actor implements CollisionEntity, Positionab
         if (xMoveSpeed == 0 && yMoveSpeed == 0) {
             moving = false;
         } else {
-            entMover.moveBy(xMoveSpeed, yMoveSpeed);
+            CollisionEntityMover.moveBy(this, xMoveSpeed, yMoveSpeed);
         }
     }
 
     public void updateAnimations() {
-        if (aniMan.anim == null) {
-            aniMan.anim = IDLE_SOUTH;
+        if (animationManager.currentAnimation == null) {
+            animationManager.currentAnimation = IDLE_SOUTH;
         }
-        if (running && moving && !core.getState().isHudPause()) {
+        if (running && moving && !game.state.hudPause) {
             updateRunningAnimation(RUN_NORTH, RUN_SOUTH, RUN_WEST, RUN_EAST);
 
-        } else if (moving && !core.getState().isHudPause()) {
+        } else if (moving && !game.state.hudPause) {
             assert !running;
             updateRunningAnimation(WALK_NORTH, WALK_SOUTH, WALK_WEST, WALK_EAST);
 
@@ -127,16 +128,16 @@ public class PartyCharacter extends Actor implements CollisionEntity, Positionab
     private void updateRunningAnimation(AnimationType north, AnimationType south, AnimationType west, AnimationType east) {
         switch (facing) {
             case NORTH:
-                aniMan.anim = north;
+                animationManager.currentAnimation = north;
                 break;
             case SOUTH:
-                aniMan.anim = south;
+                animationManager.currentAnimation = south;
                 break;
             case WEST:
-                aniMan.anim = west;
+                animationManager.currentAnimation = west;
                 break;
             case EAST:
-                aniMan.anim = east;
+                animationManager.currentAnimation = east;
                 break;
         }
     }

@@ -13,6 +13,9 @@ import java.util.function.Function;
  */
 public class GroupUtil {
 
+    private GroupUtil() {
+    }
+
     public static float getWidth(Group group) {
         return getGroupLength(group, Actor::getX, Actor::getWidth);
     }

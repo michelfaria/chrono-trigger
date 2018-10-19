@@ -9,6 +9,7 @@ public class CollisionContext {
 
     @Nullable
     public TiledMap map;
+
     public CollisionChecker collisionChecker;
     public Array<CollisionEntity> collisionEntities;
 

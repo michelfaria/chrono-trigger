@@ -5,19 +5,15 @@ import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
-import io.michelfaria.chrono.values.TxRegs;
+import io.michelfaria.chrono.values.TextureRegionDescriptor;
 
 public final class TextureTools {
 
-    private TextureAtlas atlas;
-
-    public TextureTools(TextureAtlas atlas) {
-        this.atlas = atlas;
+    private TextureTools() {
     }
 
-    public Animation<?> makeAnimation(TxRegs txReg) {
-//		return new Animation<>(txReg.speed, splitTextureRegion(txReg), PlayMode.LOOP);
-        Array<TextureRegion> textureRegions = splitTextureRegion(txReg);
+    public static Animation<?> makeAnimation(TextureAtlas atlas, TextureRegionDescriptor txReg) {
+        Array<TextureRegion> textureRegions = splitTextureRegion(atlas, txReg);
         if (txReg.assembly == null) {
             return new Animation<>(txReg.speed, textureRegions, PlayMode.LOOP);
 
@@ -37,22 +33,17 @@ public final class TextureTools {
     /**
      * Splits a texture sequence (spritesheet) into individual TextureRegions in a
      * 1-dimension array. The textures are ordered left-to-right, up-to-down.
-     *
-     * @param txReg Texture region to split
      */
-    public Array<TextureRegion> splitTextureRegion(TxRegs txReg) {
-        return splitTextureRegion(txReg.regionName, txReg.columns, txReg.rows);
+    public static Array<TextureRegion> splitTextureRegion(TextureAtlas atlas, TextureRegionDescriptor txReg) {
+        return splitTextureRegion(atlas, txReg.regionName, txReg.columns, txReg.rows);
     }
 
     /**
      * Splits a texture sequence (spritesheet) into individual TextureRegions in a
      * 1-dimension array. The textures are ordered left-to-right, up-to-down.
-     *
-     * @param regionName Name of the atlas region
-     * @param frameCols  Amount of columns in animation
-     * @param frameRows  Amount of rows in animation
      */
-    public Array<TextureRegion> splitTextureRegion(String regionName, int frameCols,
+    public static Array<TextureRegion> splitTextureRegion(TextureAtlas atlas,
+                                                   String regionName, int frameCols,
                                                    int frameRows) {
         TextureAtlas.AtlasRegion reg = atlas.findRegion(regionName);
         if (reg == null) {
@@ -65,12 +56,8 @@ public final class TextureTools {
     /**
      * Splits a texture sequence (spritesheet) into individual TextureRegions in a
      * 1-dimension array. The textures are ordered left-to-right, up-to-down.
-     *
-     * @param reg       The region to split
-     * @param frameCols Amount of columns in animation
-     * @param frameRows Amount of rows in animation
      */
-    public Array<TextureRegion> splitTextureRegion(TextureRegion reg, int frameCols,
+    public static Array<TextureRegion> splitTextureRegion(TextureRegion reg, int frameCols,
                                                    int frameRows) {
         // Use the split utility method to create a 2D array of TextureRegions.
         TextureRegion[][] tmp = reg.split(reg.getRegionWidth() / frameCols,
@@ -91,7 +78,7 @@ public final class TextureTools {
     /**
      * Null-safe findRegion
      */
-    public TextureRegion findRegion(String name) {
+    public static TextureRegion findRegion(TextureAtlas atlas, String name) {
         TextureAtlas.AtlasRegion region = atlas.findRegion(name);
         if (region == null) {
             throw new RuntimeException("Region not found");
