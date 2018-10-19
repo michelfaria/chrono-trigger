@@ -19,7 +19,7 @@ public class ScissorAnimator {
     private AnimationState spriteState;
 
     /**
-     * @param game       Class containing the virtual width and virtual height of the game
+     * @param game       Class containing the virtual mapWidth and virtual height of the game
      * @param vRectangle Virtual rectangle region to animate
      * @param vp         Viewport
      */

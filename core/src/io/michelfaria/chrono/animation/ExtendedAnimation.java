@@ -37,7 +37,7 @@ public class ExtendedAnimation<T> extends Animation<T> {
 					"Key frame durations array length does not match key frame array length");
 		}
 
-		durationFrameMap = new TreeMap<Float, Integer>();
+		durationFrameMap = new TreeMap<>();
 		float sum = 0;
 		for (int i = 0; i < frameDurations.length; i++) {
 			durationFrameMap.put(sum, i);

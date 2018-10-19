@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -21,6 +22,7 @@ import io.michelfaria.chrono.actor.PartyCharacter;
 import io.michelfaria.chrono.hud.WalkHud;
 import io.michelfaria.chrono.logic.ActorYPositionComparator;
 import io.michelfaria.chrono.logic.CollisionContext;
+import io.michelfaria.chrono.util.TiledMapUtil;
 import io.michelfaria.chrono.values.Assets;
 
 import java.util.Random;
@@ -36,7 +38,7 @@ public class WalkScreen implements Screen {
     LibGDX
      */
     private InputMultiplexer multiplexer = new InputMultiplexer();
-    
+
     /*
     Scene2D
      */
@@ -47,7 +49,7 @@ public class WalkScreen implements Screen {
     /*
     Tiled
      */
-    private TiledMap tiledMap;
+    private TiledMap map;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
 
     /*
@@ -61,11 +63,11 @@ public class WalkScreen implements Screen {
     public WalkScreen(Game game) {
         this.game = game;
 
-        tiledMap = game.getTmxMapLoader().load(Assets.EXAMPLE_TMX);
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap);
+        map = game.getTmxMapLoader().load(Assets.EXAMPLE_TMX);
+        tiledMapRenderer = new OrthogonalTiledMapRenderer(map);
 
         hud = new WalkHud(game);
-        collisionContext = new CollisionContext(this.tiledMap);
+        collisionContext = new CollisionContext(this.map);
         mainCharacter = new Crono(game, collisionContext);
     }
 
@@ -88,7 +90,8 @@ public class WalkScreen implements Screen {
             do {// TESTING
                 x = random.nextInt(400);// TESTING
                 y = random.nextInt(400);// TESTING
-            } while (collisionContext.collisionChecker.mapCollisions(new Rectangle(x, y, x + 16, y + 16)).size > 0);// TESTING
+            }
+            while (collisionContext.collisionChecker.mapCollisions(new Rectangle(x, y, x + 16, y + 16)).size > 0);// TESTING
             nu.setPosition(x, y);// TESTING
             collisionContext.addEntity(nu);
         }// TESTING
@@ -129,8 +132,18 @@ public class WalkScreen implements Screen {
     }
 
     private void updateCamera() {
-        camera.position.x = mainCharacter.getX();
-        camera.position.y = mainCharacter.getY();
+        camera.position.x = mainCharacter.getX() + mainCharacter.getWidth() / 2;
+        camera.position.y = mainCharacter.getY() + mainCharacter.getHeight() / 2;
+
+        final int mapWidth = TiledMapUtil.mapPixelWidth(map);
+        final int mapHeight = TiledMapUtil.mapPixelHeight(map);
+        final float cameraHalfWidth = camera.viewportWidth / 2;
+        final float cameraHalfHeight = camera.viewportHeight / 2;
+
+        // Keep camera inside map
+        camera.position.x = MathUtils.clamp(camera.position.x, cameraHalfWidth, mapWidth - cameraHalfWidth);
+        camera.position.y = MathUtils.clamp(camera.position.y, cameraHalfHeight, mapHeight - cameraHalfHeight);
+
         camera.update();
     }
 
@@ -149,7 +162,7 @@ public class WalkScreen implements Screen {
      * @throws IllegalStateException If the layer doesn't exist
      */
     private void renderTileLayer(String name) {
-        TiledMapTileLayer tileLayer = (TiledMapTileLayer) tiledMap.getLayers().get(name);
+        TiledMapTileLayer tileLayer = (TiledMapTileLayer) map.getLayers().get(name);
         if (tileLayer == null) {
             throw new IllegalStateException("Layer not found: " + name);
         }
@@ -183,6 +196,7 @@ public class WalkScreen implements Screen {
     public void dispose() {
         hud.dispose();
         stage.dispose();
+        map.dispose();
         tiledMapRenderer.dispose();
     }
 }

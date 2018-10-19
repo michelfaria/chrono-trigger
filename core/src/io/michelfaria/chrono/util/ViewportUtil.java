@@ -12,7 +12,7 @@ public final class ViewportUtil {
      * Calculate the scale of the viewport in relation to the game's size.
      *
      * @param vp            The viewport
-     * @param virtualWidth  Virtual width of the game
+     * @param virtualWidth  Virtual mapWidth of the game
      * @param virtualHeight Virtual height of the game
      * @return The X and Y scales of the viewport
      */

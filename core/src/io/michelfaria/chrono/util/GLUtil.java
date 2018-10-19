@@ -10,7 +10,7 @@ public final class GLUtil {
     }
 
     /**
-     * Calculates the real width and height of the Rectangle on the computer screen.
+     * Calculates the real mapWidth and height of the Rectangle on the computer screen.
      *
      * @param vp            Game viewport, provides size of the window
      * @param rectangle     Rectangle to calculate

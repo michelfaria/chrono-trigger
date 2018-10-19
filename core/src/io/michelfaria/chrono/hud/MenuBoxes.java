@@ -52,7 +52,7 @@ public class MenuBoxes {
  * This was the function used to make dynamic menu boxes. It was
  * over-engineered, so ...
  *
- * public static Table makeBox(float width, float height) { // Table to hold the
+ * public static Table makeBox(float mapWidth, float height) { // Table to hold the
  * dialog box pieces Table table = new Table(); if (Game.debug) {
  * table.debugAll(); } table.bottom(); // Align table to bottom of the screen
  * table.setFillParent(true);
@@ -77,8 +77,8 @@ public class MenuBoxes {
  *
  * // Add filling TextureRegion filling = TxUtil.findRegion(Game.atlas,
  * UI_BOX_0_FILLING); table.addEntity(new Image(new TiledDrawable(filling))); Cell
- * fillingCell = table.getCells().peek(); // Set width of the box
- * fillingCell.width(width); // Set the height of the box
+ * fillingCell = table.getCells().peek(); // Set mapWidth of the box
+ * fillingCell.mapWidth(mapWidth); // Set the height of the box
  * fillingCell.height(height); // Make the center texture fill
  * fillingCell.fill();
  *
