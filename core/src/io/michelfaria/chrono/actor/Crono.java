@@ -1,21 +1,23 @@
 package io.michelfaria.chrono.actor;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import io.michelfaria.chrono.Game;
+import io.michelfaria.chrono.animation.AnimationData;
 import io.michelfaria.chrono.animation.AnimationType;
 import io.michelfaria.chrono.logic.CollisionContext;
 
 import java.util.Map;
 
 import static io.michelfaria.chrono.animation.AnimationType.*;
-import static io.michelfaria.chrono.util.TextureTools.makeAnimation;
+import static io.michelfaria.chrono.animation.AnimationMaker.makeAnimation;
 import static io.michelfaria.chrono.values.TextureRegionDescriptor.*;
 
 public class Crono extends PartyCharacter {
 
     public Crono(Game game, CollisionContext collisionContext) {
         super(game, collisionContext);
-        final Map<AnimationType, Animation<?>> animations = animationManager.animations;
+        final Map<AnimationType, AnimationData<TextureRegion>> animations = animationManager.animations;
         /*
          * Idle animations
          */

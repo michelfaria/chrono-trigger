@@ -12,24 +12,6 @@ public final class TextureTools {
     private TextureTools() {
     }
 
-    public static Animation<?> makeAnimation(TextureAtlas atlas, TextureRegionDescriptor txReg) {
-        Array<TextureRegion> textureRegions = splitTextureRegion(atlas, txReg);
-        if (txReg.assembly == null) {
-            return new Animation<>(txReg.speed, textureRegions, PlayMode.LOOP);
-
-        } else {
-            Array<TextureRegion> assembled = new Array<>();
-            for (int assemblyNum : txReg.assembly) {
-                if (assemblyNum > textureRegions.size) {
-                    throw new ArrayIndexOutOfBoundsException(assemblyNum);
-                }
-                assembled.add(textureRegions.get(assemblyNum));
-            }
-            assert assembled.size > 0;
-            return new Animation<>(txReg.speed, assembled, PlayMode.LOOP);
-        }
-    }
-
     /**
      * Splits a texture sequence (spritesheet) into individual TextureRegions in a
      * 1-dimension array. The textures are ordered left-to-right, up-to-down.
@@ -65,7 +47,7 @@ public final class TextureTools {
 
         // Place the regions into a 1D array in the correct order, starting from the top
         // left, going across first. The Animation constructor requires a 1D array.
-        Array<TextureRegion> textures = new Array<>(frameRows * frameCols);
+        Array<TextureRegion> textures = new Array<>(false,frameRows * frameCols, TextureRegion.class);
         for (int i = 0; i < frameRows; i++) {
             for (int j = 0; j < frameCols; j++) {
                 textures.add(tmp[i][j]);

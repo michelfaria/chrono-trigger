@@ -8,7 +8,7 @@ import static io.michelfaria.chrono.values.TextureRegionDescriptor.UI_DIALOGBOX_
 
 public class MenuBoxes {
 
-    // Dialog box cache (index is type)
+    // Dialog box cache (indexes is type)
     public UiElement[] dialogBoxes = new UiElement[10];
     private Game game;
     // Current type of UI

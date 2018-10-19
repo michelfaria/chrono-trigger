@@ -6,14 +6,14 @@ filter: Nearest,Nearest
 repeat: none
 crono-idle-east
   rotate: false
-  xy: 458, 51
+  xy: 804, 50
   size: 14, 34
   orig: 14, 34
   offset: 0, 0
   index: -1
 crono-idle-north
   rotate: false
-  xy: 438, 52
+  xy: 766, 51
   size: 16, 33
   orig: 16, 33
   offset: 0, 0
@@ -27,7 +27,7 @@ crono-idle-south
   index: -1
 crono-idle-west
   rotate: false
-  xy: 420, 50
+  xy: 786, 50
   size: 14, 34
   orig: 14, 34
   offset: 0, 0
@@ -88,9 +88,23 @@ crono-walk-west
   orig: 132, 34
   offset: 0, 0
   index: -1
-nu-idle-south
+nu-walk-east
   rotate: false
-  xy: 176, 8
+  xy: 684, 52
+  size: 78, 32
+  orig: 78, 32
+  offset: 0, 0
+  index: -1
+nu-walk-north
+  rotate: false
+  xy: 176, 7
+  size: 93, 32
+  orig: 93, 32
+  offset: 0, 0
+  index: -1
+nu-walk-south
+  rotate: false
+  xy: 273, 15
   size: 93, 31
   orig: 93, 31
   offset: 0, 0

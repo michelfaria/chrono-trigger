@@ -6,6 +6,9 @@
 hs_err_pid*
 
 out/
+gradle/
+bin/
+build/
 
 ## Robovm
 /ios/robovm-build/
