@@ -19,7 +19,7 @@ public class Crono extends PartyCharacter {
     public Crono(State state, CollisionContext collisionContext, TextureAtlas atlas,
                  EventDispatcher eventDispatcher) {
         super(state, collisionContext, eventDispatcher);
-        final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.animations;
+        final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.getAnimations();
         /*
          * Idle animations
          */

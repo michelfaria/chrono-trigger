@@ -12,19 +12,23 @@ public class AnimationMaker {
 
     @NotNull
     public static AnimationData<TextureRegion> makeAnimation(TextureAtlas atlas, TextureRegionDescriptor trd) {
-        Array<TextureRegion> textureRegions = TextureTools.splitTextureRegion(atlas, trd);
+
+        final Array<TextureRegion> textureRegions = TextureTools.splitTextureRegion(atlas, trd);
+
         if (trd.assembly != null) {
             return makeAnimationWithAssemblyInstructions(textureRegions, trd);
         } else {
-            Animation<TextureRegion> animation = new Animation<>(trd.speed, textureRegions, Animation.PlayMode.LOOP);
+            final Animation<TextureRegion> animation
+                    = new Animation<>(trd.speed, textureRegions, Animation.PlayMode.LOOP);
             return new AnimationData<>(animation, trd);
         }
     }
 
     @NotNull
-    public static AnimationData<TextureRegion> makeAnimationWithAssemblyInstructions(
-            Array<TextureRegion> textureRegions, TextureRegionDescriptor trd) {
-        Array<TextureRegion> assembled = new Array<>(TextureRegion.class);
+    public static AnimationData<TextureRegion> makeAnimationWithAssemblyInstructions(Array<TextureRegion> textureRegions, TextureRegionDescriptor trd) {
+
+        final Array<TextureRegion> assembled = new Array<>(TextureRegion.class);
+
         for (int assemblyNum : trd.assembly) {
             if (assemblyNum > textureRegions.size) {
                 throw new ArrayIndexOutOfBoundsException(assemblyNum);
@@ -32,7 +36,9 @@ public class AnimationMaker {
             assembled.add(textureRegions.get(assemblyNum));
         }
         assert assembled.size > 0;
-        Animation<TextureRegion> animation = new Animation<>(trd.speed, assembled, Animation.PlayMode.LOOP);
+
+        final Animation<TextureRegion> animation
+                = new Animation<>(trd.speed, assembled, Animation.PlayMode.LOOP);
         return new AnimationData<>(animation, trd);
     }
 }

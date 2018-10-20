@@ -1,7 +1,7 @@
 package io.michelfaria.chrono.logic;
 
 import com.badlogic.gdx.math.Rectangle;
-import io.michelfaria.chrono.actor.CollisionEntity;
+import io.michelfaria.chrono.interfaces.CollisionEntity;
 
 
 public class MapCollisionEntity implements CollisionEntity {

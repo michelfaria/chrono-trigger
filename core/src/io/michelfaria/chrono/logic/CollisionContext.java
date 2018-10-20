@@ -2,7 +2,7 @@ package io.michelfaria.chrono.logic;
 
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.utils.Array;
-import io.michelfaria.chrono.actor.CollisionEntity;
+import io.michelfaria.chrono.interfaces.CollisionEntity;
 import org.jetbrains.annotations.Nullable;
 
 public class CollisionContext {

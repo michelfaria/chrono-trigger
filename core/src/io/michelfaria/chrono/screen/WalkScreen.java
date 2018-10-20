@@ -39,37 +39,37 @@ import static io.michelfaria.chrono.values.LayerNames.FOREGROUND_2;
 
 public class WalkScreen implements Screen {
 
-    private EventDispatcher eventDispatcher;
-    private TextureAtlas atlas;
-    private Batch batch;
-    private State state;
+    private final EventDispatcher eventDispatcher;
+    private final TextureAtlas atlas;
+    private final Batch batch;
+    private final State state;
 
     /*
     LibGDX
      */
-    private InputMultiplexer multiplexer = new InputMultiplexer();
-    private FPSLogger fpsLogger = new FPSLogger();
+    private final InputMultiplexer multiplexer = new InputMultiplexer();
+    private final FPSLogger fpsLogger = new FPSLogger();
 
     /*
     Scene2D
      */
-    private OrthographicCamera camera = new OrthographicCamera();
-    private Viewport viewport = new FitViewport(256, 224, camera);
-    private Stage stage = new Stage(viewport);
+    private final OrthographicCamera camera = new OrthographicCamera();
+    private final Viewport viewport = new FitViewport(256, 224, camera);
+    private final Stage stage = new Stage(viewport);
 
     /*
     Tiled
      */
-    private TiledMap map;
-    private OrthogonalTiledMapRenderer tiledMapRenderer;
+    private final TiledMap map;
+    private final OrthogonalTiledMapRenderer tiledMapRenderer;
 
     /*
     Other
      */
-    private WalkHud hud;
-    private CollisionContext collisionContext;
-    private ActorYPositionComparator yPositionCmp = new ActorYPositionComparator();
-    private PartyCharacter mainCharacter;
+    private final WalkHud hud;
+    private final CollisionContext collisionContext;
+    private final ActorYPositionComparator yPositionCmp = new ActorYPositionComparator();
+    private final PartyCharacter mainCharacter;
 
     public WalkScreen(Batch batch, MenuBoxes menuBoxes, AssetManager assetManager, State state,
                       TmxMapLoader tmxMapLoader, TextureAtlas atlas,
@@ -79,14 +79,14 @@ public class WalkScreen implements Screen {
         this.batch = batch;
         this.state = state;
 
-        map = tmxMapLoader.load(Assets.EXAMPLE_TMX);
-        tiledMapRenderer = new OrthogonalTiledMapRenderer(map);
+        this.map = tmxMapLoader.load(Assets.EXAMPLE_TMX);
+        this.tiledMapRenderer = new OrthogonalTiledMapRenderer(this.map);
 
-        hud = new WalkHud(batch, menuBoxes, assetManager, state);
+        this.hud = new WalkHud(batch, menuBoxes, assetManager, state);
         eventDispatcher.addEventListener(hud);
 
-        collisionContext = new CollisionContext(this.map);
-        mainCharacter = new Crono(state, collisionContext, atlas, eventDispatcher);
+        this.collisionContext = new CollisionContext(this.map);
+        this.mainCharacter = new Crono(state, collisionContext, atlas, eventDispatcher);
     }
 
     @Override
@@ -167,7 +167,7 @@ public class WalkScreen implements Screen {
     }
 
     private void updateActorsZIndex() {
-        Array<Actor> actors = stage.getActors();
+        final Array<Actor> actors = stage.getActors();
         actors.sort(yPositionCmp);
         for (int i = 0; i < actors.size; i++) {
             actors.get(i).setZIndex(i);
@@ -181,7 +181,7 @@ public class WalkScreen implements Screen {
      * @throws IllegalStateException If the layer doesn't exist
      */
     private void renderTileLayer(String name) {
-        TiledMapTileLayer tileLayer = (TiledMapTileLayer) map.getLayers().get(name);
+        final TiledMapTileLayer tileLayer = (TiledMapTileLayer) map.getLayers().get(name);
         if (tileLayer == null) {
             throw new IllegalStateException("Layer not found: " + name);
         }

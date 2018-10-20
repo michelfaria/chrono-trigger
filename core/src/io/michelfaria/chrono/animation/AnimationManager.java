@@ -15,11 +15,11 @@ import java.util.Map;
  */
 public class AnimationManager {
 
-    private State state;
-    private float stateTime = 0;
+    private final State state;
+    private final Map<AnimationId, AnimationData<TextureRegion>> animations = new HashMap<>();
 
-    public Map<AnimationId, AnimationData<TextureRegion>> animations = new HashMap<>();
-    public AnimationId currentAnimation = null;
+    private AnimationId currentAnimation = null;
+    private float stateTime = 0;
 
     public AnimationManager(State state) {
         this.state = state;
@@ -37,11 +37,11 @@ public class AnimationManager {
      */
     public void draw(Batch batch, float x, float y, float parentAlpha) {
         stateTime += Gdx.graphics.getDeltaTime();
-        if (currentAnimation == null) {
+        if (getCurrentAnimation() == null) {
             throw new IllegalStateException("No animation");
         }
 
-        AnimationData<TextureRegion> animationData = animations.get(currentAnimation);
+        AnimationData<TextureRegion> animationData = getAnimations().get(getCurrentAnimation());
         int keyFrameIndex = animationData.animation.getKeyFrameIndex(stateTime);
         TextureRegion keyFrame = animationData.animation.getKeyFrames()[keyFrameIndex];
         FlipData flipData = animationData.textureRegionDescriptor.flipData;
@@ -88,5 +88,17 @@ public class AnimationManager {
             }
         }
         return flipData.flip[flipIndex];
+    }
+
+    public Map<AnimationId, AnimationData<TextureRegion>> getAnimations() {
+        return animations;
+    }
+
+    public AnimationId getCurrentAnimation() {
+        return currentAnimation;
+    }
+
+    public void setCurrentAnimation(AnimationId currentAnimation) {
+        this.currentAnimation = currentAnimation;
     }
 }

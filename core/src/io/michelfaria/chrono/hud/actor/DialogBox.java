@@ -6,38 +6,36 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
-import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.values.Assets;
 
 public class DialogBox extends Group {
 
-    private BoxActor boxActor;
+    private final BoxActor boxActor;
 
     private String text = "Hello world!";
 
-    private Label.LabelStyle labelStyle;
-    private Label label;
+    private final Label.LabelStyle labelStyle;
+    private final Label label;
 
     public DialogBox(AssetManager assetManager, MenuBoxes menuBoxes) {
-
-        boxActor = new BoxActor(menuBoxes);
-        addActor(boxActor);
+        this.boxActor = new BoxActor(menuBoxes);
+        addActor(this.boxActor);
 
         // Set up label style
-        labelStyle = new Label.LabelStyle();
-        labelStyle.font = assetManager.get(Assets.FONT);
-        labelStyle.font.getData().setScale(0.5f);
-        labelStyle.fontColor = Color.WHITE;
+        this.labelStyle = new Label.LabelStyle();
+        this.labelStyle.font = assetManager.get(Assets.FONT);
+        this.labelStyle.font.getData().setScale(0.5f);
+        this.labelStyle.fontColor = Color.WHITE;
 
         // Set up label
-        label = new Label(null, labelStyle);
-        label.setBounds(boxActor.getX() + 10, boxActor.getY() - 8, boxActor.getWidth() - 10, boxActor.getHeight());
-        label.setAlignment(Align.topLeft);
-        label.setWrap(true);
-        addActor(label);
+        this.label = new Label(null, labelStyle);
+        this.label.setBounds(boxActor.getX() + 10, boxActor.getY() - 8, boxActor.getWidth() - 10, boxActor.getHeight());
+        this.label.setAlignment(Align.topLeft);
+        this.label.setWrap(true);
+        addActor(this.label);
 
-        label.setText(text);
+        this.label.setText(text);
     }
 
     @Override

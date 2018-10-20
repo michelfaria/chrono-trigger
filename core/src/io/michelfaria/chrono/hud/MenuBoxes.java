@@ -2,9 +2,8 @@ package io.michelfaria.chrono.hud;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.util.TextureTools;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static io.michelfaria.chrono.values.TextureRegionDescriptor.UI_DIALOGBOX_0;
 
@@ -13,7 +12,7 @@ public class MenuBoxes {
     private final TextureAtlas atlas;
 
     // Dialog box cache (indexes is type)
-    public UiElement[] dialogBoxes = new UiElement[10];
+    public final UiElement[] dialogBoxes = new UiElement[10];
 
     // Current type of UI
     private int type = 0;
@@ -35,15 +34,16 @@ public class MenuBoxes {
             throw new IllegalStateException("No dialog box for type " + type);
         }
         UiElement ue = dialogBoxes[type];
-        if (ue.txReg == null) {
-            ue.txReg = TextureTools.findRegion(atlas, ue.regionName);
+        if (ue.textureRegion == null) {
+            ue.textureRegion = TextureTools.findRegion(atlas, ue.regionName);
         }
-        return ue.txReg;
+        return ue.textureRegion;
     }
 
     private class UiElement {
-        public String regionName;
-        public TextureRegion txReg;
+        public final String regionName;
+        @Nullable
+        public TextureRegion textureRegion;
 
         public UiElement(String regionName) {
             this.regionName = regionName;

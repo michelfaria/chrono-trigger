@@ -4,14 +4,14 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.State;
 import io.michelfaria.chrono.animation.AnimationData;
 import io.michelfaria.chrono.animation.AnimationId;
-import io.michelfaria.chrono.animation.AnimationMaker;
 import io.michelfaria.chrono.animation.AnimationManager;
 import io.michelfaria.chrono.events.EventDispatcher;
 import io.michelfaria.chrono.events.OpenDialogBoxEvent;
+import io.michelfaria.chrono.interfaces.CollisionEntity;
+import io.michelfaria.chrono.interfaces.Interactible;
 import io.michelfaria.chrono.logic.CollisionContext;
 
 import java.util.Map;
@@ -35,10 +35,9 @@ public class Nu extends Actor implements CollisionEntity, Interactible {
         this.eventDispatcher = eventDispatcher;
         this.collisionContext = collisionContext;
         this.state = state;
+        this.animationManager = new AnimationManager(state);
 
-         animationManager = new AnimationManager(state);
-
-        final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.animations;
+        final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.getAnimations();
         animations.put(IDLE_NORTH, makeAnimation(atlas, NU_IDLE_NORTH));
         animations.put(IDLE_SOUTH, makeAnimation(atlas, NU_IDLE_SOUTH));
         animations.put(IDLE_WEST, makeAnimation(atlas, NU_IDLE_WEST));
@@ -48,7 +47,7 @@ public class Nu extends Actor implements CollisionEntity, Interactible {
         animations.put(WALK_WEST, makeAnimation(atlas, NU_WALK_WEST));
         animations.put(WALK_EAST, makeAnimation(atlas, NU_WALK_EAST));
 
-        animationManager.currentAnimation = IDLE_WEST;
+        animationManager.setCurrentAnimation(IDLE_WEST);
 
         setWidth(16);
         setHeight(16);
@@ -65,13 +64,13 @@ public class Nu extends Actor implements CollisionEntity, Interactible {
         stateTime += delta;
         float v = stateTime * 1000 % 4000;
         if (v > 3000) {
-            animationManager.currentAnimation = WALK_EAST;
+            animationManager.setCurrentAnimation(WALK_EAST);
         } else if (v > 2000) {
-            animationManager.currentAnimation = WALK_SOUTH;
+            animationManager.setCurrentAnimation(WALK_SOUTH);
         } else if (v > 1000) {
-            animationManager.currentAnimation = WALK_WEST;
+            animationManager.setCurrentAnimation(WALK_WEST);
         } else {
-            animationManager.currentAnimation = WALK_NORTH;
+            animationManager.setCurrentAnimation(WALK_NORTH);
         }
     }
 

@@ -11,6 +11,8 @@ import io.michelfaria.chrono.controller.Buttons;
 import io.michelfaria.chrono.controller.Ctrl;
 import io.michelfaria.chrono.events.APressEvent;
 import io.michelfaria.chrono.events.EventDispatcher;
+import io.michelfaria.chrono.interfaces.CollisionEntity;
+import io.michelfaria.chrono.interfaces.Interactible;
 import io.michelfaria.chrono.logic.CollisionContext;
 import io.michelfaria.chrono.logic.CollisionEntityMover;
 import io.michelfaria.chrono.util.ActorUtil;
@@ -19,27 +21,23 @@ import static io.michelfaria.chrono.animation.AnimationId.*;
 
 public class PartyCharacter extends Actor implements CollisionEntity {
 
-    protected State state;
+    protected final State state;
+    protected final AnimationManager animationManager;
+    protected final EventDispatcher eventDispatcher;
+    protected final CollisionContext collisionContext;
 
     // Runnables that run in the act() method
-    protected Array<Runnable> actionRunnables = new Array<>(Runnable.class);
+    protected final Array<Runnable> actionRunnables = new Array<>(Runnable.class);
 
     protected Direction facing = Direction.SOUTH;
     protected boolean moving;
     protected boolean running;
     protected boolean handleInput;
     protected boolean isCollisionEnabled = true;
-
+    protected boolean aButtonReleased = true;
     protected float walkSpeed = 1f;
     protected float runSpeedMultiplier = 2f;
-
-    protected AnimationManager animationManager;
-    protected EventDispatcher eventDispatcher;
-    protected CollisionContext collisionContext;
-
     protected float stateTime = 0f;
-
-    protected boolean aButtonReleased = true;
 
     /**
      * Describes a generic Chrono Trigger playable/party member
@@ -48,9 +46,7 @@ public class PartyCharacter extends Actor implements CollisionEntity {
         this.state = state;
         this.collisionContext = collisionContext;
         this.eventDispatcher = eventDispatcher;
-
-        animationManager = new AnimationManager(state);
-
+        this.animationManager = new AnimationManager(state);
         setWidth(16);
         setHeight(16);
     }
@@ -148,16 +144,14 @@ public class PartyCharacter extends Actor implements CollisionEntity {
     }
 
     public void updateAnimations() {
-        if (animationManager.currentAnimation == null) {
-            animationManager.currentAnimation = IDLE_SOUTH;
+        if (animationManager.getCurrentAnimation() == null) {
+            animationManager.setCurrentAnimation(IDLE_SOUTH);
         }
         if (running && moving && !state.hudPause) {
             updateRunningAnimation(RUN_NORTH, RUN_SOUTH, RUN_WEST, RUN_EAST);
-
         } else if (moving && !state.hudPause) {
             assert !running;
             updateRunningAnimation(WALK_NORTH, WALK_SOUTH, WALK_WEST, WALK_EAST);
-
         } else {
             updateRunningAnimation(IDLE_NORTH, IDLE_SOUTH, IDLE_WEST, IDLE_EAST);
         }
@@ -166,16 +160,16 @@ public class PartyCharacter extends Actor implements CollisionEntity {
     private void updateRunningAnimation(AnimationId north, AnimationId south,
                                         AnimationId west, AnimationId east) {
         if (facing == Direction.NORTH) {
-            animationManager.currentAnimation = north;
+            animationManager.setCurrentAnimation(north);
 
         } else if (facing == Direction.SOUTH) {
-            animationManager.currentAnimation = south;
+            animationManager.setCurrentAnimation(south);
 
         } else if (facing == Direction.WEST) {
-            animationManager.currentAnimation = west;
+            animationManager.setCurrentAnimation(west);
 
         } else if (facing == Direction.EAST) {
-            animationManager.currentAnimation = east;
+            animationManager.setCurrentAnimation(east);
 
         }
     }

@@ -5,7 +5,7 @@ import java.util.Set;
 
 public class EventDispatcher {
 
-    private Set<EventListener> eventListeners = new HashSet<>();
+    private final Set<EventListener> eventListeners = new HashSet<>();
 
     public EventDispatcher() {
     }

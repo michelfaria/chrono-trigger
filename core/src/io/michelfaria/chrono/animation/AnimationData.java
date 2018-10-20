@@ -8,9 +8,9 @@ import org.jetbrains.annotations.Nullable;
 public class AnimationData<T> {
 
     @NotNull
-    public Animation<T> animation;
+    public final Animation<T> animation;
     @Nullable
-    public TextureRegionDescriptor textureRegionDescriptor;
+    public final TextureRegionDescriptor textureRegionDescriptor;
 
     public AnimationData(@NotNull Animation<T> animation,
                          @Nullable TextureRegionDescriptor textureRegionDescriptor) {

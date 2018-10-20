@@ -1,27 +1,15 @@
-package io.michelfaria.chrono.actor;
+package io.michelfaria.chrono.interfaces;
 
 import com.badlogic.gdx.math.Rectangle;
 import io.michelfaria.chrono.logic.CollisionContext;
 
-public interface CollisionEntity {
+public interface CollisionEntity extends Positionable, Sizable {
 
     CollisionContext getCollisionContext();
 
-    float getX();
-
-    void setX(float x);
-
-    float getY();
-
-    void setY(float y);
-
-    float getWidth();
-
-    float getHeight();
+    boolean isCollisionEnabled();
 
     default Rectangle getRectangle() {
         return new Rectangle(getX(), getY(), getWidth(), getHeight());
     }
-
-    boolean isCollisionEnabled();
 }

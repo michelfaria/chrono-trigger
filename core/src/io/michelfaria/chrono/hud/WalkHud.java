@@ -1,7 +1,5 @@
 package io.michelfaria.chrono.hud;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -21,29 +19,29 @@ import io.michelfaria.chrono.util.GroupUtil;
 
 public class WalkHud implements Disposable, EventListener {
 
-    private State state;
-    private Batch batch;
+    private final State state;
+    private final Batch batch;
 
-    public OrthographicCamera camera;
-    public Viewport viewport;
-    public Stage stage;
-    public DialogBox dialogBox;
-    public ScissorAnimator scissorAnimator;
+    public final OrthographicCamera camera;
+    public final Viewport viewport;
+    public final Stage stage;
+    public final DialogBox dialogBox;
+    public final ScissorAnimator scissorAnimator;
 
     public WalkHud(Batch batch, MenuBoxes menuBoxes, AssetManager assetManager, State state) {
         this.batch = batch;
         this.state = state;
 
-        camera = new OrthographicCamera();
-        viewport = new FitViewport(256, 224);
-        stage = new Stage(viewport, batch);
+        this.camera = new OrthographicCamera();
+        this.viewport = new FitViewport(256, 224);
+        this.stage = new Stage(viewport, batch);
 
         // Set up dialog box
         menuBoxes.setUiType(0);
-        dialogBox = new DialogBox(assetManager, menuBoxes);
+        this.dialogBox = new DialogBox(assetManager, menuBoxes);
 
         // Set up animator for the dialog box
-        scissorAnimator = new ScissorAnimator(new Rectangle(dialogBox.getX(),
+        this.scissorAnimator = new ScissorAnimator(new Rectangle(dialogBox.getX(),
                 dialogBox.getY(), GroupUtil.getWidth(dialogBox), GroupUtil.getHeight(dialogBox)),
                 viewport);
     }
@@ -56,9 +54,7 @@ public class WalkHud implements Disposable, EventListener {
     public void draw() {
         stage.draw();
         batch.begin();
-
         scissorAnimator.scissor(() -> dialogBox.draw(batch, 1));
-
         batch.end();
     }
 
@@ -72,16 +68,18 @@ public class WalkHud implements Disposable, EventListener {
         if (event instanceof OpenDialogBoxEvent) {
             openDialogBox(((OpenDialogBoxEvent) event).text);
             return true;
+
         } else if (event instanceof APressEvent) {
             if (isDialogBoxOpen()) {
                 closeDialogBox();
+                return true;
             }
         }
         return false;
     }
 
     private boolean isDialogBoxOpen() {
-        return scissorAnimator.spriteState == ScissorAnimator.AnimationState.OPENED;
+        return scissorAnimator.getSpriteState() == ScissorAnimator.AnimationState.OPENED;
     }
 
     private void openDialogBox(String text) {

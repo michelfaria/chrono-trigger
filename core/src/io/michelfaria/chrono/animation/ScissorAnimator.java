@@ -11,10 +11,11 @@ import static io.michelfaria.chrono.animation.ScissorAnimator.AnimationState.*;
 public class ScissorAnimator {
 
     private static final int SCISSOR_MULTIPLE = 12;
-    public Rectangle vRectangle;
-    public Viewport vp;
+    private final Rectangle vRectangle;
+    private final Viewport vp;
+
+    private AnimationState spriteState;
     private int scissor;
-    public AnimationState spriteState;
 
     /**
      * @param vRectangle Virtual rectangle region to animate
@@ -30,7 +31,7 @@ public class ScissorAnimator {
         // Update the view port
         Gdx.gl.glViewport(0, 0, vp.getScreenWidth(), vp.getScreenHeight());
 
-        if (spriteState.equals(OPENING)) {
+        if (getSpriteState().equals(OPENING)) {
             /*
              * Open dialog box
              */
@@ -40,7 +41,7 @@ public class ScissorAnimator {
                 // Scissor has covered the sprite
                 spriteState = AnimationState.OPENED;
             }
-        } else if (spriteState.equals(CLOSING)) {
+        } else if (getSpriteState().equals(CLOSING)) {
             /*
              * Close dialog box
              */
@@ -53,14 +54,14 @@ public class ScissorAnimator {
             }
         }
 
-        boolean isAnimating = spriteState == OPENING || spriteState == CLOSING;
+        boolean isAnimating = getSpriteState() == OPENING || getSpriteState() == CLOSING;
 
         if (isAnimating) {
             Gdx.gl.glEnable(GL20.GL_SCISSOR_TEST);
             Gdx.gl.glScissor(0, getRealYCenter() - scissor, vp.getScreenWidth(), scissor * 2);
         }
 
-        if (spriteState != CLOSED) {
+        if (getSpriteState() != CLOSED) {
             draw.run();
         }
 
@@ -84,6 +85,10 @@ public class ScissorAnimator {
      */
     private int getRealYCenter() {
         return (int) (GLUtil.getRealSize(vp, vRectangle, 256, 224).height / 2);
+    }
+
+    public AnimationState getSpriteState() {
+        return spriteState;
     }
 
     public enum AnimationState {

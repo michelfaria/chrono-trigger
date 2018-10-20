@@ -4,7 +4,7 @@ import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
-import io.michelfaria.chrono.actor.CollisionEntity;
+import io.michelfaria.chrono.interfaces.CollisionEntity;
 import io.michelfaria.chrono.values.LayerNames;
 import org.jetbrains.annotations.Nullable;
 

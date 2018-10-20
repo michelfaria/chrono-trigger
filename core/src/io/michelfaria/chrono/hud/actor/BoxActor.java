@@ -7,7 +7,7 @@ import io.michelfaria.chrono.hud.MenuBoxes;
 
 public class BoxActor extends Actor {
 
-    private MenuBoxes menuBoxes;
+    private final MenuBoxes menuBoxes;
     private TextureRegion textureRegion;
 
     public BoxActor(MenuBoxes menuBoxes) {
