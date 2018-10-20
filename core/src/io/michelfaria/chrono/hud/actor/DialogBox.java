@@ -1,54 +1,56 @@
 package io.michelfaria.chrono.hud.actor;
 
+import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
-
 import io.michelfaria.chrono.Game;
+import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.values.Assets;
 
 public class DialogBox extends Group {
 
-	private Game game;
-	
-	private BoxActor boxActor;
+    private BoxActor boxActor;
 
-	private String text = "Hello world!";
+    private String text = "Hello world!";
 
-	private Label.LabelStyle labelStyle;
-	private Label label;
+    private Label.LabelStyle labelStyle;
+    private Label label;
 
-	public DialogBox(Game game) {
-		this.game = game;
-		
-		boxActor = new BoxActor(game);
-		addActor(boxActor);
+    public DialogBox(AssetManager assetManager, MenuBoxes menuBoxes) {
 
-		// Set up label style
-		labelStyle = new Label.LabelStyle();
-        labelStyle.font = game.assetManager.get(Assets.FONT);
-		labelStyle.font.getData().setScale(0.5f);
-		labelStyle.fontColor = Color.WHITE;
+        boxActor = new BoxActor(menuBoxes);
+        addActor(boxActor);
 
-		// Set up label
-		label = new Label(null, labelStyle);
-		label.setBounds(boxActor.getX() + 10, boxActor.getY() - 8, boxActor.getWidth() - 10, boxActor.getHeight());
-		label.setAlignment(Align.topLeft);
-		label.setWrap(true);
-		addActor(label);
+        // Set up label style
+        labelStyle = new Label.LabelStyle();
+        labelStyle.font = assetManager.get(Assets.FONT);
+        labelStyle.font.getData().setScale(0.5f);
+        labelStyle.fontColor = Color.WHITE;
 
-		label.setText(text);
-	}
+        // Set up label
+        label = new Label(null, labelStyle);
+        label.setBounds(boxActor.getX() + 10, boxActor.getY() - 8, boxActor.getWidth() - 10, boxActor.getHeight());
+        label.setAlignment(Align.topLeft);
+        label.setWrap(true);
+        addActor(label);
 
-	@Override
-	public void act(float delta) {
-		super.act(delta);
-	}
+        label.setText(text);
+    }
 
-	@Override
-	public void draw(Batch batch, float parentAlpha) {
-		super.draw(batch, parentAlpha);
-	}
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+    }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        super.draw(batch, parentAlpha);
+    }
+
+    public void setText(String string) {
+        label.setText(string);
+    }
 }

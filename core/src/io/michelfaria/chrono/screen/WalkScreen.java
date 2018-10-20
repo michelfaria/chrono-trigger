@@ -3,10 +3,15 @@ package io.michelfaria.chrono.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -15,10 +20,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import io.michelfaria.chrono.Game;
+import io.michelfaria.chrono.State;
 import io.michelfaria.chrono.actor.Crono;
 import io.michelfaria.chrono.actor.Nu;
 import io.michelfaria.chrono.actor.PartyCharacter;
+import io.michelfaria.chrono.events.EventDispatcher;
+import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.hud.WalkHud;
 import io.michelfaria.chrono.logic.ActorYPositionComparator;
 import io.michelfaria.chrono.logic.CollisionContext;
@@ -32,12 +39,16 @@ import static io.michelfaria.chrono.values.LayerNames.FOREGROUND_2;
 
 public class WalkScreen implements Screen {
 
-    private Game game;
+    private EventDispatcher eventDispatcher;
+    private TextureAtlas atlas;
+    private Batch batch;
+    private State state;
 
     /*
     LibGDX
      */
     private InputMultiplexer multiplexer = new InputMultiplexer();
+    private FPSLogger fpsLogger = new FPSLogger();
 
     /*
     Scene2D
@@ -60,15 +71,22 @@ public class WalkScreen implements Screen {
     private ActorYPositionComparator yPositionCmp = new ActorYPositionComparator();
     private PartyCharacter mainCharacter;
 
-    public WalkScreen(Game game) {
-        this.game = game;
+    public WalkScreen(Batch batch, MenuBoxes menuBoxes, AssetManager assetManager, State state,
+                      TmxMapLoader tmxMapLoader, TextureAtlas atlas,
+                      EventDispatcher eventDispatcher) {
+        this.eventDispatcher = eventDispatcher;
+        this.atlas = atlas;
+        this.batch = batch;
+        this.state = state;
 
-        map = game.getTmxMapLoader().load(Assets.EXAMPLE_TMX);
+        map = tmxMapLoader.load(Assets.EXAMPLE_TMX);
         tiledMapRenderer = new OrthogonalTiledMapRenderer(map);
 
-        hud = new WalkHud(game);
+        hud = new WalkHud(batch, menuBoxes, assetManager, state);
+        eventDispatcher.addEventListener(hud);
+
         collisionContext = new CollisionContext(this.map);
-        mainCharacter = new Crono(game, collisionContext);
+        mainCharacter = new Crono(state, collisionContext, atlas, eventDispatcher);
     }
 
     @Override
@@ -82,7 +100,7 @@ public class WalkScreen implements Screen {
         collisionContext.addEntity(mainCharacter);
 
         for (int i = 0; i < 80; i++) {// TESTING
-            Nu nu = new Nu(game, collisionContext);// TESTING
+            Nu nu = new Nu(collisionContext, eventDispatcher, atlas, state);// TESTING
             stage.addActor(nu);// TESTING
             Random random = new Random();// TESTING
             int x;// TESTING
@@ -99,6 +117,7 @@ public class WalkScreen implements Screen {
 
     @Override
     public void render(float dt) {
+        fpsLogger.log();
         update(dt);
 
         // Clean canvas
@@ -110,14 +129,14 @@ public class WalkScreen implements Screen {
 
         // Stage drawings
         // (Stages open the batch and close it again)
-        game.batch.setProjectionMatrix(camera.combined);
+        batch.setProjectionMatrix(camera.combined);
         stage.draw();
 
         // Render the foreground that goes in front of the Sprite(s)
         renderTileLayer(FOREGROUND_1);
 
         // HUD always drawn on top
-        game.batch.setProjectionMatrix(hud.stage.getCamera().combined);
+        batch.setProjectionMatrix(hud.stage.getCamera().combined);
         hud.draw();
     }
 

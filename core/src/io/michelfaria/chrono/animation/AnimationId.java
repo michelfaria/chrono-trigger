@@ -1,6 +1,6 @@
 package io.michelfaria.chrono.animation;
 
-public enum AnimationType {
+public enum AnimationId {
     IDLE_NORTH,
     IDLE_SOUTH,
     IDLE_WEST,

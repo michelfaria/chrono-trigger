@@ -9,26 +9,21 @@ import io.michelfaria.chrono.values.TextureRegionDescriptor;
 import org.jetbrains.annotations.NotNull;
 
 public class AnimationMaker {
-    /**
-     * Creates an animation from a TextureAtlas and a TextureRegionDescriptor.
-     */
+
     @NotNull
     public static AnimationData<TextureRegion> makeAnimation(TextureAtlas atlas, TextureRegionDescriptor trd) {
         Array<TextureRegion> textureRegions = TextureTools.splitTextureRegion(atlas, trd);
         if (trd.assembly != null) {
-            return assembleAnimation(trd, textureRegions);
+            return makeAnimationWithAssemblyInstructions(textureRegions, trd);
         } else {
             Animation<TextureRegion> animation = new Animation<>(trd.speed, textureRegions, Animation.PlayMode.LOOP);
             return new AnimationData<>(animation, trd);
         }
     }
 
-    /**
-     * Assembles an animation with assembly instructions.
-     */
     @NotNull
-    public static AnimationData<TextureRegion> assembleAnimation(TextureRegionDescriptor trd,
-                                                                 Array<TextureRegion> textureRegions) {
+    public static AnimationData<TextureRegion> makeAnimationWithAssemblyInstructions(
+            Array<TextureRegion> textureRegions, TextureRegionDescriptor trd) {
         Array<TextureRegion> assembled = new Array<>(TextureRegion.class);
         for (int assemblyNum : trd.assembly) {
             if (assemblyNum > textureRegions.size) {

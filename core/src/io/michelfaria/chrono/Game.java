@@ -6,18 +6,20 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import io.michelfaria.chrono.events.EventDispatcher;
 import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.screen.WalkScreen;
 import io.michelfaria.chrono.values.Assets;
 
 public class Game extends com.badlogic.gdx.Game {
 
-    public State state;
-    public AssetManager assetManager;
-    public TextureAtlas atlas;
-    public SpriteBatch batch;
-    public TmxMapLoader tmxMapLoader;
-    public MenuBoxes menuBoxes;
+    State state;
+    AssetManager assetManager;
+    TextureAtlas atlas;
+    SpriteBatch batch;
+    TmxMapLoader tmxMapLoader;
+    MenuBoxes menuBoxes;
+    EventDispatcher eventDispatcher;
 
     @Override
     public void create() {
@@ -28,7 +30,7 @@ public class Game extends com.badlogic.gdx.Game {
 
         batch = new SpriteBatch();
         tmxMapLoader = new TmxMapLoader();
-        menuBoxes = new MenuBoxes(this);
+        eventDispatcher = new EventDispatcher();
 
         // Load assets
         assetManager = new AssetManager();
@@ -41,8 +43,9 @@ public class Game extends com.badlogic.gdx.Game {
         // Done loading assets
 
         atlas = assetManager.get(Assets.CHRONO_ATLAS);
+        menuBoxes = new MenuBoxes(atlas);
 
-        setScreen(new WalkScreen(this));
+        setScreen(new WalkScreen(batch, menuBoxes, assetManager, state, tmxMapLoader, atlas, eventDispatcher));
     }
 
     public TmxMapLoader getTmxMapLoader() {

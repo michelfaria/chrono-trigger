@@ -1,35 +1,52 @@
 package io.michelfaria.chrono.actor;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import io.michelfaria.chrono.Game;
+import io.michelfaria.chrono.State;
+import io.michelfaria.chrono.animation.AnimationData;
+import io.michelfaria.chrono.animation.AnimationId;
 import io.michelfaria.chrono.animation.AnimationMaker;
 import io.michelfaria.chrono.animation.AnimationManager;
+import io.michelfaria.chrono.events.EventDispatcher;
+import io.michelfaria.chrono.events.OpenDialogBoxEvent;
 import io.michelfaria.chrono.logic.CollisionContext;
 
-import static io.michelfaria.chrono.animation.AnimationType.*;
+import java.util.Map;
+
+import static io.michelfaria.chrono.animation.AnimationId.*;
+import static io.michelfaria.chrono.animation.AnimationMaker.makeAnimation;
 import static io.michelfaria.chrono.values.TextureRegionDescriptor.*;
 
-public class Nu extends Actor implements CollisionEntity {
+public class Nu extends Actor implements CollisionEntity, Interactible {
 
-    protected Game game;
-    protected CollisionContext collisionContext;
-    protected float stateTime = 0f;
+    private EventDispatcher eventDispatcher;
+    private CollisionContext collisionContext;
+    private State state;
 
-    protected AnimationManager animationManager = new AnimationManager();
+    private float stateTime = 0f;
 
-    public Nu(Game game, CollisionContext collisionContext) {
-        this.game = game;
+    private AnimationManager animationManager;
+
+    public Nu(CollisionContext collisionContext,
+              EventDispatcher eventDispatcher, TextureAtlas atlas, State state) {
+        this.eventDispatcher = eventDispatcher;
         this.collisionContext = collisionContext;
+        this.state = state;
 
-        animationManager.animations.put(IDLE_NORTH, AnimationMaker.makeAnimation(game.atlas, NU_IDLE_NORTH));
-        animationManager.animations.put(IDLE_SOUTH, AnimationMaker.makeAnimation(game.atlas, NU_IDLE_SOUTH));
-        animationManager.animations.put(IDLE_WEST, AnimationMaker.makeAnimation(game.atlas, NU_IDLE_WEST));
-        animationManager.animations.put(IDLE_EAST, AnimationMaker.makeAnimation(game.atlas, NU_IDLE_EAST));
-        animationManager.animations.put(WALK_NORTH, AnimationMaker.makeAnimation(game.atlas, NU_WALK_NORTH));
-        animationManager.animations.put(WALK_SOUTH, AnimationMaker.makeAnimation(game.atlas, NU_WALK_SOUTH));
-        animationManager.animations.put(WALK_WEST, AnimationMaker.makeAnimation(game.atlas, NU_WALK_WEST));
-        animationManager.animations.put(WALK_EAST, AnimationMaker.makeAnimation(game.atlas, NU_WALK_EAST));
+         animationManager = new AnimationManager(state);
+
+        final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.animations;
+        animations.put(IDLE_NORTH, makeAnimation(atlas, NU_IDLE_NORTH));
+        animations.put(IDLE_SOUTH, makeAnimation(atlas, NU_IDLE_SOUTH));
+        animations.put(IDLE_WEST, makeAnimation(atlas, NU_IDLE_WEST));
+        animations.put(IDLE_EAST, makeAnimation(atlas, NU_IDLE_EAST));
+        animations.put(WALK_NORTH, makeAnimation(atlas, NU_WALK_NORTH));
+        animations.put(WALK_SOUTH, makeAnimation(atlas, NU_WALK_SOUTH));
+        animations.put(WALK_WEST, makeAnimation(atlas, NU_WALK_WEST));
+        animations.put(WALK_EAST, makeAnimation(atlas, NU_WALK_EAST));
 
         animationManager.currentAnimation = IDLE_WEST;
 
@@ -39,7 +56,7 @@ public class Nu extends Actor implements CollisionEntity {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        animationManager.draw(batch, getX() - 8, getY(), stateTime);
+        animationManager.draw(batch, getX() - 8, getY());
     }
 
     @Override
@@ -66,5 +83,10 @@ public class Nu extends Actor implements CollisionEntity {
     @Override
     public boolean isCollisionEnabled() {
         return true;
+    }
+
+    @Override
+    public void interact() {
+        eventDispatcher.emitEvent(new OpenDialogBoxEvent("I am a Nu! I am at x:" + getX() + " and y: " + getY()));
     }
 }

@@ -1,24 +1,28 @@
 package io.michelfaria.chrono.actor;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
-import io.michelfaria.chrono.Game;
+import io.michelfaria.chrono.State;
+import io.michelfaria.chrono.animation.AnimationId;
 import io.michelfaria.chrono.animation.AnimationManager;
-import io.michelfaria.chrono.animation.AnimationType;
 import io.michelfaria.chrono.controller.Buttons;
 import io.michelfaria.chrono.controller.Ctrl;
+import io.michelfaria.chrono.events.APressEvent;
+import io.michelfaria.chrono.events.EventDispatcher;
 import io.michelfaria.chrono.logic.CollisionContext;
 import io.michelfaria.chrono.logic.CollisionEntityMover;
+import io.michelfaria.chrono.util.ActorUtil;
 
-import static io.michelfaria.chrono.animation.AnimationType.*;
+import static io.michelfaria.chrono.animation.AnimationId.*;
 
 public class PartyCharacter extends Actor implements CollisionEntity {
 
-    protected Game game;
+    protected State state;
 
     // Runnables that run in the act() method
-    public Array<Runnable> actionRunnables = new Array<>();
+    protected Array<Runnable> actionRunnables = new Array<>(Runnable.class);
 
     protected Direction facing = Direction.SOUTH;
     protected boolean moving;
@@ -30,17 +34,22 @@ public class PartyCharacter extends Actor implements CollisionEntity {
     protected float runSpeedMultiplier = 2f;
 
     protected AnimationManager animationManager;
+    protected EventDispatcher eventDispatcher;
     protected CollisionContext collisionContext;
 
     protected float stateTime = 0f;
 
+    protected boolean aButtonReleased = true;
+
     /**
      * Describes a generic Chrono Trigger playable/party member
      */
-    public PartyCharacter(Game game, CollisionContext collisionContext) {
-        this.game = game;
+    public PartyCharacter(State state, CollisionContext collisionContext, EventDispatcher eventDispatcher) {
+        this.state = state;
         this.collisionContext = collisionContext;
-        animationManager = new AnimationManager();
+        this.eventDispatcher = eventDispatcher;
+
+        animationManager = new AnimationManager(state);
 
         setWidth(16);
         setHeight(16);
@@ -67,12 +76,13 @@ public class PartyCharacter extends Actor implements CollisionEntity {
 
     protected void handleInput(float delta) {
         assert handleInput;
-        if (!game.state.hudPause) {
-            handleMovingInput(delta);
+        if (!state.hudPause) {
+            handleMovementInput(delta);
         }
+        handleAPress(delta);
     }
 
-    protected void handleMovingInput(float delta) {
+    protected void handleMovementInput(float delta) {
         float xMoveSpeed = 0;
         float yMoveSpeed = 0;
 
@@ -105,7 +115,35 @@ public class PartyCharacter extends Actor implements CollisionEntity {
         if (xMoveSpeed == 0 && yMoveSpeed == 0) {
             moving = false;
         } else {
-            CollisionEntityMover.moveBy(this, xMoveSpeed, yMoveSpeed);
+            CollisionEntityMover.moveEntityBy(this, xMoveSpeed, yMoveSpeed);
+        }
+    }
+
+    private void handleAPress(float delta) {
+        boolean buttonPressed = Ctrl.isButtonPressed(0, Buttons.A);
+        if (aButtonReleased && buttonPressed) {
+            aButtonReleased = false;
+            if (!state.hudPause) {
+                Rectangle interactionRegion = ActorUtil.getActorRectangle(this);
+                if (facing == Direction.NORTH) {
+                    interactionRegion.y += getHeight() / 2;
+
+                } else if (facing == Direction.SOUTH) {
+                    interactionRegion.y -= getHeight() / 2;
+
+                } else if (facing == Direction.WEST) {
+                    interactionRegion.x -= getWidth() / 2;
+
+                } else if (facing == Direction.EAST) {
+                    interactionRegion.x += getWidth() / 2;
+                }
+                interactWithRegion(interactionRegion);
+            } else {
+                eventDispatcher.emitEvent(new APressEvent());
+            }
+        }
+        if (!buttonPressed) {
+            aButtonReleased = true;
         }
     }
 
@@ -113,10 +151,10 @@ public class PartyCharacter extends Actor implements CollisionEntity {
         if (animationManager.currentAnimation == null) {
             animationManager.currentAnimation = IDLE_SOUTH;
         }
-        if (running && moving && !game.state.hudPause) {
+        if (running && moving && !state.hudPause) {
             updateRunningAnimation(RUN_NORTH, RUN_SOUTH, RUN_WEST, RUN_EAST);
 
-        } else if (moving && !game.state.hudPause) {
+        } else if (moving && !state.hudPause) {
             assert !running;
             updateRunningAnimation(WALK_NORTH, WALK_SOUTH, WALK_WEST, WALK_EAST);
 
@@ -125,25 +163,37 @@ public class PartyCharacter extends Actor implements CollisionEntity {
         }
     }
 
-    private void updateRunningAnimation(AnimationType north, AnimationType south, AnimationType west, AnimationType east) {
-        switch (facing) {
-            case NORTH:
-                animationManager.currentAnimation = north;
-                break;
-            case SOUTH:
-                animationManager.currentAnimation = south;
-                break;
-            case WEST:
-                animationManager.currentAnimation = west;
-                break;
-            case EAST:
-                animationManager.currentAnimation = east;
-                break;
+    private void updateRunningAnimation(AnimationId north, AnimationId south,
+                                        AnimationId west, AnimationId east) {
+        if (facing == Direction.NORTH) {
+            animationManager.currentAnimation = north;
+
+        } else if (facing == Direction.SOUTH) {
+            animationManager.currentAnimation = south;
+
+        } else if (facing == Direction.WEST) {
+            animationManager.currentAnimation = west;
+
+        } else if (facing == Direction.EAST) {
+            animationManager.currentAnimation = east;
+
         }
     }
 
     public void setHandleInput(boolean handleInput) {
         this.handleInput = handleInput;
+    }
+
+    private void interactWithRegion(Rectangle region) {
+        Array<CollisionEntity> collisionEntities
+                = collisionContext.collisionChecker.entityCollisions(this, region);
+        for (CollisionEntity collisionEntity : collisionEntities) {
+            if (collisionEntity instanceof Interactible) {
+                Interactible interactible = (Interactible) collisionEntity;
+                interactible.interact();
+                break;
+            }
+        }
     }
 
     @Override
