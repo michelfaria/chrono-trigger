@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import io.michelfaria.chrono.controller.ControllerEventEmitter;
 import io.michelfaria.chrono.events.EventDispatcher;
 import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.screen.WalkScreen;
@@ -28,6 +29,7 @@ public class Game extends com.badlogic.gdx.Game {
         this.batch = new SpriteBatch();
         TmxMapLoader tmxMapLoader = new TmxMapLoader();
         EventDispatcher eventDispatcher = new EventDispatcher();
+        ControllerEventEmitter controllerEventEmitter = new ControllerEventEmitter(eventDispatcher);
 
         // Load assets
         this.assetManager = new AssetManager();
@@ -43,7 +45,7 @@ public class Game extends com.badlogic.gdx.Game {
         MenuBoxes menuBoxes = new MenuBoxes(this.atlas);
 
         setScreen(new WalkScreen(this.batch, menuBoxes, this.assetManager, state, tmxMapLoader,
-                this.atlas, eventDispatcher));
+                this.atlas, eventDispatcher, controllerEventEmitter));
     }
 
     @Override

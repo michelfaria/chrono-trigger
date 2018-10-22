@@ -10,6 +10,8 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.michelfaria.chrono.State;
 import io.michelfaria.chrono.animation.ScissorAnimator;
+import io.michelfaria.chrono.controller.Buttons;
+import io.michelfaria.chrono.controller.events.ButtonEvent;
 import io.michelfaria.chrono.events.APressEvent;
 import io.michelfaria.chrono.events.Event;
 import io.michelfaria.chrono.events.EventListener;
@@ -69,10 +71,12 @@ public class WalkHud implements Disposable, EventListener {
             openDialogBox(((OpenDialogBoxEvent) event).text);
             return true;
 
-        } else if (event instanceof APressEvent) {
-            if (isDialogBoxOpen()) {
-                closeDialogBox();
-                return true;
+        } else if (event instanceof ButtonEvent) {
+            if (((ButtonEvent) event).getButton() == Buttons.A) {
+                if (isDialogBoxOpen()) {
+                    closeDialogBox();
+                    return true;
+                }
             }
         }
         return false;

@@ -61,6 +61,16 @@ public class MapCollisionEntity implements CollisionEntity {
     }
 
     @Override
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    @Override
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    @Override
     public boolean isCollisionEnabled() {
         return isCollisionEnabled;
     }

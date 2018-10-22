@@ -9,8 +9,11 @@ import io.michelfaria.chrono.animation.AnimationId;
 import io.michelfaria.chrono.animation.AnimationManager;
 import io.michelfaria.chrono.controller.Buttons;
 import io.michelfaria.chrono.controller.Ctrl;
+import io.michelfaria.chrono.controller.events.ButtonEvent;
 import io.michelfaria.chrono.events.APressEvent;
+import io.michelfaria.chrono.events.Event;
 import io.michelfaria.chrono.events.EventDispatcher;
+import io.michelfaria.chrono.events.EventListener;
 import io.michelfaria.chrono.interfaces.CollisionEntity;
 import io.michelfaria.chrono.interfaces.Interactible;
 import io.michelfaria.chrono.logic.CollisionContext;
@@ -19,7 +22,7 @@ import io.michelfaria.chrono.util.ActorUtil;
 
 import static io.michelfaria.chrono.animation.AnimationId.*;
 
-public class PartyCharacter extends Actor implements CollisionEntity {
+public class PartyCharacter extends Actor implements CollisionEntity, EventListener {
 
     protected final State state;
     protected final AnimationManager animationManager;
@@ -30,11 +33,12 @@ public class PartyCharacter extends Actor implements CollisionEntity {
     protected final Array<Runnable> actionRunnables = new Array<>(Runnable.class);
 
     protected Direction facing = Direction.SOUTH;
+
     protected boolean moving;
     protected boolean running;
     protected boolean handleInput;
     protected boolean isCollisionEnabled = true;
-    protected boolean aButtonReleased = true;
+
     protected float walkSpeed = 1f;
     protected float runSpeedMultiplier = 2f;
     protected float stateTime = 0f;
@@ -75,7 +79,6 @@ public class PartyCharacter extends Actor implements CollisionEntity {
         if (!state.hudPause) {
             handleMovementInput(delta);
         }
-        handleAPress(delta);
     }
 
     protected void handleMovementInput(float delta) {
@@ -115,34 +118,6 @@ public class PartyCharacter extends Actor implements CollisionEntity {
         }
     }
 
-    private void handleAPress(float delta) {
-        boolean buttonPressed = Ctrl.isButtonPressed(0, Buttons.A);
-        if (aButtonReleased && buttonPressed) {
-            aButtonReleased = false;
-            if (!state.hudPause) {
-                Rectangle interactionRegion = ActorUtil.getActorRectangle(this);
-                if (facing == Direction.NORTH) {
-                    interactionRegion.y += getHeight() / 2;
-
-                } else if (facing == Direction.SOUTH) {
-                    interactionRegion.y -= getHeight() / 2;
-
-                } else if (facing == Direction.WEST) {
-                    interactionRegion.x -= getWidth() / 2;
-
-                } else if (facing == Direction.EAST) {
-                    interactionRegion.x += getWidth() / 2;
-                }
-                interactWithRegion(interactionRegion);
-            } else {
-                eventDispatcher.emitEvent(new APressEvent());
-            }
-        }
-        if (!buttonPressed) {
-            aButtonReleased = true;
-        }
-    }
-
     public void updateAnimations() {
         if (animationManager.getCurrentAnimation() == null) {
             animationManager.setCurrentAnimation(IDLE_SOUTH);
@@ -174,8 +149,29 @@ public class PartyCharacter extends Actor implements CollisionEntity {
         }
     }
 
-    public void setHandleInput(boolean handleInput) {
-        this.handleInput = handleInput;
+    protected void handleAPress(ButtonEvent event) {
+        if (event.getButton() == Buttons.A && event.getEventType() == ButtonEvent.EventType.PRESS) {
+            if (!state.hudPause) {
+                emitInteraction();
+            }
+        }
+    }
+
+    protected void emitInteraction() {
+        Rectangle interactionRegion = ActorUtil.getActorRectangle(this);
+        if (facing == Direction.NORTH) {
+            interactionRegion.y += getHeight() / 2;
+
+        } else if (facing == Direction.SOUTH) {
+            interactionRegion.y -= getHeight() / 2;
+
+        } else if (facing == Direction.WEST) {
+            interactionRegion.x -= getWidth() / 2;
+
+        } else if (facing == Direction.EAST) {
+            interactionRegion.x += getWidth() / 2;
+        }
+        interactWithRegion(interactionRegion);
     }
 
     private void interactWithRegion(Rectangle region) {
@@ -190,6 +186,10 @@ public class PartyCharacter extends Actor implements CollisionEntity {
         }
     }
 
+    public void setHandleInput(boolean handleInput) {
+        this.handleInput = handleInput;
+    }
+
     @Override
     public CollisionContext getCollisionContext() {
         return collisionContext;
@@ -198,5 +198,16 @@ public class PartyCharacter extends Actor implements CollisionEntity {
     @Override
     public boolean isCollisionEnabled() {
         return isCollisionEnabled;
+    }
+
+    @Override
+    public boolean handleEvent(Event event) {
+        if (event instanceof ButtonEvent) {
+            if (((ButtonEvent) event).getButton() == Buttons.A) {
+                handleAPress((ButtonEvent) event);
+                return true;
+            }
+        }
+        return false;
     }
 }

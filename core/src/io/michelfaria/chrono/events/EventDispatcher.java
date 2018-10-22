@@ -19,6 +19,7 @@ public class EventDispatcher {
     }
 
     public void emitEvent(Event event) {
+        System.out.println("Emitting event: " + event);
         for (EventListener eventListener : eventListeners) {
             eventListener.handleEvent(event);
         }

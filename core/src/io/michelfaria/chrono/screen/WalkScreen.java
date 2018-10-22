@@ -24,6 +24,7 @@ import io.michelfaria.chrono.State;
 import io.michelfaria.chrono.actor.Crono;
 import io.michelfaria.chrono.actor.Nu;
 import io.michelfaria.chrono.actor.PartyCharacter;
+import io.michelfaria.chrono.controller.ControllerEventEmitter;
 import io.michelfaria.chrono.events.EventDispatcher;
 import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.hud.WalkHud;
@@ -43,6 +44,7 @@ public class WalkScreen implements Screen {
     private final TextureAtlas atlas;
     private final Batch batch;
     private final State state;
+    private final ControllerEventEmitter controllerEventEmitter;
 
     /*
     LibGDX
@@ -72,12 +74,13 @@ public class WalkScreen implements Screen {
     private final PartyCharacter mainCharacter;
 
     public WalkScreen(Batch batch, MenuBoxes menuBoxes, AssetManager assetManager, State state,
-                      TmxMapLoader tmxMapLoader, TextureAtlas atlas,
-                      EventDispatcher eventDispatcher) {
+                      TmxMapLoader tmxMapLoader, TextureAtlas atlas, EventDispatcher eventDispatcher,
+                      ControllerEventEmitter controllerEventEmitter) {
         this.eventDispatcher = eventDispatcher;
         this.atlas = atlas;
         this.batch = batch;
         this.state = state;
+        this.controllerEventEmitter = controllerEventEmitter;
 
         this.map = tmxMapLoader.load(Assets.EXAMPLE_TMX);
         this.tiledMapRenderer = new OrthogonalTiledMapRenderer(this.map);
@@ -87,6 +90,7 @@ public class WalkScreen implements Screen {
 
         this.collisionContext = new CollisionContext(this.map);
         this.mainCharacter = new Crono(state, collisionContext, atlas, eventDispatcher);
+        eventDispatcher.addEventListener(this.mainCharacter);
     }
 
     @Override
@@ -99,20 +103,23 @@ public class WalkScreen implements Screen {
         stage.addActor(mainCharacter);
         collisionContext.addEntity(mainCharacter);
 
-        for (int i = 0; i < 80; i++) {// TESTING
-            Nu nu = new Nu(collisionContext, eventDispatcher, atlas, state);// TESTING
-            stage.addActor(nu);// TESTING
-            Random random = new Random();// TESTING
-            int x;// TESTING
-            int y;// TESTING
-            do {// TESTING
-                x = random.nextInt(400);// TESTING
-                y = random.nextInt(400);// TESTING
+        addTestNus();
+    }
+
+    private void addTestNus() {
+        for (int i = 0; i < 80; i++) {
+            Nu nu = new Nu(collisionContext, eventDispatcher, atlas, state);
+            stage.addActor(nu);
+            Random random = new Random();
+            int x, y;
+            do {
+                x = random.nextInt(400);
+                y = random.nextInt(400);
             }
-            while (collisionContext.collisionChecker.mapCollisions(new Rectangle(x, y, x + 16, y + 16)).size > 0);// TESTING
-            nu.setPosition(x, y);// TESTING
+            while (collisionContext.collisionChecker.mapCollisions(new Rectangle(x, y, x + 16, y + 16)).size > 0);
+            nu.setPosition(x, y);
             collisionContext.addEntity(nu);
-        }// TESTING
+        }
     }
 
     @Override
@@ -141,6 +148,8 @@ public class WalkScreen implements Screen {
     }
 
     private void update(float dt) {
+        controllerEventEmitter.tick();
+
         hud.update(dt);
         stage.act();
 
