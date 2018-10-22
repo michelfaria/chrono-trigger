@@ -68,7 +68,9 @@ public class WalkHud implements Disposable, EventListener {
             return true;
 
         } else if (event instanceof ButtonEvent) {
-            if (((ButtonEvent) event).getButton() == Buttons.A) {
+            ButtonEvent buttonEvent = (ButtonEvent) event;
+            if (buttonEvent.getButton() == Buttons.A
+                    && buttonEvent.getEventType() == ButtonEventType.PRESS) {
                 if (isDialogBoxOpen()) {
                     closeDialogBox();
                     return true;

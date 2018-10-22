@@ -187,16 +187,6 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
     }
 
     @Override
-    public CollisionContext getCollisionContext() {
-        return collisionContext;
-    }
-
-    @Override
-    public boolean isCollisionEnabled() {
-        return isCollisionEnabled;
-    }
-
-    @Override
     public boolean handleEvent(Event event) {
         if (event instanceof ButtonEvent) {
             if (((ButtonEvent) event).getButton() == Buttons.A) {
@@ -208,5 +198,15 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
             paused = ((HudPauseEvent) event).isPaused();
         }
         return false;
+    }
+
+    @Override
+    public CollisionContext getCollisionContext() {
+        return collisionContext;
+    }
+
+    @Override
+    public boolean isCollisionEnabled() {
+        return isCollisionEnabled;
     }
 }

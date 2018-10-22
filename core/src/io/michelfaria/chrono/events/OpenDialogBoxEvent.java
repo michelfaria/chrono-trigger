@@ -7,4 +7,11 @@ public class OpenDialogBoxEvent implements Event {
     public OpenDialogBoxEvent(String text) {
         this.text = text;
     }
+
+    @Override
+    public String toString() {
+        return "OpenDialogBoxEvent{" +
+                "text='" + text + '\'' +
+                '}';
+    }
 }

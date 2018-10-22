@@ -10,4 +10,11 @@ public class HudPauseEvent implements Event {
     public boolean isPaused() {
         return isPaused;
     }
+
+    @Override
+    public String toString() {
+        return "HudPauseEvent{" +
+                "isPaused=" + isPaused +
+                '}';
+    }
 }
