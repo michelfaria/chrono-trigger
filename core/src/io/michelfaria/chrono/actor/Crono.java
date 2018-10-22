@@ -2,7 +2,6 @@ package io.michelfaria.chrono.actor;
 
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import io.michelfaria.chrono.State;
 import io.michelfaria.chrono.animation.AnimationData;
 import io.michelfaria.chrono.animation.AnimationId;
 import io.michelfaria.chrono.events.EventDispatcher;
@@ -16,9 +15,9 @@ import static io.michelfaria.chrono.values.TextureRegionDescriptor.*;
 
 public class Crono extends PartyCharacter {
 
-    public Crono(State state, CollisionContext collisionContext, TextureAtlas atlas,
+    public Crono(CollisionContext collisionContext, TextureAtlas atlas,
                  EventDispatcher eventDispatcher) {
-        super(state, collisionContext, eventDispatcher);
+        super(collisionContext, eventDispatcher);
         final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.getAnimations();
         /*
          * Idle animations

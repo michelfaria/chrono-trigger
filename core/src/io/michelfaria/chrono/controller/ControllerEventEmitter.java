@@ -1,9 +1,8 @@
 package io.michelfaria.chrono.controller;
 
-import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
-import com.badlogic.gdx.utils.Array;
-import io.michelfaria.chrono.controller.events.ButtonEvent;
+import io.michelfaria.chrono.events.ButtonEvent;
+import io.michelfaria.chrono.events.ButtonEventType;
 import io.michelfaria.chrono.events.EventDispatcher;
 
 import java.util.HashMap;
@@ -35,11 +34,11 @@ public class ControllerEventEmitter {
                 final AtomicBoolean storedState = buttonStateMap.get(button);
 
                 if (isButtonPressed && !storedState.get()) {
-                    eventDispatcher.emitEvent(new ButtonEvent(i, button, ButtonEvent.EventType.PRESS));
+                    eventDispatcher.emitEvent(new ButtonEvent(i, button, ButtonEventType.PRESS));
                     storedState.set(true);
 
                 } else if (!isButtonPressed && storedState.get()) {
-                    eventDispatcher.emitEvent(new ButtonEvent(i, button, ButtonEvent.EventType.RELEASE));
+                    eventDispatcher.emitEvent(new ButtonEvent(i, button, ButtonEventType.RELEASE));
                     storedState.set(false);
                 }
             }

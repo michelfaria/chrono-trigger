@@ -8,21 +8,16 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import io.michelfaria.chrono.State;
 import io.michelfaria.chrono.animation.ScissorAnimator;
 import io.michelfaria.chrono.controller.Buttons;
-import io.michelfaria.chrono.controller.events.ButtonEvent;
-import io.michelfaria.chrono.events.APressEvent;
-import io.michelfaria.chrono.events.Event;
-import io.michelfaria.chrono.events.EventListener;
-import io.michelfaria.chrono.events.OpenDialogBoxEvent;
+import io.michelfaria.chrono.events.*;
 import io.michelfaria.chrono.hud.actor.DialogBox;
 import io.michelfaria.chrono.util.GroupUtil;
 
 public class WalkHud implements Disposable, EventListener {
 
-    private final State state;
     private final Batch batch;
+    private final EventDispatcher eventDispatcher;
 
     public final OrthographicCamera camera;
     public final Viewport viewport;
@@ -30,9 +25,10 @@ public class WalkHud implements Disposable, EventListener {
     public final DialogBox dialogBox;
     public final ScissorAnimator scissorAnimator;
 
-    public WalkHud(Batch batch, MenuBoxes menuBoxes, AssetManager assetManager, State state) {
+    public WalkHud(Batch batch, MenuBoxes menuBoxes, AssetManager assetManager,
+                   EventDispatcher eventDispatcher) {
         this.batch = batch;
-        this.state = state;
+        this.eventDispatcher = eventDispatcher;
 
         this.camera = new OrthographicCamera();
         this.viewport = new FitViewport(256, 224);
@@ -88,12 +84,12 @@ public class WalkHud implements Disposable, EventListener {
 
     private void openDialogBox(String text) {
         dialogBox.setText(text);
-        state.hudPause = true;
+        eventDispatcher.emitEvent(new HudPauseEvent(true));
         scissorAnimator.open();
     }
 
     private void closeDialogBox() {
-        state.hudPause = false;
+        eventDispatcher.emitEvent(new HudPauseEvent(false));
         scissorAnimator.close();
     }
 }

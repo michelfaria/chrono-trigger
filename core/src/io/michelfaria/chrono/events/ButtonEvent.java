@@ -1,23 +1,19 @@
-package io.michelfaria.chrono.controller.events;
+package io.michelfaria.chrono.events;
 
 import io.michelfaria.chrono.controller.Buttons;
 
 public class ButtonEvent extends ControllerEvent {
 
-    public enum EventType {
-        PRESS, RELEASE
-    }
-
     private final Buttons button;
-    private final EventType eventType;
+    private final ButtonEventType eventType;
 
-    public ButtonEvent(int controllerId, Buttons button, EventType eventType) {
+    public ButtonEvent(int controllerId, Buttons button, ButtonEventType eventType) {
         super(controllerId);
         this.button = button;
         this.eventType = eventType;
     }
 
-    public EventType getEventType() {
+    public ButtonEventType getEventType() {
         return eventType;
     }
 

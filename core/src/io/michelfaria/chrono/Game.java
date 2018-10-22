@@ -21,11 +21,6 @@ public class Game extends com.badlogic.gdx.Game {
 
     @Override
     public void create() {
-        final State state = new State();
-        if (state.debug) {
-            Gdx.app.setLogLevel(Application.LOG_DEBUG);
-        }
-
         this.batch = new SpriteBatch();
         TmxMapLoader tmxMapLoader = new TmxMapLoader();
         EventDispatcher eventDispatcher = new EventDispatcher();
@@ -44,8 +39,8 @@ public class Game extends com.badlogic.gdx.Game {
         this.atlas = this.assetManager.get(Assets.CHRONO_ATLAS);
         MenuBoxes menuBoxes = new MenuBoxes(this.atlas);
 
-        setScreen(new WalkScreen(this.batch, menuBoxes, this.assetManager, state, tmxMapLoader,
-                this.atlas, eventDispatcher, controllerEventEmitter));
+        setScreen(new WalkScreen(this.batch, menuBoxes, this.assetManager, tmxMapLoader, this.atlas,
+                eventDispatcher, controllerEventEmitter));
     }
 
     @Override

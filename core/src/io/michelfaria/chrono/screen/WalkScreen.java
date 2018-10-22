@@ -20,7 +20,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import io.michelfaria.chrono.State;
 import io.michelfaria.chrono.actor.Crono;
 import io.michelfaria.chrono.actor.Nu;
 import io.michelfaria.chrono.actor.PartyCharacter;
@@ -43,7 +42,6 @@ public class WalkScreen implements Screen {
     private final EventDispatcher eventDispatcher;
     private final TextureAtlas atlas;
     private final Batch batch;
-    private final State state;
     private final ControllerEventEmitter controllerEventEmitter;
 
     /*
@@ -73,23 +71,22 @@ public class WalkScreen implements Screen {
     private final ActorYPositionComparator yPositionCmp = new ActorYPositionComparator();
     private final PartyCharacter mainCharacter;
 
-    public WalkScreen(Batch batch, MenuBoxes menuBoxes, AssetManager assetManager, State state,
+    public WalkScreen(Batch batch, MenuBoxes menuBoxes, AssetManager assetManager,
                       TmxMapLoader tmxMapLoader, TextureAtlas atlas, EventDispatcher eventDispatcher,
                       ControllerEventEmitter controllerEventEmitter) {
         this.eventDispatcher = eventDispatcher;
         this.atlas = atlas;
         this.batch = batch;
-        this.state = state;
         this.controllerEventEmitter = controllerEventEmitter;
 
         this.map = tmxMapLoader.load(Assets.EXAMPLE_TMX);
         this.tiledMapRenderer = new OrthogonalTiledMapRenderer(this.map);
 
-        this.hud = new WalkHud(batch, menuBoxes, assetManager, state);
+        this.hud = new WalkHud(batch, menuBoxes, assetManager, eventDispatcher);
         eventDispatcher.addEventListener(hud);
 
         this.collisionContext = new CollisionContext(this.map);
-        this.mainCharacter = new Crono(state, collisionContext, atlas, eventDispatcher);
+        this.mainCharacter = new Crono(collisionContext, atlas, eventDispatcher);
         eventDispatcher.addEventListener(this.mainCharacter);
     }
 
@@ -108,7 +105,7 @@ public class WalkScreen implements Screen {
 
     private void addTestNus() {
         for (int i = 0; i < 80; i++) {
-            Nu nu = new Nu(collisionContext, eventDispatcher, atlas, state);
+            Nu nu = new Nu(collisionContext, eventDispatcher, atlas);
             stage.addActor(nu);
             Random random = new Random();
             int x, y;

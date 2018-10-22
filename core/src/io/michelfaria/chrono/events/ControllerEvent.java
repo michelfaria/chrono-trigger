@@ -1,4 +1,4 @@
-package io.michelfaria.chrono.controller.events;
+package io.michelfaria.chrono.events;
 
 import com.badlogic.gdx.controllers.Controllers;
 import io.michelfaria.chrono.events.Event;

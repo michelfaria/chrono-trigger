@@ -4,16 +4,11 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
-import io.michelfaria.chrono.State;
 import io.michelfaria.chrono.animation.AnimationId;
 import io.michelfaria.chrono.animation.AnimationManager;
 import io.michelfaria.chrono.controller.Buttons;
 import io.michelfaria.chrono.controller.Ctrl;
-import io.michelfaria.chrono.controller.events.ButtonEvent;
-import io.michelfaria.chrono.events.APressEvent;
-import io.michelfaria.chrono.events.Event;
-import io.michelfaria.chrono.events.EventDispatcher;
-import io.michelfaria.chrono.events.EventListener;
+import io.michelfaria.chrono.events.*;
 import io.michelfaria.chrono.interfaces.CollisionEntity;
 import io.michelfaria.chrono.interfaces.Interactible;
 import io.michelfaria.chrono.logic.CollisionContext;
@@ -24,7 +19,6 @@ import static io.michelfaria.chrono.animation.AnimationId.*;
 
 public class PartyCharacter extends Actor implements CollisionEntity, EventListener {
 
-    protected final State state;
     protected final AnimationManager animationManager;
     protected final EventDispatcher eventDispatcher;
     protected final CollisionContext collisionContext;
@@ -33,6 +27,8 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
     protected final Array<Runnable> actionRunnables = new Array<>(Runnable.class);
 
     protected Direction facing = Direction.SOUTH;
+
+    protected boolean paused;
 
     protected boolean moving;
     protected boolean running;
@@ -43,14 +39,14 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
     protected float runSpeedMultiplier = 2f;
     protected float stateTime = 0f;
 
+
     /**
      * Describes a generic Chrono Trigger playable/party member
      */
-    public PartyCharacter(State state, CollisionContext collisionContext, EventDispatcher eventDispatcher) {
-        this.state = state;
+    public PartyCharacter(CollisionContext collisionContext, EventDispatcher eventDispatcher) {
         this.collisionContext = collisionContext;
         this.eventDispatcher = eventDispatcher;
-        this.animationManager = new AnimationManager(state);
+        this.animationManager = new AnimationManager();
         setWidth(16);
         setHeight(16);
     }
@@ -76,7 +72,7 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
 
     protected void handleInput(float delta) {
         assert handleInput;
-        if (!state.hudPause) {
+        if (!paused) {
             handleMovementInput(delta);
         }
     }
@@ -122,9 +118,9 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
         if (animationManager.getCurrentAnimation() == null) {
             animationManager.setCurrentAnimation(IDLE_SOUTH);
         }
-        if (running && moving && !state.hudPause) {
+        if (running && moving && !paused) {
             updateRunningAnimation(RUN_NORTH, RUN_SOUTH, RUN_WEST, RUN_EAST);
-        } else if (moving && !state.hudPause) {
+        } else if (moving && !paused) {
             assert !running;
             updateRunningAnimation(WALK_NORTH, WALK_SOUTH, WALK_WEST, WALK_EAST);
         } else {
@@ -150,8 +146,8 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
     }
 
     protected void handleAPress(ButtonEvent event) {
-        if (event.getButton() == Buttons.A && event.getEventType() == ButtonEvent.EventType.PRESS) {
-            if (!state.hudPause) {
+        if (event.getButton() == Buttons.A && event.getEventType() == ButtonEventType.PRESS) {
+            if (!paused) {
                 emitInteraction();
             }
         }
@@ -207,6 +203,9 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
                 handleAPress((ButtonEvent) event);
                 return true;
             }
+        }
+        if (event instanceof HudPauseEvent) {
+            paused = ((HudPauseEvent) event).isPaused();
         }
         return false;
     }

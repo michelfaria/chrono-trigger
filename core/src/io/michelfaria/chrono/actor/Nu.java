@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import io.michelfaria.chrono.State;
 import io.michelfaria.chrono.animation.AnimationData;
 import io.michelfaria.chrono.animation.AnimationId;
 import io.michelfaria.chrono.animation.AnimationManager;
@@ -24,18 +23,16 @@ public class Nu extends Actor implements CollisionEntity, Interactible {
 
     private EventDispatcher eventDispatcher;
     private CollisionContext collisionContext;
-    private State state;
 
     private float stateTime = 0f;
 
     private AnimationManager animationManager;
 
     public Nu(CollisionContext collisionContext,
-              EventDispatcher eventDispatcher, TextureAtlas atlas, State state) {
+              EventDispatcher eventDispatcher, TextureAtlas atlas) {
         this.eventDispatcher = eventDispatcher;
         this.collisionContext = collisionContext;
-        this.state = state;
-        this.animationManager = new AnimationManager(state);
+        this.animationManager = new AnimationManager();
 
         final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.getAnimations();
         animations.put(IDLE_NORTH, makeAnimation(atlas, NU_IDLE_NORTH));

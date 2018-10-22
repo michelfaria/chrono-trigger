@@ -3,7 +3,6 @@ package io.michelfaria.chrono.animation;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import io.michelfaria.chrono.State;
 import io.michelfaria.chrono.values.TextureRegionDescriptor.FlipData;
 
 import java.util.HashMap;
@@ -15,15 +14,10 @@ import java.util.Map;
  */
 public class AnimationManager {
 
-    private final State state;
     private final Map<AnimationId, AnimationData<TextureRegion>> animations = new HashMap<>();
 
     private AnimationId currentAnimation = null;
     private float stateTime = 0;
-
-    public AnimationManager(State state) {
-        this.state = state;
-    }
 
     /**
      * Draws the current animation at the X and Y location.
