@@ -1,21 +1,23 @@
 package io.michelfaria.chrono.events;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class EventDispatcher {
 
-    private final Set<EventListener> eventListeners = new HashSet<>();
+    private final List<EventListener> eventListeners = new CopyOnWriteArrayList<>();
 
     public EventDispatcher() {
     }
 
-    public boolean addEventListener(EventListener listener) {
-        return eventListeners.add(listener);
+    public void addEventListener(EventListener listener) {
+        eventListeners.add(listener);
+        eventListeners.sort(Comparator.comparingInt(EventListener::priority));
     }
 
-    public boolean removeEventListener(EventListener listener) {
-        return eventListeners.remove(listener);
+    public void removeEventListener(EventListener listener) {
+        eventListeners.remove(listener);
     }
 
     public void emitEvent(Event event) {

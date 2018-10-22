@@ -6,6 +6,7 @@ import io.michelfaria.chrono.animation.AnimationData;
 import io.michelfaria.chrono.animation.AnimationId;
 import io.michelfaria.chrono.events.EventDispatcher;
 import io.michelfaria.chrono.logic.CollisionContext;
+import io.michelfaria.chrono.logic.Party;
 
 import java.util.Map;
 
@@ -16,8 +17,8 @@ import static io.michelfaria.chrono.data.CronoTRD.*;
 public class Crono extends PartyCharacter {
 
     public Crono(CollisionContext collisionContext, TextureAtlas atlas,
-                 EventDispatcher eventDispatcher) {
-        super(collisionContext, eventDispatcher);
+                 EventDispatcher eventDispatcher, Party party) {
+        super(collisionContext, eventDispatcher, party);
         final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.getAnimations();
         /*
          * Idle animations

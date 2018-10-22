@@ -37,8 +37,10 @@ public class Game extends com.badlogic.gdx.Game {
         this.atlas = this.assetManager.get(Assets.CHRONO_ATLAS);
         MenuBoxes menuBoxes = new MenuBoxes(this.atlas);
 
-        setScreen(new WalkScreen(this.batch, menuBoxes, this.assetManager, tmxMapLoader, this.atlas,
-                eventDispatcher, controllerEventEmitter));
+        WalkScreen screen = new WalkScreen(this.batch, menuBoxes, this.assetManager, tmxMapLoader, this.atlas,
+                eventDispatcher, controllerEventEmitter);
+        eventDispatcher.addEventListener(screen);
+        setScreen(screen);
     }
 
     @Override

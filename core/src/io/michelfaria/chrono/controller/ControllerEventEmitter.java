@@ -17,6 +17,8 @@ public class ControllerEventEmitter {
     {
         buttonStateMap.put(Buttons.A, new AtomicBoolean(false));
         buttonStateMap.put(Buttons.B, new AtomicBoolean(false));
+        buttonStateMap.put(Buttons.X, new AtomicBoolean(false));
+        buttonStateMap.put(Buttons.Y, new AtomicBoolean(false));
     }
 
     public ControllerEventEmitter(EventDispatcher eventDispatcher) {

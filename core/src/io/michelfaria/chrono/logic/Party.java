@@ -15,7 +15,7 @@ public class Party {
     }
 
     public void remove(PartyCharacter character) {
-        characters.removeValue(character, false);
+        characters.removeValue(character, true);
         refresh();
     }
 
@@ -28,6 +28,10 @@ public class Party {
                 character.setInputHandler(null);
             }
         }
+    }
+
+    public int indexOf(PartyCharacter character) {
+        return characters.indexOf(character, true);
     }
 
     public PartyCharacter getLeader() {

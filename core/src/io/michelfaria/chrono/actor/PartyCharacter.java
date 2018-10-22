@@ -11,8 +11,12 @@ import io.michelfaria.chrono.events.*;
 import io.michelfaria.chrono.interfaces.CollisionEntity;
 import io.michelfaria.chrono.interfaces.Interactible;
 import io.michelfaria.chrono.logic.CollisionContext;
+import io.michelfaria.chrono.logic.FloatPair;
+import io.michelfaria.chrono.logic.Party;
 import io.michelfaria.chrono.util.ActorUtil;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.ArrayDeque;
 
 import static io.michelfaria.chrono.animation.AnimationId.*;
 import static io.michelfaria.chrono.controller.Ctrl.isButtonPressed;
@@ -20,9 +24,13 @@ import static io.michelfaria.chrono.logic.CollisionEntityMover.moveEntityBy;
 
 public class PartyCharacter extends Actor implements CollisionEntity, EventListener {
 
+    public static final int MOVE_HISTORY_LIMIT = 15;
+
     protected final AnimationManager animationManager;
     protected final EventDispatcher eventDispatcher;
     protected final CollisionContext collisionContext;
+
+    protected final Party party;
 
     @Nullable
     protected PartyCharacter.InputHandler inputHandler;
@@ -31,22 +39,27 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
     protected boolean paused;
     protected boolean moving;
     protected boolean running;
-    protected boolean isCollisionEnabled = true;
 
     protected float walkSpeed = 1f;
     protected float runSpeedMultiplier = 2f;
     protected float stateTime = 0f;
 
+    protected ArrayDeque<FloatPair> moveHistory = new ArrayDeque<>();
+    protected float prevX;
+    protected float prevY;
+
     /**
      * Describes a generic Chrono Trigger playable/party member
      */
-    public PartyCharacter(CollisionContext collisionContext, EventDispatcher eventDispatcher) {
+    public PartyCharacter(CollisionContext collisionContext, EventDispatcher eventDispatcher, Party party) {
         this.collisionContext = collisionContext;
         this.eventDispatcher = eventDispatcher;
+        this.party = party;
+
         this.animationManager = new AnimationManager();
-
         this.animationManager.setCurrentAnimation(AnimationId.IDLE_SOUTH);
-
+        prevX = getX();
+        prevY = getY();
         setWidth(16);
         setHeight(16);
     }
@@ -60,17 +73,62 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
     public void act(float delta) {
         super.act(delta);
         stateTime += delta;
-        updateAnimations();
-        handleInput(delta);
+        if (inputHandler == null) {
+            followNextPartyMember(delta);
+        } else {
+            handleInput(delta);
+        }
+        updateDirection();
+        updateAnimation();
+        updateMoveHistory();
+    }
+
+    protected void updateDirection() {
+        if (getX() > prevX) {
+            facing = Direction.EAST;
+        } else if (getX() < prevX) {
+            facing = Direction.WEST;
+        }
+        if (getY() > prevY) {
+            facing = Direction.NORTH;
+        } else if (getY() < prevY) {
+            facing = Direction.SOUTH;
+        }
+    }
+
+    protected void updateMoveHistory() {
+        if (prevX != getX() || prevY != getY()) {
+            moveHistory.addFirst(new FloatPair(getX(), getY()));
+            while (moveHistory.size() > MOVE_HISTORY_LIMIT) {
+                moveHistory.removeLast();
+            }
+            prevX = getX();
+            prevY = getY();
+        }
     }
 
     protected void handleInput(float delta) {
-        if (inputHandler != null) {
+        if (inputHandler != null && !paused) {
             inputHandler.handleMovement();
         }
     }
 
-    public void updateAnimations() {
+    protected void followNextPartyMember(float delta) {
+        int nextPartyMemberIndex = party.indexOf(this) - 1;
+        assert nextPartyMemberIndex >= 0;
+        PartyCharacter nextPartyMember = party.getCharacters().get(nextPartyMemberIndex);
+
+        this.moving = nextPartyMember.moving;
+        this.running = nextPartyMember.running;
+
+        if (nextPartyMember.moveHistory.size() > 0) {
+            FloatPair last = nextPartyMember.moveHistory.getLast();
+            setX(last.a);
+            setY(last.b);
+        }
+    }
+
+    protected void updateAnimation() {
         if (animationManager.getCurrentAnimation() == null) {
             animationManager.setCurrentAnimation(IDLE_SOUTH);
         }
@@ -155,7 +213,7 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
 
     @Override
     public boolean isCollisionEnabled() {
-        return isCollisionEnabled;
+        return inputHandler != null;
     }
 
     @Nullable
@@ -175,22 +233,18 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
             if (isButtonPressed(0, Buttons.DPAD_LEFT)) {
                 moving = true;
                 xMoveSpeed = -walkSpeed;
-                facing = Direction.WEST;
             }
             if (isButtonPressed(0, Buttons.DPAD_RIGHT)) {
                 moving = true;
                 xMoveSpeed = walkSpeed;
-                facing = Direction.EAST;
             }
             if (isButtonPressed(0, Buttons.DPAD_UP)) {
                 moving = true;
                 yMoveSpeed = walkSpeed;
-                facing = Direction.NORTH;
             }
             if (isButtonPressed(0, Buttons.DPAD_DOWN)) {
                 moving = true;
                 yMoveSpeed = -walkSpeed;
-                facing = Direction.SOUTH;
             }
             running = isButtonPressed(0, Buttons.B);
 

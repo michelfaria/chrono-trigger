@@ -23,8 +23,9 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import io.michelfaria.chrono.actor.Crono;
 import io.michelfaria.chrono.actor.Nu;
 import io.michelfaria.chrono.actor.PartyCharacter;
+import io.michelfaria.chrono.controller.Buttons;
 import io.michelfaria.chrono.controller.ControllerEventEmitter;
-import io.michelfaria.chrono.events.EventDispatcher;
+import io.michelfaria.chrono.events.*;
 import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.hud.WalkHud;
 import io.michelfaria.chrono.logic.ActorYPositionComparator;
@@ -39,7 +40,7 @@ import java.util.Random;
 import static io.michelfaria.chrono.data.LayerNames.FOREGROUND_1;
 import static io.michelfaria.chrono.data.LayerNames.FOREGROUND_2;
 
-public class WalkScreen implements Screen {
+public class WalkScreen implements Screen, EventListener {
 
     private final EventDispatcher eventDispatcher;
     private final TextureAtlas atlas;
@@ -92,18 +93,16 @@ public class WalkScreen implements Screen {
 
     @Override
     public void show() {
-        Crono crono = makeCrono();
-        stage.addActor(crono);
+        addCrono();
         addTestNus();
     }
 
-    @NotNull
-    private Crono makeCrono() {
-        Crono crono = new Crono(collisionContext, atlas, eventDispatcher);
+    private void addCrono() {
+        Crono crono = new Crono(collisionContext, atlas, eventDispatcher, party);
         this.collisionContext.addEntity(crono);
         this.eventDispatcher.addEventListener(crono);
         this.party.add(crono);
-        return crono;
+        stage.addActor(crono);
     }
 
     private void addTestNus() {
@@ -226,5 +225,17 @@ public class WalkScreen implements Screen {
         stage.dispose();
         map.dispose();
         tiledMapRenderer.dispose();
+    }
+
+    @Override
+    public boolean handleEvent(Event event) {
+        if (event instanceof ButtonEvent) {
+            ButtonEvent buttonEvent = (ButtonEvent) event;
+            if (buttonEvent.getButton() == Buttons.Y && buttonEvent.getEventType() == ButtonEventType.PRESS) {
+                addCrono();
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -94,4 +94,9 @@ public class WalkHud implements Disposable, EventListener {
         eventDispatcher.emitEvent(new HudPauseEvent(false));
         scissorAnimator.close();
     }
+
+    @Override
+    public int priority() {
+        return 1;
+    }
 }
