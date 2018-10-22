@@ -29,8 +29,10 @@ import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.hud.WalkHud;
 import io.michelfaria.chrono.logic.ActorYPositionComparator;
 import io.michelfaria.chrono.logic.CollisionContext;
+import io.michelfaria.chrono.logic.Party;
 import io.michelfaria.chrono.util.TiledMapUtil;
 import io.michelfaria.chrono.data.Assets;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
@@ -47,7 +49,6 @@ public class WalkScreen implements Screen {
     /*
     LibGDX
      */
-    private final InputMultiplexer multiplexer = new InputMultiplexer();
     private final FPSLogger fpsLogger = new FPSLogger();
 
     /*
@@ -69,7 +70,8 @@ public class WalkScreen implements Screen {
     private final WalkHud hud;
     private final CollisionContext collisionContext;
     private final ActorYPositionComparator yPositionCmp = new ActorYPositionComparator();
-    private final PartyCharacter mainCharacter;
+
+    private final Party party = new Party();
 
     public WalkScreen(Batch batch, MenuBoxes menuBoxes, AssetManager assetManager,
                       TmxMapLoader tmxMapLoader, TextureAtlas atlas, EventDispatcher eventDispatcher,
@@ -86,21 +88,22 @@ public class WalkScreen implements Screen {
         eventDispatcher.addEventListener(hud);
 
         this.collisionContext = new CollisionContext(this.map);
-        this.mainCharacter = new Crono(collisionContext, atlas, eventDispatcher);
-        eventDispatcher.addEventListener(this.mainCharacter);
     }
 
     @Override
     public void show() {
-        Gdx.input.setInputProcessor(multiplexer);
-        multiplexer.addProcessor(stage);
-        multiplexer.addProcessor(hud.stage);
-
-        mainCharacter.setHandleInput(true);
-        stage.addActor(mainCharacter);
-        collisionContext.addEntity(mainCharacter);
-
+        Crono crono = makeCrono();
+        stage.addActor(crono);
         addTestNus();
+    }
+
+    @NotNull
+    private Crono makeCrono() {
+        Crono crono = new Crono(collisionContext, atlas, eventDispatcher);
+        this.collisionContext.addEntity(crono);
+        this.eventDispatcher.addEventListener(crono);
+        this.party.add(crono);
+        return crono;
     }
 
     private void addTestNus() {
@@ -114,8 +117,8 @@ public class WalkScreen implements Screen {
                 y = random.nextInt(400);
             }
             while (collisionContext.collisionChecker.mapCollisions(new Rectangle(x, y, x + 16, y + 16)).size > 0);
-            nu.setPosition(x, y);
             collisionContext.addEntity(nu);
+            nu.setPosition(x, y);
         }
     }
 
@@ -157,8 +160,8 @@ public class WalkScreen implements Screen {
     }
 
     private void updateCamera() {
-        camera.position.x = mainCharacter.getX() + mainCharacter.getWidth() / 2;
-        camera.position.y = mainCharacter.getY() + mainCharacter.getHeight() / 2;
+        camera.position.x = party.getLeader().getX() + party.getLeader().getWidth() / 2;
+        camera.position.y = party.getLeader().getY() + party.getLeader().getHeight() / 2;
 
         final int mapWidth = TiledMapUtil.mapPixelWidth(map);
         final int mapHeight = TiledMapUtil.mapPixelHeight(map);

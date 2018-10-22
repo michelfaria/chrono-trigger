@@ -20,7 +20,7 @@ public class CollisionContext {
     public CollisionContext(@Nullable TiledMap map) {
         this.map = map;
         collisionChecker = new CollisionChecker(this);
-        collisionEntities = new Array<>();
+        collisionEntities = new Array<>(CollisionEntity.class);
     }
 
     public void addEntity(CollisionEntity entity) {

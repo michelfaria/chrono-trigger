@@ -35,10 +35,13 @@ public class AnimationManager {
             throw new IllegalStateException("No animation");
         }
 
-        AnimationData<TextureRegion> animationData = getAnimations().get(getCurrentAnimation());
+        AnimationData<TextureRegion> animationData = animations.get(getCurrentAnimation());
         int keyFrameIndex = animationData.animation.getKeyFrameIndex(stateTime);
         TextureRegion keyFrame = animationData.animation.getKeyFrames()[keyFrameIndex];
-        FlipData flipData = animationData.trd.flipData;
+        FlipData flipData = null;
+        if (animationData.trd != null) {
+            flipData = animationData.trd.flipData;
+        }
 
         if (flipData == null) {
             keyFrame.flip(false, false);

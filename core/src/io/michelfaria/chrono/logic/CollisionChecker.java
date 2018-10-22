@@ -38,7 +38,7 @@ public class CollisionChecker {
      */
     public Array<CollisionEntity> collisions(CollisionEntity entity, @Nullable Rectangle rectangle) {
         if (!entity.isCollisionEnabled()) {
-            return new Array<>();
+            return new Array<>(CollisionEntity.class);
         }
         if (rectangle == null) {
             rectangle = entity.getRectangle();
@@ -64,7 +64,7 @@ public class CollisionChecker {
             rectangle = entity.getRectangle();
         }
 
-        Array<CollisionEntity> collisionEntities = new Array<>();
+        Array<CollisionEntity> collisionEntities = new Array<>(CollisionEntity.class);
 
         for (CollisionEntity otherEntity : collisionContext.collisionEntities) {
             if (entity != otherEntity
@@ -81,12 +81,12 @@ public class CollisionChecker {
      */
     public Array<CollisionEntity> mapCollisions(Rectangle rectangle) {
         if (collisionContext.map == null) {
-            return new Array<>();
+            return new Array<>(CollisionEntity.class);
         }
         MapLayer collisionLayer = collisionContext.map.getLayers().get(LayerNames.COLLISION);
         Array<RectangleMapObject> rectangles = collisionLayer.getObjects().getByType(RectangleMapObject.class);
 
-        Array<CollisionEntity> collisionEntities = new Array<>();
+        Array<CollisionEntity> collisionEntities = new Array<>(CollisionEntity.class);
 
         for (RectangleMapObject rmo : rectangles) {
             Rectangle mapRectangle = rmo.getRectangle();
