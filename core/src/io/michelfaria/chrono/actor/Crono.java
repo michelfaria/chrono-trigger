@@ -11,7 +11,7 @@ import java.util.Map;
 
 import static io.michelfaria.chrono.animation.AnimationId.*;
 import static io.michelfaria.chrono.animation.AnimationMaker.makeAnimation;
-import static io.michelfaria.chrono.values.TextureRegionDescriptor.*;
+import static io.michelfaria.chrono.data.CronoTRD.*;
 
 public class Crono extends PartyCharacter {
 

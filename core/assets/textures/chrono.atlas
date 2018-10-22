@@ -4,23 +4,30 @@ size: 1024,128
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+crono-battle-north
+  rotate: false
+  xy: 264, 53
+  size: 132, 32
+  orig: 132, 32
+  offset: 0, 0
+  index: -1
 crono-idle-east
   rotate: false
-  xy: 950, 89
+  xy: 985, 89
   size: 14, 34
   orig: 14, 34
   offset: 0, 0
   index: -1
 crono-idle-north
   rotate: false
-  xy: 930, 90
+  xy: 965, 90
   size: 16, 33
   orig: 16, 33
   offset: 0, 0
   index: -1
 crono-idle-south
   rotate: false
-  xy: 376, 50
+  xy: 945, 88
   size: 16, 35
   orig: 16, 35
   offset: 0, 0
@@ -34,14 +41,14 @@ crono-run-east
   index: -1
 crono-run-north
   rotate: false
-  xy: 264, 47
+  xy: 400, 85
   size: 108, 38
   orig: 108, 38
   offset: 0, 0
   index: -1
 crono-run-south
   rotate: false
-  xy: 400, 88
+  xy: 512, 88
   size: 108, 35
   orig: 108, 35
   offset: 0, 0
@@ -55,14 +62,14 @@ crono-walk-east
   index: -1
 crono-walk-north
   rotate: false
-  xy: 512, 88
+  xy: 624, 88
   size: 108, 35
   orig: 108, 35
   offset: 0, 0
   index: -1
 crono-walk-south
   rotate: false
-  xy: 624, 89
+  xy: 736, 89
   size: 108, 34
   orig: 108, 34
   offset: 0, 0
@@ -76,14 +83,14 @@ nu-walk-east
   index: -1
 nu-walk-north
   rotate: false
-  xy: 736, 91
+  xy: 848, 91
   size: 93, 32
   orig: 93, 32
   offset: 0, 0
   index: -1
 nu-walk-south
   rotate: false
-  xy: 833, 92
+  xy: 400, 50
   size: 93, 31
   orig: 93, 31
   offset: 0, 0

@@ -1,7 +1,5 @@
 package io.michelfaria.chrono;
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -11,7 +9,7 @@ import io.michelfaria.chrono.controller.ControllerEventEmitter;
 import io.michelfaria.chrono.events.EventDispatcher;
 import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.screen.WalkScreen;
-import io.michelfaria.chrono.values.Assets;
+import io.michelfaria.chrono.data.Assets;
 
 public class Game extends com.badlogic.gdx.Game {
 

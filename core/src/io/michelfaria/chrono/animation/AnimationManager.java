@@ -3,7 +3,7 @@ package io.michelfaria.chrono.animation;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import io.michelfaria.chrono.values.TextureRegionDescriptor.FlipData;
+import io.michelfaria.chrono.data.TRD.FlipData;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,7 +38,7 @@ public class AnimationManager {
         AnimationData<TextureRegion> animationData = getAnimations().get(getCurrentAnimation());
         int keyFrameIndex = animationData.animation.getKeyFrameIndex(stateTime);
         TextureRegion keyFrame = animationData.animation.getKeyFrames()[keyFrameIndex];
-        FlipData flipData = animationData.textureRegionDescriptor.flipData;
+        FlipData flipData = animationData.trd.flipData;
 
         if (flipData == null) {
             keyFrame.flip(false, false);

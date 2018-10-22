@@ -5,13 +5,13 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
 import io.michelfaria.chrono.util.TextureTools;
-import io.michelfaria.chrono.values.TextureRegionDescriptor;
+import io.michelfaria.chrono.data.TRD;
 import org.jetbrains.annotations.NotNull;
 
 public class AnimationMaker {
 
     @NotNull
-    public static AnimationData<TextureRegion> makeAnimation(TextureAtlas atlas, TextureRegionDescriptor trd) {
+    public static AnimationData<TextureRegion> makeAnimation(TextureAtlas atlas, TRD trd) {
 
         final Array<TextureRegion> textureRegions = TextureTools.splitTextureRegion(atlas, trd);
 
@@ -25,7 +25,7 @@ public class AnimationMaker {
     }
 
     @NotNull
-    public static AnimationData<TextureRegion> makeAnimationWithAssemblyInstructions(Array<TextureRegion> textureRegions, TextureRegionDescriptor trd) {
+    public static AnimationData<TextureRegion> makeAnimationWithAssemblyInstructions(Array<TextureRegion> textureRegions, TRD trd) {
 
         final Array<TextureRegion> assembled = new Array<>(TextureRegion.class);
 

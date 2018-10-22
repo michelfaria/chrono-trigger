@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import io.michelfaria.chrono.util.TextureTools;
 import org.jetbrains.annotations.Nullable;
 
-import static io.michelfaria.chrono.values.TextureRegionDescriptor.UI_DIALOGBOX_0;
+import static io.michelfaria.chrono.data.UITRD.UI_DIALOGBOX_0;
 
 public class MenuBoxes {
 

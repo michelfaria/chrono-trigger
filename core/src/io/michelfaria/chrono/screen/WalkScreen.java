@@ -30,12 +30,12 @@ import io.michelfaria.chrono.hud.WalkHud;
 import io.michelfaria.chrono.logic.ActorYPositionComparator;
 import io.michelfaria.chrono.logic.CollisionContext;
 import io.michelfaria.chrono.util.TiledMapUtil;
-import io.michelfaria.chrono.values.Assets;
+import io.michelfaria.chrono.data.Assets;
 
 import java.util.Random;
 
-import static io.michelfaria.chrono.values.LayerNames.FOREGROUND_1;
-import static io.michelfaria.chrono.values.LayerNames.FOREGROUND_2;
+import static io.michelfaria.chrono.data.LayerNames.FOREGROUND_1;
+import static io.michelfaria.chrono.data.LayerNames.FOREGROUND_2;
 
 public class WalkScreen implements Screen {
 

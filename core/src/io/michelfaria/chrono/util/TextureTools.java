@@ -1,11 +1,9 @@
 package io.michelfaria.chrono.util;
 
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Animation.PlayMode;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
-import io.michelfaria.chrono.values.TextureRegionDescriptor;
+import io.michelfaria.chrono.data.TRD;
 
 public final class TextureTools {
 
@@ -16,7 +14,7 @@ public final class TextureTools {
      * Splits a texture sequence (spritesheet) into individual TextureRegions in a
      * 1-dimension array. The textures are ordered left-to-right, up-to-down.
      */
-    public static Array<TextureRegion> splitTextureRegion(TextureAtlas atlas, TextureRegionDescriptor txReg) {
+    public static Array<TextureRegion> splitTextureRegion(TextureAtlas atlas, TRD txReg) {
         return splitTextureRegion(atlas, txReg.regionName, txReg.columns, txReg.rows);
     }
 

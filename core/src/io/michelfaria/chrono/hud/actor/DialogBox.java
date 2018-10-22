@@ -7,7 +7,7 @@ import com.badlogic.gdx.scenes.scene2d.Group;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import io.michelfaria.chrono.hud.MenuBoxes;
-import io.michelfaria.chrono.values.Assets;
+import io.michelfaria.chrono.data.Assets;
 
 public class DialogBox extends Group {
 

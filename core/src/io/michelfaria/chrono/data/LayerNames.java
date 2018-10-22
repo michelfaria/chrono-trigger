@@ -1,4 +1,4 @@
-package io.michelfaria.chrono.values;
+package io.michelfaria.chrono.data;
 
 public class LayerNames {
     public static String FOREGROUND_1 = "fg-1";
