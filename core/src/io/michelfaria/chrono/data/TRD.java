@@ -3,6 +3,9 @@ package io.michelfaria.chrono.data;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * TRD == Texture Region Descriptor
+ */
 public class TRD {
 
     public static final byte[] flipHorz = {FlipData.FLIP_HORZ};

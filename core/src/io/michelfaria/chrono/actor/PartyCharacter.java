@@ -23,9 +23,6 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
     protected final EventDispatcher eventDispatcher;
     protected final CollisionContext collisionContext;
 
-    // Runnables that run in the act() method
-    protected final Array<Runnable> actionRunnables = new Array<>(Runnable.class);
-
     protected Direction facing = Direction.SOUTH;
 
     protected boolean paused;
@@ -60,13 +57,6 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
     public void act(float delta) {
         super.act(delta);
         stateTime += delta;
-
-        for (Runnable runnable : actionRunnables) {
-            runnable.run();
-        }
-        if (handleInput) {
-            handleInput(delta);
-        }
         updateAnimations();
     }
 
