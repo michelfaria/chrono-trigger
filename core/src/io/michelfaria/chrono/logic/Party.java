@@ -22,11 +22,7 @@ public class Party {
     public void refresh() {
         for (int i = 0; i < characters.size; i++) {
             PartyCharacter character = characters.get(i);
-            if (i == 0) {
-                character.setInputHandler(character.new InputHandler());
-            } else {
-                character.setInputHandler(null);
-            }
+            character.setHandleInput(i == 0);
         }
     }
 

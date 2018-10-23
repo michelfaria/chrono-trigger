@@ -32,10 +32,9 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
 
     protected final Party party;
 
-    @Nullable
-    protected PartyCharacter.InputHandler inputHandler;
     protected Direction facing = Direction.SOUTH;
 
+    protected boolean handleInput;
     protected boolean paused;
     protected boolean moving;
     protected boolean running;
@@ -58,8 +57,10 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
 
         this.animationManager = new AnimationManager();
         this.animationManager.setCurrentAnimation(AnimationId.IDLE_SOUTH);
+
         prevX = getX();
         prevY = getY();
+
         setWidth(16);
         setHeight(16);
     }
@@ -73,17 +74,66 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
     public void act(float delta) {
         super.act(delta);
         stateTime += delta;
-        if (inputHandler == null) {
-            followNextPartyMember(delta);
-        } else {
+        if (handleInput) {
             handleInput(delta);
+        } else {
+            followNextPartyMember(delta);
+            updateFollowerStatus();
         }
-        updateDirection();
         updateAnimation();
         updateMoveHistory();
     }
 
-    protected void updateDirection() {
+    protected void handleInput(float delta) {
+        assert isHandleInput();
+        if (!paused) {
+            float xMoveSpeed = 0;
+            float yMoveSpeed = 0;
+
+            if (isButtonPressed(0, Buttons.DPAD_LEFT)) {
+                moving = true;
+                xMoveSpeed = -walkSpeed;
+                facing = Direction.WEST;
+            }
+            if (isButtonPressed(0, Buttons.DPAD_RIGHT)) {
+                moving = true;
+                xMoveSpeed = walkSpeed;
+                facing = Direction.EAST;
+            }
+            if (isButtonPressed(0, Buttons.DPAD_UP)) {
+                moving = true;
+                yMoveSpeed = walkSpeed;
+                facing = Direction.NORTH;
+            }
+            if (isButtonPressed(0, Buttons.DPAD_DOWN)) {
+                moving = true;
+                yMoveSpeed = -walkSpeed;
+                facing = Direction.SOUTH;
+            }
+            running = isButtonPressed(0, Buttons.B);
+
+            if (running) {
+                xMoveSpeed *= runSpeedMultiplier;
+                yMoveSpeed *= runSpeedMultiplier;
+            }
+            if (xMoveSpeed == 0 && yMoveSpeed == 0) {
+                moving = false;
+            } else {
+                moveEntityBy(PartyCharacter.this, xMoveSpeed, yMoveSpeed);
+            }
+        }
+    }
+
+    protected void followNextPartyMember(float delta) {
+        PartyCharacter nextPartyMember = getNextPartyMember();
+        if (nextPartyMember.moveHistory.size() > 0) {
+            FloatPair last = nextPartyMember.moveHistory.getLast();
+            setX(last.a);
+            setY(last.b);
+        }
+    }
+
+    protected void updateFollowerStatus() {
         if (getX() > prevX) {
             facing = Direction.EAST;
         } else if (getX() < prevX) {
@@ -93,6 +143,26 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
             facing = Direction.NORTH;
         } else if (getY() < prevY) {
             facing = Direction.SOUTH;
+        }
+        if (getX() != prevX && getY() != prevX) {
+            this.moving = true;
+            this.running = getNextPartyMember().running;
+        } else {
+            this.moving = false;
+            this.running = false;
+        }
+    }
+
+    protected void updateAnimation() {
+        if (animationManager.getCurrentAnimation() == null) {
+            animationManager.setCurrentAnimation(IDLE_SOUTH);
+        }
+        if (running && moving && !paused) {
+            updateAnimationWith(RUN_NORTH, RUN_SOUTH, RUN_WEST, RUN_EAST);
+        } else if (moving && !paused) {
+            updateAnimationWith(WALK_NORTH, WALK_SOUTH, WALK_WEST, WALK_EAST);
+        } else {
+            updateAnimationWith(IDLE_NORTH, IDLE_SOUTH, IDLE_WEST, IDLE_EAST);
         }
     }
 
@@ -107,43 +177,18 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
         }
     }
 
-    protected void handleInput(float delta) {
-        if (inputHandler != null && !paused) {
-            inputHandler.handleMovement();
-        }
+    public boolean isHandleInput() {
+        return handleInput;
     }
 
-    protected void followNextPartyMember(float delta) {
-        int nextPartyMemberIndex = party.indexOf(this) - 1;
-        assert nextPartyMemberIndex >= 0;
-        PartyCharacter nextPartyMember = party.getCharacters().get(nextPartyMemberIndex);
-
-        this.moving = nextPartyMember.moving;
-        this.running = nextPartyMember.running;
-
-        if (nextPartyMember.moveHistory.size() > 0) {
-            FloatPair last = nextPartyMember.moveHistory.getLast();
-            setX(last.a);
-            setY(last.b);
+    private @Nullable PartyCharacter getNextPartyMember() {
+        if (party.getCharacters().size < 2) {
+            return null;
         }
+        return party.getCharacters().get(party.indexOf(this) - 1);
     }
 
-    protected void updateAnimation() {
-        if (animationManager.getCurrentAnimation() == null) {
-            animationManager.setCurrentAnimation(IDLE_SOUTH);
-        }
-        if (running && moving && !paused) {
-            updateRunningAnimation(RUN_NORTH, RUN_SOUTH, RUN_WEST, RUN_EAST);
-        } else if (moving && !paused) {
-            assert !running;
-            updateRunningAnimation(WALK_NORTH, WALK_SOUTH, WALK_WEST, WALK_EAST);
-        } else {
-            updateRunningAnimation(IDLE_NORTH, IDLE_SOUTH, IDLE_WEST, IDLE_EAST);
-        }
-    }
-
-    private void updateRunningAnimation(AnimationId north, AnimationId south,
-                                        AnimationId west, AnimationId east) {
+    private void updateAnimationWith(AnimationId north, AnimationId south, AnimationId west, AnimationId east) {
         if (facing == Direction.NORTH) {
             animationManager.setCurrentAnimation(north);
 
@@ -156,6 +201,37 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
         } else if (facing == Direction.EAST) {
             animationManager.setCurrentAnimation(east);
 
+        }
+    }
+
+    public void setHandleInput(boolean handleInput) {
+        this.handleInput = handleInput;
+    }
+
+    @Override
+    public boolean handleEvent(Event event) {
+        if (event instanceof ButtonEvent) {
+            ButtonEvent be = (ButtonEvent) event;
+            if (be.getButton() == Buttons.A) {
+                // A-Button pressed
+                if (isHandleInput()) {
+                    handleAPress(be);
+                }
+                return true;
+            }
+        }
+        if (event instanceof HudPauseEvent) {
+            paused = ((HudPauseEvent) event).isPaused();
+        }
+        return false;
+    }
+
+    protected void handleAPress(ButtonEvent event) {
+        assert isHandleInput();
+        if (event.getButton() == Buttons.A && event.getEventType() == ButtonEventType.PRESS) {
+            if (!paused) {
+                emitInteraction();
+            }
         }
     }
 
@@ -176,34 +252,19 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
         interactWithRegion(interactionRegion);
     }
 
-    private void interactWithRegion(Rectangle region) {
-        Array<CollisionEntity> collisionEntities
-                = collisionContext.collisionChecker.entityCollisions(this, region);
-        for (CollisionEntity collisionEntity : collisionEntities) {
-            if (collisionEntity instanceof Interactible) {
-                Interactible interactible = (Interactible) collisionEntity;
-                interactible.interact();
+    protected void interactWithRegion(Rectangle region) {
+        Array<CollisionEntity> arr = collisionContext.collisionChecker.entityCollisions(this, region);
+        for (CollisionEntity ce : arr) {
+            if (ce instanceof Interactible) {
+                Interactible in = (Interactible) ce;
+                in.interact();
                 break;
             }
         }
     }
 
-    @Override
-    public boolean handleEvent(Event event) {
-        if (event instanceof ButtonEvent) {
-            ButtonEvent buttonEvent = (ButtonEvent) event;
-            if (buttonEvent.getButton() == Buttons.A) {
-                // A-Button pressed
-                if (inputHandler != null) {
-                    inputHandler.handleAPress(buttonEvent);
-                }
-                return true;
-            }
-        }
-        if (event instanceof HudPauseEvent) {
-            paused = ((HudPauseEvent) event).isPaused();
-        }
-        return false;
+    protected final boolean isPartyLeader() {
+        return party.getLeader() == this;
     }
 
     @Override
@@ -213,58 +274,6 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
 
     @Override
     public boolean isCollisionEnabled() {
-        return inputHandler != null;
-    }
-
-    @Nullable
-    public PartyCharacter.InputHandler getInputHandler() {
-        return inputHandler;
-    }
-
-    public void setInputHandler(@Nullable PartyCharacter.InputHandler inputHandler) {
-        this.inputHandler = inputHandler;
-    }
-
-    public class InputHandler {
-        public void handleMovement() {
-            float xMoveSpeed = 0;
-            float yMoveSpeed = 0;
-
-            if (isButtonPressed(0, Buttons.DPAD_LEFT)) {
-                moving = true;
-                xMoveSpeed = -walkSpeed;
-            }
-            if (isButtonPressed(0, Buttons.DPAD_RIGHT)) {
-                moving = true;
-                xMoveSpeed = walkSpeed;
-            }
-            if (isButtonPressed(0, Buttons.DPAD_UP)) {
-                moving = true;
-                yMoveSpeed = walkSpeed;
-            }
-            if (isButtonPressed(0, Buttons.DPAD_DOWN)) {
-                moving = true;
-                yMoveSpeed = -walkSpeed;
-            }
-            running = isButtonPressed(0, Buttons.B);
-
-            if (running) {
-                xMoveSpeed *= runSpeedMultiplier;
-                yMoveSpeed *= runSpeedMultiplier;
-            }
-            if (xMoveSpeed == 0 && yMoveSpeed == 0) {
-                moving = false;
-            } else {
-                moveEntityBy(PartyCharacter.this, xMoveSpeed, yMoveSpeed);
-            }
-        }
-
-        public void handleAPress(ButtonEvent event) {
-            if (event.getButton() == Buttons.A && event.getEventType() == ButtonEventType.PRESS) {
-                if (!paused) {
-                    emitInteraction();
-                }
-            }
-        }
+        return isHandleInput();
     }
 }
