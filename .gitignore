@@ -1,3 +1,15 @@
+## Copyrighted files
+
+/core/assets/font.png
+/core/assets/font.fnt
+/core/assets/textures/*.png
+/core/assets/tilesets/*.png
+/img/
+
+## KDE
+
+.directory
+
 ## Java
 
 *.class
@@ -132,3 +144,4 @@ Thumbs.db
 !/ios-moe/xcode/*.xcodeproj/xcshareddata
 !/ios-moe/xcode/*.xcodeproj/project.pbxproj
 /ios-moe/xcode/native/
+
