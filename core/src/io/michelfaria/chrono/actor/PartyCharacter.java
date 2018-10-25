@@ -15,6 +15,8 @@ import static io.michelfaria.chrono.animation.AnimationId.WALK_WEST;
 import static io.michelfaria.chrono.controller.Ctrl.isButtonPressed;
 import static io.michelfaria.chrono.logic.CollisionEntityMover.moveEntityBy;
 
+import io.michelfaria.chrono.items.WoodenSword;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -42,11 +44,31 @@ import io.michelfaria.chrono.logic.MoveHistory;
 import io.michelfaria.chrono.logic.Party;
 import io.michelfaria.chrono.util.ActorUtil;
 
-public class PartyCharacter extends Actor implements CollisionEntity, EventListener, Combatant {
+import java.util.Objects;
 
+/**
+ * This class represents a Party character from Chrono Trigger.
+ * <p>
+ * A party character:
+ * <p>
+ * 1. Has a set of mandatory animations that all subclasses must provide. Currently, these are the idle, moving and
+ * running animations in all four cardinal directions.
+ * <p>
+ * 2. Can be either controllable or a follower. When "handleInput" is true, then this character will be controllable by
+ * the player. If the character is a follower and is the only member in the party, the class will throw a
+ * NullPointerException. This is fail-fast behavior.
+ * <p>
+ * 3. Should never be without a "weapon", as it is a requirement to calculate damage.
+ */
+public abstract class PartyCharacter extends Actor implements CollisionEntity, EventListener, Combatant {
+
+    @NotNull
     protected final AnimationManager animationManager;
+    @NotNull
     protected final EventDispatcher eventDispatcher;
+    @NotNull
     protected final CollisionContext collisionContext;
+    @NotNull
     protected final Party party;
 
     protected Direction facing = Direction.SOUTH;
@@ -60,13 +82,13 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
     protected float runSpeedMultiplier = 2f;
     protected float stateTime = 0f;
 
+    @NotNull
     protected MoveHistory moveHistory;
+    @NotNull
     protected CombatStats combatStats = new CombatStats();
-    protected Weapon weapon;
+    @NotNull
+    protected Weapon weapon = new WoodenSword();
 
-    /**
-     * Describes a generic Chrono Trigger playable/party member
-     */
     public PartyCharacter(CollisionContext collisionContext, EventDispatcher eventDispatcher, Party party) {
         this.collisionContext = collisionContext;
         this.eventDispatcher = eventDispatcher;
@@ -144,7 +166,7 @@ public class PartyCharacter extends Actor implements CollisionEntity, EventListe
     }
 
     protected void followNextPartyMember(float delta) {
-        PartyCharacter nextPartyMember = getNextPartyMember();
+        PartyCharacter nextPartyMember = Objects.requireNonNull(getNextPartyMember());
         if (nextPartyMember.moveHistory.size() > 0) {
             FloatPair last = nextPartyMember.moveHistory.getLast();
             setX(last.a);
