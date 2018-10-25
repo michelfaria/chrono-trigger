@@ -38,11 +38,11 @@ import org.jetbrains.annotations.Nullable;
  * NOTE 0: Use constant, pre-defined arrays to avoid polluting the heap with
  * repetitive objects.
  * 
- * NOTE 1: If the texture region descriptor is not an
- * animation, set the columns, rows and speed to 0.
+ * NOTE 1: If the texture region descriptor is not an animation, set the
+ * columns, rows and speed to 0.
  * 
- * NOTE 2: The "assembly" and
- * "flipData" fields can be set to null if not needed.
+ * NOTE 2: The "assembly" and "flipData" fields can be set to null if not
+ * needed.
  */
 public class TRD {
 

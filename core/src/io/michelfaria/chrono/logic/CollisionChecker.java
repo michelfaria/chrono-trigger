@@ -5,7 +5,7 @@ import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
-import io.michelfaria.chrono.consts.LayerNames;
+import io.michelfaria.chrono.consts.MapConstants;
 import io.michelfaria.chrono.interfaces.CollisionEntity;
 
 import org.jetbrains.annotations.Nullable;
@@ -85,7 +85,7 @@ public class CollisionChecker {
         if (collisionContext.map == null) {
             return new Array<>(CollisionEntity.class);
         }
-        MapLayer collisionLayer = collisionContext.map.getLayers().get(LayerNames.COLLISION);
+        MapLayer collisionLayer = collisionContext.map.getLayers().get(MapConstants.LAYER_COLLISION);
         Array<RectangleMapObject> rectangles = collisionLayer.getObjects().getByType(RectangleMapObject.class);
 
         Array<CollisionEntity> collisionEntities = new Array<>(CollisionEntity.class);

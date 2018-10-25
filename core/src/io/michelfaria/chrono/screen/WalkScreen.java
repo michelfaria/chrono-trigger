@@ -36,8 +36,8 @@ import io.michelfaria.chrono.util.TiledMapUtil;
 
 import org.jetbrains.annotations.NotNull;
 
-import static io.michelfaria.chrono.consts.LayerNames.FOREGROUND_1;
-import static io.michelfaria.chrono.consts.LayerNames.FOREGROUND_2;
+import static io.michelfaria.chrono.consts.MapConstants.LAYER_FG_1;
+import static io.michelfaria.chrono.consts.MapConstants.LAYER_FG_2;
 
 import java.util.Random;
 
@@ -132,7 +132,7 @@ public class WalkScreen implements Screen, EventListener {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Render the foreground that goes behind the Sprite(s)
-        renderTileLayer(FOREGROUND_2);
+        renderTileLayer(LAYER_FG_2);
 
         // Stage drawings
         // (Stages open the batch and close it again)
@@ -140,7 +140,7 @@ public class WalkScreen implements Screen, EventListener {
         stage.draw();
 
         // Render the foreground that goes in front of the Sprite(s)
-        renderTileLayer(FOREGROUND_1);
+        renderTileLayer(LAYER_FG_1);
 
         // HUD always drawn on top
         batch.setProjectionMatrix(hud.stage.getCamera().combined);
