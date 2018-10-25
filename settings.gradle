@@ -1,1 +1,7 @@
+/*
+ * Developed by Michel Faria on 10/25/18 7:45 PM.
+ * Last modified 9/29/18 10:29 PM.
+ * Copyright (c) 2018. All rights reserved.
+ */
+
 include 'desktop', 'html', 'core'
