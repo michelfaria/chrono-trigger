@@ -1,7 +1,9 @@
 package io.michelfaria.chrono.animation;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
-import io.michelfaria.chrono.data.TRD;
+
+import io.michelfaria.chrono.textures.TRD;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,4 +1,4 @@
-package io.michelfaria.chrono.data;
+package io.michelfaria.chrono.consts;
 
 import com.badlogic.gdx.assets.AssetDescriptor;
 import com.badlogic.gdx.graphics.Texture;

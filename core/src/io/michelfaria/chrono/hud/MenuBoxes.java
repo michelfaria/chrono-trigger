@@ -3,9 +3,10 @@ package io.michelfaria.chrono.hud;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import io.michelfaria.chrono.util.TextureTools;
-import org.jetbrains.annotations.Nullable;
 
-import static io.michelfaria.chrono.data.UITRD.UI_DIALOGBOX_0;
+import static io.michelfaria.chrono.textures.UITRD.UI_DIALOGBOX_0;
+
+import org.jetbrains.annotations.Nullable;
 
 public class MenuBoxes {
 

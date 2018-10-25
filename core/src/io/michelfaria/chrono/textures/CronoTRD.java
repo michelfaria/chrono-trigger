@@ -1,6 +1,6 @@
-package io.michelfaria.chrono.data;
+package io.michelfaria.chrono.textures;
 
-import static io.michelfaria.chrono.data.TRD.flipHorizontal;
+import static io.michelfaria.chrono.textures.TRD.flipHorizontal;
 
 public final class CronoTRD {
     public static final TRD

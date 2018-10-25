@@ -3,7 +3,8 @@ package io.michelfaria.chrono.animation;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import io.michelfaria.chrono.data.TRD.FlipData;
+
+import io.michelfaria.chrono.textures.TRD.FlipData;
 
 import java.util.HashMap;
 import java.util.Map;

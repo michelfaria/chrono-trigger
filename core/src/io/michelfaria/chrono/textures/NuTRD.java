@@ -1,6 +1,6 @@
-package io.michelfaria.chrono.data;
+package io.michelfaria.chrono.textures;
 
-import static io.michelfaria.chrono.data.TRD.*;
+import static io.michelfaria.chrono.textures.TRD.*;
 
 public final class NuTRD {
     public static final TRD NU_IDLE_NORTH = new TRD("nu-walk-north", 3, 1, 0.3f, arr0),

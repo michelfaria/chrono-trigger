@@ -23,6 +23,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import io.michelfaria.chrono.actor.Crono;
 import io.michelfaria.chrono.actor.Nu;
 import io.michelfaria.chrono.actor.PartyCharacter;
+import io.michelfaria.chrono.consts.Assets;
 import io.michelfaria.chrono.controller.Buttons;
 import io.michelfaria.chrono.controller.ControllerEventEmitter;
 import io.michelfaria.chrono.events.*;
@@ -32,13 +33,13 @@ import io.michelfaria.chrono.logic.ActorYPositionComparator;
 import io.michelfaria.chrono.logic.CollisionContext;
 import io.michelfaria.chrono.logic.Party;
 import io.michelfaria.chrono.util.TiledMapUtil;
-import io.michelfaria.chrono.data.Assets;
+
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Random;
+import static io.michelfaria.chrono.consts.LayerNames.FOREGROUND_1;
+import static io.michelfaria.chrono.consts.LayerNames.FOREGROUND_2;
 
-import static io.michelfaria.chrono.data.LayerNames.FOREGROUND_1;
-import static io.michelfaria.chrono.data.LayerNames.FOREGROUND_2;
+import java.util.Random;
 
 public class WalkScreen implements Screen, EventListener {
 

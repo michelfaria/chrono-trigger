@@ -5,11 +5,12 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+
+import io.michelfaria.chrono.consts.Assets;
 import io.michelfaria.chrono.controller.ControllerEventEmitter;
 import io.michelfaria.chrono.events.EventDispatcher;
 import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.screen.WalkScreen;
-import io.michelfaria.chrono.data.Assets;
 
 public class Game extends com.badlogic.gdx.Game {
 

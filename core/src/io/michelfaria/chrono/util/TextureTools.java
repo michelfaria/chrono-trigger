@@ -3,7 +3,8 @@ package io.michelfaria.chrono.util;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
-import io.michelfaria.chrono.data.TRD;
+
+import io.michelfaria.chrono.textures.TRD;
 
 public final class TextureTools {
 

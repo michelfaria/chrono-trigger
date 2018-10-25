@@ -4,8 +4,10 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.utils.Array;
+
+import io.michelfaria.chrono.textures.TRD;
 import io.michelfaria.chrono.util.TextureTools;
-import io.michelfaria.chrono.data.TRD;
+
 import org.jetbrains.annotations.NotNull;
 
 public class AnimationMaker {
