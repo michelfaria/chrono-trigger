@@ -1,7 +1,6 @@
 package io.michelfaria.chrono.screen;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.FPSLogger;
@@ -14,15 +13,12 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.michelfaria.chrono.actor.Crono;
-import io.michelfaria.chrono.actor.Nu;
-import io.michelfaria.chrono.actor.PartyCharacter;
 import io.michelfaria.chrono.consts.Assets;
 import io.michelfaria.chrono.controller.Buttons;
 import io.michelfaria.chrono.controller.ControllerEventEmitter;
@@ -32,14 +28,11 @@ import io.michelfaria.chrono.hud.WalkHud;
 import io.michelfaria.chrono.logic.ActorYPositionComparator;
 import io.michelfaria.chrono.logic.CollisionContext;
 import io.michelfaria.chrono.logic.Party;
+import io.michelfaria.chrono.logic.TiledMapStagePopulator;
 import io.michelfaria.chrono.util.TiledMapUtil;
-
-import org.jetbrains.annotations.NotNull;
 
 import static io.michelfaria.chrono.consts.MapConstants.LAYER_FG_1;
 import static io.michelfaria.chrono.consts.MapConstants.LAYER_FG_2;
-
-import java.util.Random;
 
 public class WalkScreen implements Screen, EventListener {
 
@@ -65,6 +58,7 @@ public class WalkScreen implements Screen, EventListener {
      */
     private final TiledMap map;
     private final OrthogonalTiledMapRenderer tiledMapRenderer;
+    private final TiledMapStagePopulator tiledMapStagePopulator;
 
     /*
     Other
@@ -90,18 +84,17 @@ public class WalkScreen implements Screen, EventListener {
         eventDispatcher.addEventListener(hud);
 
         this.collisionContext = new CollisionContext(this.map);
+        this.tiledMapStagePopulator = new TiledMapStagePopulator(collisionContext, eventDispatcher, atlas);
     }
 
     @Override
     public void show() {
         addCrono();
+        tiledMapStagePopulator.populate(map, stage);
     }
 
     private void addCrono() {
         Crono crono = new Crono(collisionContext, atlas, eventDispatcher, party);
-        this.collisionContext.addEntity(crono);
-        this.eventDispatcher.addEventListener(crono);
-        this.party.add(crono);
         stage.addActor(crono);
     }
 

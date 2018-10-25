@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import javax.annotation.ParametersAreNonnullByDefault;
 
 import static com.badlogic.gdx.math.Intersector.intersectRectangles;
+import static io.michelfaria.chrono.consts.MapConstants.LAYER_COLLISION;
 
 @ParametersAreNonnullByDefault
 public class CollisionChecker {
@@ -85,7 +86,7 @@ public class CollisionChecker {
         if (collisionContext.map == null) {
             return new Array<>(CollisionEntity.class);
         }
-        MapLayer collisionLayer = collisionContext.map.getLayers().get(MapConstants.LAYER_COLLISION);
+        MapLayer collisionLayer = collisionContext.map.getLayers().get(LAYER_COLLISION);
         Array<RectangleMapObject> rectangles = collisionLayer.getObjects().getByType(RectangleMapObject.class);
 
         Array<CollisionEntity> collisionEntities = new Array<>(CollisionEntity.class);

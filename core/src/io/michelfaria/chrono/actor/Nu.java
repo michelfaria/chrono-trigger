@@ -1,5 +1,6 @@
 package io.michelfaria.chrono.actor;
 
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -9,10 +10,12 @@ import io.michelfaria.chrono.animation.AnimationId;
 import io.michelfaria.chrono.animation.AnimationManager;
 import io.michelfaria.chrono.events.EventDispatcher;
 import io.michelfaria.chrono.events.OpenDialogBoxEvent;
+import io.michelfaria.chrono.interfaces.ActorFactory;
 import io.michelfaria.chrono.interfaces.CollisionEntity;
 import io.michelfaria.chrono.interfaces.Interactible;
 import io.michelfaria.chrono.logic.CollisionContext;
 
+import javax.xml.soap.Text;
 import java.util.Map;
 
 import static io.michelfaria.chrono.animation.AnimationId.*;
@@ -28,8 +31,7 @@ public class Nu extends Actor implements CollisionEntity, Interactible {
 
     private AnimationManager animationManager;
 
-    public Nu(CollisionContext collisionContext,
-              EventDispatcher eventDispatcher, TextureAtlas atlas) {
+    public Nu(CollisionContext collisionContext, EventDispatcher eventDispatcher, TextureAtlas atlas) {
         this.eventDispatcher = eventDispatcher;
         this.collisionContext = collisionContext;
         this.animationManager = new AnimationManager();
@@ -48,6 +50,8 @@ public class Nu extends Actor implements CollisionEntity, Interactible {
 
         setWidth(16);
         setHeight(16);
+
+        collisionContext.addEntity(this);
     }
 
     @Override
@@ -84,5 +88,28 @@ public class Nu extends Actor implements CollisionEntity, Interactible {
     @Override
     public void interact() {
         eventDispatcher.emitEvent(new OpenDialogBoxEvent("I am a Nu! I am at x:" + getX() + " and y: " + getY()));
+    }
+
+    public static class NuFactory implements ActorFactory<Nu> {
+
+        private CollisionContext collisionContext;
+        private EventDispatcher eventDispatcher;
+        private TextureAtlas textureAtlas;
+
+        public NuFactory(CollisionContext collisionContext, EventDispatcher eventDispatcher, TextureAtlas textureAtlas) {
+            this.collisionContext = collisionContext;
+            this.eventDispatcher = eventDispatcher;
+            this.textureAtlas = textureAtlas;
+        }
+
+        @Override
+        public Nu make() {
+            return new Nu(collisionContext, eventDispatcher, textureAtlas);
+        }
+
+        @Override
+        public Class<Nu> actorClass() {
+            return Nu.class;
+        }
     }
 }
