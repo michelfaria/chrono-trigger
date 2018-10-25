@@ -95,7 +95,6 @@ public class WalkScreen implements Screen, EventListener {
     @Override
     public void show() {
         addCrono();
-        addTestNus();
     }
 
     private void addCrono() {
@@ -104,22 +103,6 @@ public class WalkScreen implements Screen, EventListener {
         this.eventDispatcher.addEventListener(crono);
         this.party.add(crono);
         stage.addActor(crono);
-    }
-
-    private void addTestNus() {
-        for (int i = 0; i < 80; i++) {
-            Nu nu = new Nu(collisionContext, eventDispatcher, atlas);
-            stage.addActor(nu);
-            Random random = new Random();
-            int x, y;
-            do {
-                x = random.nextInt(400);
-                y = random.nextInt(400);
-            }
-            while (collisionContext.collisionChecker.mapCollisions(new Rectangle(x, y, x + 16, y + 16)).size > 0);
-            collisionContext.addEntity(nu);
-            nu.setPosition(x, y);
-        }
     }
 
     @Override
