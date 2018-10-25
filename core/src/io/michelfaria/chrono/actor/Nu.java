@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import io.michelfaria.chrono.animation.AnimationData;
 import io.michelfaria.chrono.animation.AnimationId;
@@ -103,7 +104,7 @@ public class Nu extends Actor implements CollisionEntity, Interactible {
         }
 
         @Override
-        public Nu make() {
+        public Nu make(MapProperties props) {
             return new Nu(collisionContext, eventDispatcher, textureAtlas);
         }
 

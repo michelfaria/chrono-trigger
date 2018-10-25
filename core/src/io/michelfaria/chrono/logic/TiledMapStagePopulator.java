@@ -7,11 +7,11 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
+import io.michelfaria.chrono.actor.BattlePoint;
 import io.michelfaria.chrono.actor.Nu;
 import io.michelfaria.chrono.events.EventDispatcher;
 import io.michelfaria.chrono.interfaces.ActorFactory;
-import io.michelfaria.chrono.util.PrintProperties;
-import sun.plugin.javascript.navig4.Layer;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +24,7 @@ public class TiledMapStagePopulator {
 
     public TiledMapStagePopulator(CollisionContext collisionContext, EventDispatcher eventDispatcher, TextureAtlas textureAtlas) {
         actorFactoryList.add(new Nu.NuFactory(collisionContext, eventDispatcher, textureAtlas));
+        actorFactoryList.add(new BattlePoint.Factory());
     }
 
     public void populate(TiledMap map, Stage stage) {
@@ -41,19 +42,23 @@ public class TiledMapStagePopulator {
 
         for (RectangleMapObject object : objects) {
 
-            MapProperties properties = object.getProperties();
-            String npcType = (String) properties.get(PROP_NPC_TYPE);
+            MapProperties props = object.getProperties();
+            String npcType = (String) props.get(PROP_ACTOR_TYPE);
+            if (npcType == null) {
+                throw new IllegalStateException("Object in the entity layer does not have the " + PROP_ACTOR_TYPE
+                        + " property. This is required!");
+            }
 
-            Class<?> actorClass = PROP_NPC_TYPE_NPCS.get(npcType);
+            Class<?> actorClass = PROP_ACTOR_TYPE_ACTORS.get(npcType);
             if (actorClass == null) {
-                throw new IllegalStateException("Unknown \"" + PROP_NPC_TYPE + "\": " + npcType);
+                throw new IllegalStateException(npcType + " does not exist in the actor/class map.");
             }
 
             Actor actor = null;
 
             for (ActorFactory<?> actorFactory : actorFactoryList) {
                 if (actorFactory.actorClass().equals(actorClass)) {
-                    actor = actorFactory.make();
+                    actor = actorFactory.make(props);
                 }
             }
 
