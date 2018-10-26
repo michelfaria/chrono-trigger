@@ -48,4 +48,12 @@ public class Crono extends PartyCharacter {
         animations.put(RUN_WEST, makeAnimation(atlas, CRONO_RUN_WEST));
         animations.put(RUN_EAST, makeAnimation(atlas, CRONO_RUN_EAST));
     }
+
+    @Override
+    public String toString() {
+        return "Crono{" +
+                "x=" + getX() +
+                ", y=" + getY() +
+                '}';
+    }
 }

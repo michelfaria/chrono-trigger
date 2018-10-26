@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.michelfaria.chrono.actor.BattlePoint;
+import io.michelfaria.chrono.actor.EntryPoint;
 import io.michelfaria.chrono.actor.Nu;
 
 /**
@@ -40,16 +41,21 @@ public final class MapConstants {
      *===============================*/
     // Property that contains the name of the NPC to be spawned
     public static String PROP_ACTOR_TYPE = "actor_type";
+    public static String PROP_ACTOR_ID = "actor_id";
 
     // -============ BattlePoints =============-
     // Id of the battle point group
     public static String PROP_BATTLEPT_BATTLEID = "battle_id";
     // Id of the point itself
     public static String PROP_BATTLEPT_SUBID = "battle_sub_id";
+
     // Type of the BattlePoint (has to be PROP_BATTLEPT_TYPE_PARTY or PROP_BATTLEPT_TYPE_ENEMY)
     public static String PROP_BATTLEPT_TYPE = "battlept_type";
     public static String PROP_BATTLEPT_TYPE_PARTY = "party";
     public static String PROP_BATTLEPT_TYPE_ENEMY = "enemy";
+
+    // Entrypoint id
+    public static String PROP_ENTRYPOINT_ID = "entry_point_id";
 
     /*===============================*
           ENTITY POINT NPC CLASSES
@@ -57,6 +63,7 @@ public final class MapConstants {
     // Map of NPC identifiers and Java class objects
     public static Map<String, Class<?>> PROP_ACTOR_TYPE_ACTORS = new HashMap<>();
     static {
+        PROP_ACTOR_TYPE_ACTORS.put("entry_point", EntryPoint.class);
         PROP_ACTOR_TYPE_ACTORS.put("nu", Nu.class);
         PROP_ACTOR_TYPE_ACTORS.put("battlept", BattlePoint.class);
     }

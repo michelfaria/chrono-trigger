@@ -15,32 +15,38 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import io.michelfaria.chrono.animation.AnimationData;
 import io.michelfaria.chrono.animation.AnimationId;
 import io.michelfaria.chrono.animation.AnimationManager;
+import io.michelfaria.chrono.consts.MapConstants;
 import io.michelfaria.chrono.events.EventDispatcher;
 import io.michelfaria.chrono.events.OpenDialogBoxEvent;
 import io.michelfaria.chrono.interfaces.ActorFactory;
 import io.michelfaria.chrono.interfaces.CollisionEntity;
+import io.michelfaria.chrono.interfaces.Identifiable;
 import io.michelfaria.chrono.interfaces.Interactible;
 import io.michelfaria.chrono.logic.CollisionContext;
 
 import javax.xml.soap.Text;
 import java.util.Map;
+import java.util.Objects;
 
 import static io.michelfaria.chrono.animation.AnimationId.*;
 import static io.michelfaria.chrono.animation.AnimationMaker.makeAnimation;
+import static io.michelfaria.chrono.consts.MapConstants.PROP_ACTOR_ID;
 import static io.michelfaria.chrono.textures.NuTRD.*;
 
-public class Nu extends Actor implements CollisionEntity, Interactible {
+public class Nu extends Actor implements CollisionEntity, Interactible, Identifiable {
 
-    private EventDispatcher eventDispatcher;
-    private CollisionContext collisionContext;
+    private final int id;
+    private final EventDispatcher eventDispatcher;
+    private final CollisionContext collisionContext;
 
     private float stateTime = 0f;
 
-    private AnimationManager animationManager;
+    private final AnimationManager animationManager;
 
-    public Nu(CollisionContext collisionContext, EventDispatcher eventDispatcher, TextureAtlas atlas) {
+    public Nu(CollisionContext collisionContext, EventDispatcher eventDispatcher, TextureAtlas atlas, int id) {
         this.eventDispatcher = eventDispatcher;
         this.collisionContext = collisionContext;
+        this.id = id;
         this.animationManager = new AnimationManager();
 
         final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.getAnimations();
@@ -97,6 +103,20 @@ public class Nu extends Actor implements CollisionEntity, Interactible {
         eventDispatcher.emitEvent(new OpenDialogBoxEvent("I am a Nu! I am at x:" + getX() + " and y: " + getY()));
     }
 
+    @Override
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return "Nu{" +
+                "id=" + id +
+                ", x=" + getX() +
+                ", y=" + getY() +
+                '}';
+    }
+
     public static class NuFactory implements ActorFactory<Nu> {
 
         private CollisionContext collisionContext;
@@ -111,7 +131,8 @@ public class Nu extends Actor implements CollisionEntity, Interactible {
 
         @Override
         public Nu make(MapProperties props) {
-            return new Nu(collisionContext, eventDispatcher, textureAtlas);
+            Integer id = (Integer) props.get(PROP_ACTOR_ID);
+            return new Nu(collisionContext, eventDispatcher, textureAtlas, id == null ? -1 : id);
         }
 
         @Override
@@ -119,4 +140,5 @@ public class Nu extends Actor implements CollisionEntity, Interactible {
             return Nu.class;
         }
     }
+
 }

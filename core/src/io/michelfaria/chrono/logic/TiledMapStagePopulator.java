@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import io.michelfaria.chrono.actor.BattlePoint;
+import io.michelfaria.chrono.actor.EntryPoint;
 import io.michelfaria.chrono.actor.Nu;
 import io.michelfaria.chrono.events.EventDispatcher;
 import io.michelfaria.chrono.interfaces.ActorFactory;
@@ -31,6 +32,7 @@ public class TiledMapStagePopulator {
     public TiledMapStagePopulator(CollisionContext collisionContext, EventDispatcher eventDispatcher, TextureAtlas textureAtlas) {
         actorFactoryList.add(new Nu.NuFactory(collisionContext, eventDispatcher, textureAtlas));
         actorFactoryList.add(new BattlePoint.Factory());
+        actorFactoryList.add(new EntryPoint.Factory());
     }
 
     public void populate(TiledMap map, Stage stage) {
@@ -64,7 +66,13 @@ public class TiledMapStagePopulator {
 
             for (ActorFactory<?> actorFactory : actorFactoryList) {
                 if (actorFactory.actorClass().equals(actorClass)) {
-                    actor = actorFactory.make(props);
+                    try {
+                        actor = actorFactory.make(props);
+                    } catch (Exception ex) {
+                        throw new RuntimeException("An error occurred while creating an entity at x:"
+                                + object.getRectangle().x + ", y:" + object.getRectangle().y + " in layer "
+                                + layer.getName(), ex);
+                    }
                 }
             }
 

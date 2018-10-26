@@ -31,10 +31,7 @@ import io.michelfaria.chrono.controller.ControllerEventEmitter;
 import io.michelfaria.chrono.events.*;
 import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.hud.WalkHud;
-import io.michelfaria.chrono.logic.ActorYPositionComparator;
-import io.michelfaria.chrono.logic.CollisionContext;
-import io.michelfaria.chrono.logic.Party;
-import io.michelfaria.chrono.logic.TiledMapStagePopulator;
+import io.michelfaria.chrono.logic.*;
 import io.michelfaria.chrono.util.TiledMapUtil;
 
 import static io.michelfaria.chrono.consts.MapConstants.LAYER_FG_1;
@@ -95,11 +92,12 @@ public class WalkScreen implements Screen, EventListener {
 
     @Override
     public void show() {
-        addCrono();
+        addParty();
         tiledMapStagePopulator.populate(map, stage);
+        BattlePointsValidator.validateBattlePoints(stage.getActors());
     }
 
-    private void addCrono() {
+    private void addParty() {
         Crono crono = new Crono(collisionContext, atlas, eventDispatcher, party);
         stage.addActor(crono);
     }
@@ -215,7 +213,7 @@ public class WalkScreen implements Screen, EventListener {
         if (event instanceof ButtonEvent) {
             ButtonEvent buttonEvent = (ButtonEvent) event;
             if (buttonEvent.getButton() == Buttons.Y && buttonEvent.getEventType() == ButtonEventType.PRESS) {
-                addCrono();
+                addParty();
                 return true;
             }
         }

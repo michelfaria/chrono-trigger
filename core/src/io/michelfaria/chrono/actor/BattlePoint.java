@@ -10,6 +10,8 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import io.michelfaria.chrono.interfaces.ActorFactory;
 
+import java.util.Objects;
+
 import static io.michelfaria.chrono.consts.MapConstants.*;
 
 /**
@@ -20,6 +22,8 @@ import static io.michelfaria.chrono.consts.MapConstants.*;
  * <p>
  * 1. Each BattlePoint belongs to a group (appointed by "groupId".) A group holds all the BattlePoints for a specific
  * battle. Therefore, all BattlePoints belonging to the same battle should have the same "groupId".
+ * <p>
+ * 1. b. A BattlePoint group needs to have at least 3 BattlePoints of the type PARTY.
  * <p>
  * 2. Each BattlePoint should appoint a position to either a party member or an enemy. This is definition is designated
  * by the "type" of the BattlePoint, which can be either "ENEMY" or "PARTY". In the case that this is a "PARTY"
@@ -43,7 +47,18 @@ public class BattlePoint extends Actor {
         this.subId = subId;
         this.type = type;
 
-        System.out.println("groupId = [" + groupId + "], subId = [" + subId + "], type = [" + type + "]");
+        System.out.println(toString());
+    }
+
+    @Override
+    public String toString() {
+        return "BattlePoint{" +
+                "groupId=" + groupId +
+                ", subId=" + subId +
+                ", type=" + type +
+                ", x=" + getX() +
+                ", y=" + getY() +
+                '}';
     }
 
     public enum Type {
@@ -53,9 +68,11 @@ public class BattlePoint extends Actor {
     public static class Factory implements ActorFactory<BattlePoint> {
         @Override
         public BattlePoint make(MapProperties props) {
-            int groupId = (Integer) props.get(PROP_BATTLEPT_BATTLEID);
-            int subId = (Integer) props.get(PROP_BATTLEPT_SUBID);
-            Type type = Type.valueOf((String) props.get(PROP_BATTLEPT_TYPE));
+            int groupId = (Integer) Objects.requireNonNull(props.get(PROP_BATTLEPT_BATTLEID), "Group id not found");
+            int subId = (Integer) Objects.requireNonNull(props.get(PROP_BATTLEPT_SUBID), "Sub id not found");
+            Type type = Type.valueOf(
+                    Objects.requireNonNull(
+                            (String) props.get(PROP_BATTLEPT_TYPE), "Battle point type not found"));
             return new BattlePoint(groupId, subId, type);
         }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.0" orientation="orthogonal" renderorder="left-up" width="100" height="100" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="127">
+<map version="1.2" tiledversion="1.2.0" orientation="orthogonal" renderorder="left-up" width="100" height="100" tilewidth="8" tileheight="8" infinite="0" nextlayerid="9" nextobjectid="129">
  <tileset firstgid="1" source="../tilesets/guardia-forest.tsx"/>
  <layer id="1" name="fg2" width="100" height="100">
   <data encoding="csv">
@@ -224,6 +224,7 @@
   </object>
   <object id="122" x="416" y="632.667">
    <properties>
+    <property name="actor_id" type="int" value="1000"/>
     <property name="actor_type" value="nu"/>
    </properties>
    <point/>
@@ -259,8 +260,15 @@
    <properties>
     <property name="actor_type" value="battlept"/>
     <property name="battle_id" type="int" value="0"/>
-    <property name="battle_sub_id" type="int" value="0"/>
+    <property name="battle_sub_id" type="int" value="1000"/>
     <property name="battlept_type" value="ENEMY"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="127" x="33.3333" y="736">
+   <properties>
+    <property name="actor_type" value="entry_point"/>
+    <property name="entry_point_id" type="int" value="0"/>
    </properties>
    <point/>
   </object>
