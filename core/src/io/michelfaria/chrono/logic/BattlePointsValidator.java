@@ -11,10 +11,7 @@ import com.badlogic.gdx.utils.Array;
 import io.michelfaria.chrono.actor.BattlePoint;
 import io.michelfaria.chrono.interfaces.Identifiable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class BattlePointsValidator {
 
@@ -39,15 +36,17 @@ public class BattlePointsValidator {
         }
 
         for (BattlePoint battlePoint : battlePoints) {
-            ensureBattlePointHasMatchingIndentifiable(identifiables, battlePoint);
+            ensureBattlePointHasMatchingIndentifiable(battlePoint, identifiables);
         }
-        ensureGroupsHaveAtLeastThreePartyTypeBattlePoints(battlePoints);
+        Map<Integer, List<BattlePoint>> groups = compileGroups(battlePoints);
+        ensureGroupsHaveAtLeastThreePartyTypeBattlePoints(groups);
+        ensureGroupsHaveUniqueSubIds(groups);
     }
 
     /**
      * Ensures the BattlePoint provided has exactly one Identifiable with an "id" that matches its "subId".
      */
-    private static void ensureBattlePointHasMatchingIndentifiable(List<Identifiable> identifiables, BattlePoint battlePoint) {
+    private static void ensureBattlePointHasMatchingIndentifiable(BattlePoint battlePoint, List<Identifiable> identifiables) {
         if (battlePoint.type == BattlePoint.Type.ENEMY) {
             // Ensure each battle point has _only_ *one* actor where the BattlePoint.subId is equal to the Actor's id
             List<Identifiable> matches = new ArrayList<>();
@@ -62,7 +61,7 @@ public class BattlePointsValidator {
             }
             if (matches.size() > 1) {
                 throw new IllegalStateException("BattlePoint " + battlePoint.toString() + " has more than one"
-                        + " matching entity: " + matches.toString()); //FIXME
+                        + " matching entity: " + matches.toString());
             }
         }
     }
@@ -89,8 +88,7 @@ public class BattlePointsValidator {
     /**
      * Ensures each individual BattlePoint group has at least 3 PARTY BattlePoints.
      */
-    private static void ensureGroupsHaveAtLeastThreePartyTypeBattlePoints(List<BattlePoint> battlePoints) {
-        Map<Integer, List<BattlePoint>> groups = compileGroups(battlePoints);
+    private static void ensureGroupsHaveAtLeastThreePartyTypeBattlePoints(Map<Integer, List<BattlePoint>> groups) {
         for (Map.Entry<Integer, List<BattlePoint>> entry : groups.entrySet()) {
             int partyBattlePoints = 0;
             for (BattlePoint battlePoint : entry.getValue()) {
@@ -102,6 +100,18 @@ public class BattlePointsValidator {
                 throw new IllegalStateException("BattlePoint group id " + entry.getKey() + " only has "
                         + partyBattlePoints + " party battle points. The minimum required is "
                         + MINIMUM_PARTY_BATTLEPOINTS_PER_GROUP);
+            }
+        }
+    }
+
+    private static void ensureGroupsHaveUniqueSubIds(Map<Integer, List<BattlePoint>> groups) {
+        for (Map.Entry<Integer, List<BattlePoint>> entry : groups.entrySet()) {
+            Set<Integer> subIdSet = new HashSet<>();
+            for (BattlePoint battlePoint : entry.getValue()) {
+                if (!subIdSet.add(battlePoint.subId)) {
+                    throw new IllegalStateException("Duplicate subId " + battlePoint.subId + " in group "
+                            + entry.getKey() + ". Violating BattlePoint: " + battlePoint);
+                }
             }
         }
     }
