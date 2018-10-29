@@ -1,6 +1,6 @@
 /*
- * Developed by Michel Faria on 10/25/18 7:45 PM.
- * Last modified 10/25/18 7:38 PM.
+ * Developed by Michel Faria on 10/29/18 8:03 PM.
+ * Last modified 10/25/18 7:46 PM.
  * Copyright (c) 2018. All rights reserved.
  */
 
@@ -17,6 +17,7 @@ import static io.michelfaria.chrono.animation.ScissorAnimator.AnimationState.*;
 public class ScissorAnimator {
 
     private static final int SCISSOR_MULTIPLE = 12;
+
     private final Rectangle vRectangle;
     private final Viewport vp;
 

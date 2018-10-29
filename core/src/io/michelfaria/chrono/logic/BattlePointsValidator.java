@@ -1,6 +1,6 @@
 /*
- * Developed by Michel Faria on 10/26/18 3:21 PM.
- * Last modified 10/26/18 3:21 PM.
+ * Developed by Michel Faria on 10/29/18 8:57 PM.
+ * Last modified 10/28/18 11:15 AM.
  * Copyright (c) 2018. All rights reserved.
  */
 
@@ -8,7 +8,7 @@ package io.michelfaria.chrono.logic;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
-import io.michelfaria.chrono.actor.BattlePoint;
+import io.michelfaria.chrono.actors.BattlePoint;
 import io.michelfaria.chrono.interfaces.Identifiable;
 
 import java.util.*;

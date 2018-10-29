@@ -1,6 +1,6 @@
 /*
- * Developed by Michel Faria on 10/25/18 7:45 PM.
- * Last modified 10/25/18 7:38 PM.
+ * Developed by Michel Faria on 10/29/18 8:32 PM.
+ * Last modified 10/25/18 7:46 PM.
  * Copyright (c) 2018. All rights reserved.
  */
 
@@ -20,8 +20,7 @@ public class AnimationData<T> {
     @Nullable
     public final TRD trd;
 
-    public AnimationData(@NotNull Animation<T> animation,
-                         @Nullable TRD trd) {
+    public AnimationData(@NotNull Animation<T> animation, @Nullable TRD trd) {
         this.animation = animation;
         this.trd = trd;
     }

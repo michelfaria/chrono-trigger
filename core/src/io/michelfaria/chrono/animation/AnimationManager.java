@@ -1,6 +1,6 @@
 /*
- * Developed by Michel Faria on 10/25/18 7:45 PM.
- * Last modified 10/25/18 7:38 PM.
+ * Developed by Michel Faria on 10/29/18 8:39 PM.
+ * Last modified 10/25/18 7:46 PM.
  * Copyright (c) 2018. All rights reserved.
  */
 
@@ -10,6 +10,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
+import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.textures.TRD.FlipData;
 
 import java.util.HashMap;

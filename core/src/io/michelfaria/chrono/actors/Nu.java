@@ -1,0 +1,129 @@
+/*
+ * Developed by Michel Faria on 10/29/18 8:50 PM.
+ * Last modified 10/29/18 3:16 PM.
+ * Copyright (c) 2018. All rights reserved.
+ */
+
+package io.michelfaria.chrono.actors;
+
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Disposable;
+import io.michelfaria.chrono.Game;
+import io.michelfaria.chrono.animation.AnimationData;
+import io.michelfaria.chrono.animation.AnimationId;
+import io.michelfaria.chrono.animation.AnimationManager;
+import io.michelfaria.chrono.interfaces.ActorFactory;
+import io.michelfaria.chrono.interfaces.CollisionEntity;
+import io.michelfaria.chrono.interfaces.Identifiable;
+import io.michelfaria.chrono.interfaces.Interactible;
+import io.michelfaria.chrono.ui.DefaultHud;
+
+import java.util.Map;
+
+import static io.michelfaria.chrono.MapConstants.PROP_ACTOR_ID;
+import static io.michelfaria.chrono.animation.AnimationId.*;
+import static io.michelfaria.chrono.animation.AnimationMaker.makeAnimation;
+import static io.michelfaria.chrono.textures.NuTRD.*;
+
+public class Nu extends Actor implements CollisionEntity, Interactible, Identifiable, Disposable {
+
+    private final int id;
+    private final AnimationManager animationManager = new AnimationManager();
+
+    private float stateTime = 0f;
+
+    public Nu(int id) {
+        this.id = id;
+
+        final TextureAtlas atlas = Game.getMainTextureAtlas();
+        final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.getAnimations();
+
+        animations.put(IDLE_NORTH, makeAnimation(atlas, NU_IDLE_NORTH));
+        animations.put(IDLE_SOUTH, makeAnimation(atlas, NU_IDLE_SOUTH));
+        animations.put(IDLE_WEST, makeAnimation(atlas, NU_IDLE_WEST));
+        animations.put(IDLE_EAST, makeAnimation(atlas, NU_IDLE_EAST));
+        animations.put(WALK_NORTH, makeAnimation(atlas, NU_WALK_NORTH));
+        animations.put(WALK_SOUTH, makeAnimation(atlas, NU_WALK_SOUTH));
+        animations.put(WALK_WEST, makeAnimation(atlas, NU_WALK_WEST));
+        animations.put(WALK_EAST, makeAnimation(atlas, NU_WALK_EAST));
+
+        animationManager.setCurrentAnimation(IDLE_WEST);
+
+        setWidth(16);
+        setHeight(16);
+
+        Game.collisionEntities.add(this);
+    }
+
+    @Override
+    public void draw(Batch batch, float parentAlpha) {
+        animationManager.draw(batch, getX() - 8, getY());
+    }
+
+    @Override
+    public void act(float delta) {
+        super.act(delta);
+        stateTime += delta;
+        float v = stateTime * 1000 % 4000;
+        if (v > 3000) {
+            animationManager.setCurrentAnimation(WALK_EAST);
+        } else if (v > 2000) {
+            animationManager.setCurrentAnimation(WALK_SOUTH);
+        } else if (v > 1000) {
+            animationManager.setCurrentAnimation(WALK_WEST);
+        } else {
+            animationManager.setCurrentAnimation(WALK_NORTH);
+        }
+    }
+
+    @Override
+    public boolean isCollisionEnabled() {
+        return true;
+    }
+
+    @Override
+    public void interact() {
+        if (id == -1) {
+            DefaultHud.openDialogBox("I am a Nu! I am at x:" + getX() + " and y: " + getY());
+        } else if (id == 1000) {
+            // send battle request
+        }
+    }
+
+    @Override
+    public int getId() {
+        return id;
+    }
+
+    @Override
+    public String toString() {
+        return "Nu{" +
+                "id=" + id +
+                ", x=" + getX() +
+                ", y=" + getY() +
+                '}';
+    }
+
+    @Override
+    public void dispose() {
+        Game.collisionEntities.removeValue(this, true);
+    }
+
+    public static class NuFactory implements ActorFactory<Nu> {
+        @Override
+        public Nu make(MapProperties props) {
+            Integer id = (Integer) props.get(PROP_ACTOR_ID);
+            return new Nu(id == null ? -1 : id);
+        }
+
+        @Override
+        public Class<Nu> actorClass() {
+            return Nu.class;
+        }
+    }
+
+}

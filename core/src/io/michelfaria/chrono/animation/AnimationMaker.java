@@ -1,6 +1,6 @@
 /*
- * Developed by Michel Faria on 10/25/18 7:45 PM.
- * Last modified 10/25/18 7:38 PM.
+ * Developed by Michel Faria on 10/29/18 8:33 PM.
+ * Last modified 10/25/18 7:45 PM.
  * Copyright (c) 2018. All rights reserved.
  */
 
@@ -16,7 +16,7 @@ import io.michelfaria.chrono.util.TextureTools;
 
 import org.jetbrains.annotations.NotNull;
 
-public class AnimationMaker {
+public final class AnimationMaker {
 
     @NotNull
     public static AnimationData<TextureRegion> makeAnimation(TextureAtlas atlas, TRD trd) {
@@ -34,9 +34,9 @@ public class AnimationMaker {
 
     @NotNull
     public static AnimationData<TextureRegion> makeAnimationWithAssemblyInstructions(Array<TextureRegion> textureRegions, TRD trd) {
+        assert trd.assembly != null;
 
         final Array<TextureRegion> assembled = new Array<>(TextureRegion.class);
-
         for (int assemblyNum : trd.assembly) {
             if (assemblyNum > textureRegions.size) {
                 throw new ArrayIndexOutOfBoundsException(assemblyNum);

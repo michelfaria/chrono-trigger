@@ -1,6 +1,6 @@
 /*
- * Developed by Michel Faria on 10/25/18 7:45 PM.
- * Last modified 10/25/18 7:44 PM.
+ * Developed by Michel Faria on 10/29/18 7:50 PM.
+ * Last modified 10/25/18 7:46 PM.
  * Copyright (c) 2018. All rights reserved.
  */
 
@@ -17,7 +17,7 @@ import java.util.function.Function;
  *
  * @author wilde
  */
-public class GroupUtil {
+public final class GroupUtil {
 
     private GroupUtil() {
     }
