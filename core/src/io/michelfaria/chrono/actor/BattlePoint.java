@@ -38,6 +38,9 @@ import static io.michelfaria.chrono.consts.MapConstants.*;
  * id.
  */
 public class BattlePoint extends Actor {
+
+    public static float BATTLE_MOVE_DURATION = 1f;
+
     public final int groupId;
     public final int subId;
     public final Type type;

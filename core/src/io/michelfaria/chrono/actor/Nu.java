@@ -18,6 +18,7 @@ import io.michelfaria.chrono.animation.AnimationManager;
 import io.michelfaria.chrono.consts.MapConstants;
 import io.michelfaria.chrono.events.EventDispatcher;
 import io.michelfaria.chrono.events.OpenDialogBoxEvent;
+import io.michelfaria.chrono.events.RequestBattleEvent;
 import io.michelfaria.chrono.interfaces.ActorFactory;
 import io.michelfaria.chrono.interfaces.CollisionEntity;
 import io.michelfaria.chrono.interfaces.Identifiable;
@@ -38,10 +39,9 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
     private final int id;
     private final EventDispatcher eventDispatcher;
     private final CollisionContext collisionContext;
+    private final AnimationManager animationManager;
 
     private float stateTime = 0f;
-
-    private final AnimationManager animationManager;
 
     public Nu(CollisionContext collisionContext, EventDispatcher eventDispatcher, TextureAtlas atlas, int id) {
         this.eventDispatcher = eventDispatcher;
@@ -100,7 +100,11 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
 
     @Override
     public void interact() {
-        eventDispatcher.emitEvent(new OpenDialogBoxEvent("I am a Nu! I am at x:" + getX() + " and y: " + getY()));
+        if (id == -1) {
+            eventDispatcher.emitEvent(new OpenDialogBoxEvent("I am a Nu! I am at x:" + getX() + " and y: " + getY()));
+        } else if (id == 1000) {
+            eventDispatcher.emitEvent(new RequestBattleEvent(10));
+        }
     }
 
     @Override

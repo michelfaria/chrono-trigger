@@ -9,6 +9,7 @@ package io.michelfaria.chrono.consts;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import io.michelfaria.chrono.actor.BattlePoint;
 import io.michelfaria.chrono.actor.EntryPoint;
 import io.michelfaria.chrono.actor.Nu;
@@ -61,11 +62,11 @@ public final class MapConstants {
           ENTITY POINT NPC CLASSES
      *===============================*/
     // Map of NPC identifiers and Java class objects
-    public static Map<String, Class<?>> PROP_ACTOR_TYPE_ACTORS = new HashMap<>();
+    public static Map<String, Class<? extends Actor>> ACTORTYPE_ACTORCLASS_MAP = new HashMap<>();
     static {
-        PROP_ACTOR_TYPE_ACTORS.put("entry_point", EntryPoint.class);
-        PROP_ACTOR_TYPE_ACTORS.put("nu", Nu.class);
-        PROP_ACTOR_TYPE_ACTORS.put("battlept", BattlePoint.class);
+        ACTORTYPE_ACTORCLASS_MAP.put("entry_point", EntryPoint.class);
+        ACTORTYPE_ACTORCLASS_MAP.put("nu", Nu.class);
+        ACTORTYPE_ACTORCLASS_MAP.put("battlept", BattlePoint.class);
     }
 
     private MapConstants() {

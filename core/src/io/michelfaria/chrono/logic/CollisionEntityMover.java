@@ -19,7 +19,7 @@ public final class CollisionEntityMover {
      *
      * @return If the entity moved successfully, it will return true.
      */
-    public static boolean moveEntityBy(CollisionEntity entity, float xMoveSpeed, float yMoveSpeed) {
+    public static boolean moveCollisionEntityBy(CollisionEntity entity, float xMoveSpeed, float yMoveSpeed) {
         final float x = entity.getX();
         final float y = entity.getY();
         final float width = entity.getWidth();

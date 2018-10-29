@@ -28,7 +28,7 @@ public class Party {
     public void refresh() {
         for (int i = 0; i < characters.size; i++) {
             PartyCharacter character = characters.get(i);
-            character.setHandleInput(i == 0);
+            character.setMainChar(i == 0);
         }
     }
 

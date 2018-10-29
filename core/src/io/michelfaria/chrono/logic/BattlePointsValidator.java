@@ -13,9 +13,12 @@ import io.michelfaria.chrono.interfaces.Identifiable;
 
 import java.util.*;
 
-public class BattlePointsValidator {
+public final class BattlePointsValidator {
 
     public static int MINIMUM_PARTY_BATTLEPOINTS_PER_GROUP = 3;
+
+    private BattlePointsValidator() {
+    }
 
     /**
      * This method validates every instance of BattlePoint in an Array of Actors.
@@ -104,6 +107,9 @@ public class BattlePointsValidator {
         }
     }
 
+    /**
+     * Ensures each battle point in each group has an unique subId.
+     */
     private static void ensureGroupsHaveUniqueSubIds(Map<Integer, List<BattlePoint>> groups) {
         for (Map.Entry<Integer, List<BattlePoint>> entry : groups.entrySet()) {
             Set<Integer> subIdSet = new HashSet<>();

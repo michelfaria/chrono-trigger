@@ -6,11 +6,14 @@
 
 package io.michelfaria.chrono.interfaces;
 
+import io.michelfaria.chrono.actor.BattlePoint;
 import io.michelfaria.chrono.logic.CombatStats;
 
-public interface Combatant {
+public interface Combatant extends Identifiable {
 
 	CombatStats getCombatStats();
 
 	int calculateAttackDamage();
+
+	void goToBattle(BattlePoint battlePoint);
 }

@@ -24,6 +24,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import io.michelfaria.chrono.actor.BattlePoint;
 import io.michelfaria.chrono.actor.Crono;
 import io.michelfaria.chrono.consts.Assets;
 import io.michelfaria.chrono.controller.Buttons;
@@ -31,8 +32,13 @@ import io.michelfaria.chrono.controller.ControllerEventEmitter;
 import io.michelfaria.chrono.events.*;
 import io.michelfaria.chrono.hud.MenuBoxes;
 import io.michelfaria.chrono.hud.WalkHud;
+import io.michelfaria.chrono.interfaces.Combatant;
+import io.michelfaria.chrono.interfaces.Identifiable;
 import io.michelfaria.chrono.logic.*;
 import io.michelfaria.chrono.util.TiledMapUtil;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static io.michelfaria.chrono.consts.MapConstants.LAYER_FG_1;
 import static io.michelfaria.chrono.consts.MapConstants.LAYER_FG_2;
@@ -136,7 +142,7 @@ public class WalkScreen implements Screen, EventListener {
         updateCamera();
         tiledMapRenderer.setView(camera);
 
-        updateActorsZIndex();
+        ActorZIndexUpdater.updateActorsZIndex(stage.getActors());
     }
 
     private void updateCamera() {
@@ -153,14 +159,6 @@ public class WalkScreen implements Screen, EventListener {
         camera.position.y = MathUtils.clamp(camera.position.y, cameraHalfHeight, mapHeight - cameraHalfHeight);
 
         camera.update();
-    }
-
-    private void updateActorsZIndex() {
-        final Array<Actor> actors = stage.getActors();
-        actors.sort(yPositionCmp);
-        for (int i = 0; i < actors.size; i++) {
-            actors.get(i).setZIndex(i);
-        }
     }
 
     /**
@@ -211,12 +209,50 @@ public class WalkScreen implements Screen, EventListener {
     @Override
     public boolean handleEvent(Event event) {
         if (event instanceof ButtonEvent) {
+            // HANDLE BUTTON EVENT (TEST PARTY FOLLOWERS)
             ButtonEvent buttonEvent = (ButtonEvent) event;
             if (buttonEvent.getButton() == Buttons.Y && buttonEvent.getEventType() == ButtonEventType.PRESS) {
                 addParty();
                 return true;
             }
+        } else if (event instanceof RequestBattleEvent) {
+            return handleEvent((RequestBattleEvent) event);
         }
         return false;
+    }
+
+    public boolean handleEvent(RequestBattleEvent event) {
+        List<BattlePoint> battlePoints = new ArrayList<>();
+        for (Actor actor : stage.getActors()) {
+            if (actor instanceof BattlePoint) {
+                battlePoints.add((BattlePoint) actor);
+            }
+        }
+
+        int combatantsFound = 0;
+
+        outer:
+        for (BattlePoint battlePoint : battlePoints) {
+            // Filter points that don't belong to the request group
+            if (battlePoint.groupId != event.battleGroupId) {
+                continue;
+            }
+            // Find identifiable combatants with the battle point's subId
+            for (Actor actor : stage.getActors()) {
+                if (actor instanceof Combatant && ((Combatant) actor).getId() == battlePoint.subId) {
+                    ((Combatant) actor).goToBattle(battlePoint);
+                    combatantsFound++;
+                    continue outer;
+                }
+            }
+            // If the code reaches here, that means we didn't find any combatants for the Battle Point
+            if (battlePoint.type == BattlePoint.Type.ENEMY) {
+                throw new IllegalStateException("No matching Combatant found with id: " + battlePoint.subId);
+            }
+        }
+
+        assert combatantsFound >= 2;
+
+        return true;
     }
 }

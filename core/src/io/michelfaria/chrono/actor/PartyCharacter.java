@@ -19,8 +19,9 @@ import static io.michelfaria.chrono.animation.AnimationId.WALK_NORTH;
 import static io.michelfaria.chrono.animation.AnimationId.WALK_SOUTH;
 import static io.michelfaria.chrono.animation.AnimationId.WALK_WEST;
 import static io.michelfaria.chrono.controller.Ctrl.isButtonPressed;
-import static io.michelfaria.chrono.logic.CollisionEntityMover.moveEntityBy;
+import static io.michelfaria.chrono.logic.CollisionEntityMover.moveCollisionEntityBy;
 
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import io.michelfaria.chrono.items.WoodenSword;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,10 +58,10 @@ import java.util.Objects;
  * <p>
  * A party character:
  * <p>
- * 1. Has a set of mandatory animations that all subclasses must provide. Currently, these are the idle, moving and
- * running animations in all four cardinal directions.
+ * 1. Has a set of mandatory animations that all subclasses must provide. Currently, these are the idle, isMoving and
+ * isRunning animations in all four cardinal directions.
  * <p>
- * 2. Can be either controllable or a follower. When "handleInput" is true, then this character will be controllable by
+ * 2. Can be either controllable or a follower. When "isMainChar" is true, then this character will be controllable by
  * the player. If the character is a follower and is the only member in the party, the class will throw a
  * NullPointerException. This is fail-fast behavior.
  * <p>
@@ -79,10 +80,11 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, E
 
     protected Direction facing = Direction.SOUTH;
 
-    protected boolean handleInput;
-    protected boolean paused;
-    protected boolean moving;
-    protected boolean running;
+    protected boolean isMainChar;
+    protected boolean isBattling;
+    protected boolean isPaused;
+    protected boolean isMoving;
+    protected boolean isRunning;
 
     protected float walkSpeed = 1f;
     protected float runSpeedMultiplier = 2f;
@@ -122,56 +124,56 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, E
     public void act(float delta) {
         super.act(delta);
         stateTime += delta;
-        if (handleInput) {
+        if (isMainChar) {
             handleInput(delta);
         } else {
-            followNextPartyMember(delta);
+            actFollower(delta);
         }
         updateAnimation();
         moveHistory.add(getX(), getY());
     }
 
     protected void handleInput(float delta) {
-        assert isHandleInput();
-        if (!paused) {
+        assert isMainChar();
+        if (!isPaused) {
             float xMoveSpeed = 0;
             float yMoveSpeed = 0;
 
             if (isButtonPressed(0, Buttons.DPAD_LEFT)) {
-                moving = true;
+                isMoving = true;
                 xMoveSpeed = -walkSpeed;
                 facing = Direction.WEST;
             }
             if (isButtonPressed(0, Buttons.DPAD_RIGHT)) {
-                moving = true;
+                isMoving = true;
                 xMoveSpeed = walkSpeed;
                 facing = Direction.EAST;
             }
             if (isButtonPressed(0, Buttons.DPAD_UP)) {
-                moving = true;
+                isMoving = true;
                 yMoveSpeed = walkSpeed;
                 facing = Direction.NORTH;
             }
             if (isButtonPressed(0, Buttons.DPAD_DOWN)) {
-                moving = true;
+                isMoving = true;
                 yMoveSpeed = -walkSpeed;
                 facing = Direction.SOUTH;
             }
-            running = isButtonPressed(0, Buttons.B);
+            isRunning = isButtonPressed(0, Buttons.B);
 
-            if (running) {
+            if (isRunning) {
                 xMoveSpeed *= runSpeedMultiplier;
                 yMoveSpeed *= runSpeedMultiplier;
             }
             if (xMoveSpeed == 0 && yMoveSpeed == 0) {
-                moving = false;
+                isMoving = false;
             } else {
-                moveEntityBy(PartyCharacter.this, xMoveSpeed, yMoveSpeed);
+                moveCollisionEntityBy(this, xMoveSpeed, yMoveSpeed);
             }
         }
     }
 
-    protected void followNextPartyMember(float delta) {
+    protected void actFollower(float delta) {
         PartyCharacter nextPartyMember = Objects.requireNonNull(getNextPartyMember());
         if (nextPartyMember.moveHistory.size() > 0) {
             FloatPair last = nextPartyMember.moveHistory.getLast();
@@ -191,11 +193,11 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, E
         }
 
         if (getX() != moveHistory.getPrevX() || getY() != moveHistory.getPrevY()) {
-            this.moving = true;
-            this.running = getNextPartyMember().running;
+            this.isMoving = true;
+            this.isRunning = getNextPartyMember().isRunning;
         } else {
-            this.moving = false;
-            this.running = false;
+            this.isMoving = false;
+            this.isRunning = false;
         }
     }
 
@@ -209,12 +211,12 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, E
         AnimationId west;
         AnimationId east;
 
-        if (running && moving && !paused) {
+        if (isRunning && isMoving && !isPaused) {
             north = RUN_NORTH;
             south = RUN_SOUTH;
             west = RUN_WEST;
             east = RUN_EAST;
-        } else if (moving && !paused) {
+        } else if (isMoving && !isPaused) {
             north = WALK_NORTH;
             south = WALK_SOUTH;
             west = WALK_WEST;
@@ -242,8 +244,8 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, E
         }
     }
 
-    public boolean isHandleInput() {
-        return handleInput;
+    public boolean isMainChar() {
+        return isMainChar;
     }
 
     private @Nullable PartyCharacter getNextPartyMember() {
@@ -253,8 +255,8 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, E
         return party.getCharacters().get(party.indexOf(this) - 1);
     }
 
-    public void setHandleInput(boolean handleInput) {
-        this.handleInput = handleInput;
+    public void setMainChar(boolean mainChar) {
+        this.isMainChar = mainChar;
     }
 
     @Override
@@ -263,22 +265,22 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, E
             ButtonEvent be = (ButtonEvent) event;
             if (be.getButton() == Buttons.A) {
                 // A-Button pressed
-                if (isHandleInput()) {
+                if (isMainChar()) {
                     handleAPress(be);
                 }
                 return true;
             }
         }
         if (event instanceof HudPauseEvent) {
-            paused = ((HudPauseEvent) event).isPaused();
+            isPaused = ((HudPauseEvent) event).isPaused();
         }
         return false;
     }
 
     protected void handleAPress(ButtonEvent event) {
-        assert isHandleInput();
+        assert isMainChar();
         if (event.getButton() == Buttons.A && event.getEventType() == ButtonEventType.PRESS) {
-            if (!paused) {
+            if (!isPaused) {
                 emitInteraction();
             }
         }
@@ -323,16 +325,26 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, E
 
     @Override
     public boolean isCollisionEnabled() {
-        return isHandleInput();
+        return isMainChar();
     }
 
     @Override
     public int calculateAttackDamage() {
-        return Math.round((combatStats.power * 4 / 3) + (weapon.getAttackDamage() * 5 / 9));
+        return Math.round((combatStats.power * 4f / 3f) + (weapon.getAttackDamage() * 5f / 9f));
     }
 
     @Override
     public CombatStats getCombatStats() {
         return this.combatStats;
+    }
+
+    @Override
+    public void goToBattle(BattlePoint battlePoint) {
+        addAction(Actions.sequence(
+                Actions.moveTo(battlePoint.getX(), battlePoint.getY(), BattlePoint.BATTLE_MOVE_DURATION),
+                Actions.run(() -> {
+
+                })
+                ));
     }
 }

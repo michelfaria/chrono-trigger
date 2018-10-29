@@ -6,6 +6,7 @@
 
 package io.michelfaria.chrono;
 
+import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -44,17 +45,27 @@ public class Game extends com.badlogic.gdx.Game {
         this.atlas = this.assetManager.get(Assets.CHRONO_ATLAS);
         MenuBoxes menuBoxes = new MenuBoxes(this.atlas);
 
-        WalkScreen screen = new WalkScreen(this.batch, menuBoxes, this.assetManager, tmxMapLoader, this.atlas,
-                eventDispatcher, controllerEventEmitter);
+        WalkScreen screen = new WalkScreen(this.batch, menuBoxes, this.assetManager, tmxMapLoader, this.atlas, eventDispatcher, controllerEventEmitter);
         eventDispatcher.addEventListener(screen);
-        setScreen(screen);
+
+        this.setScreen(screen);
     }
 
     @Override
     public void dispose() {
-        assetManager.dispose();
-        atlas.dispose();
-        batch.dispose();
+        if (this.screen != null) {
+            this.screen.dispose();
+        }
+        this.assetManager.dispose();
+        this.atlas.dispose();
+        this.batch.dispose();
     }
 
+    @Override
+    public void setScreen(Screen screen) {
+        if (this.screen != null) {
+            this.screen.dispose();
+        }
+        super.setScreen(screen);
+    }
 }
