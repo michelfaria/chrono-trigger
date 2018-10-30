@@ -64,7 +64,6 @@ public final class DefaultScreen implements Screen {
         public void buttonPressed(int controller, Buttons button) {
             if (button == Buttons.X) {
                 Crono crono = new Crono();
-                Game.party.add(crono);
                 stage.addActor(crono);
             }
         }
