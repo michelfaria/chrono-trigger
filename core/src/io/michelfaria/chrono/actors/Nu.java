@@ -110,7 +110,7 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
 
     @Override
     public void dispose() {
-        Game.collisionEntities.removeValue(this, true);
+        Game.collisionEntities.remove(this);
     }
 
     public static class NuFactory implements ActorFactory<Nu> {

@@ -6,6 +6,7 @@
 
 package io.michelfaria.chrono.actors;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import io.michelfaria.chrono.interfaces.ActorFactory;
@@ -19,7 +20,7 @@ public class EntryPoint extends Actor {
 
     public EntryPoint(int id) {
         this.id = id;
-        System.out.println(toString());
+        Gdx.app.debug(EntryPoint.class.getName(), this.toString());
     }
 
     public static class Factory implements ActorFactory<EntryPoint> {

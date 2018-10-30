@@ -6,24 +6,29 @@
 
 package io.michelfaria.chrono;
 
+import com.badlogic.gdx.Application;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.FPSLogger;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;
+import io.michelfaria.chrono.actors.BattlePoint;
 import io.michelfaria.chrono.actors.PartyCharacter;
+import io.michelfaria.chrono.control.GameInput;
 import io.michelfaria.chrono.interfaces.CollisionEntity;
+import io.michelfaria.chrono.ui.DefaultHud;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Game extends com.badlogic.gdx.Game {
+public final class Game extends com.badlogic.gdx.Game {
 
     public static final int VRESX = 256;
     public static final int VRESY = 224;
@@ -36,13 +41,16 @@ public class Game extends com.badlogic.gdx.Game {
     public static TiledMap map;
     public static OrthogonalTiledMapRenderer mapRenderer;
 
-    public static Array<CollisionEntity> collisionEntities = new Array<>(CollisionEntity.class);
+    public static Set<CollisionEntity> collisionEntities = new HashSet<>();
     public static Array<PartyCharacter> party = new Array<>(Actor.class);
+    public static Set<BattlePoint> battlePoints = new HashSet<>();
 
     public static AtomicInteger paused = new AtomicInteger(0);
 
     @Override
     public void create() {
+        Gdx.app.setLogLevel(Application.LOG_DEBUG);
+
         batch = new SpriteBatch();
         tmxMapLoader = new TmxMapLoader();
         assetManager = new AssetManager();
@@ -61,10 +69,13 @@ public class Game extends com.badlogic.gdx.Game {
         batch.dispose();
         assetManager.dispose();
         DefaultScreen.disposeInstance();
+        DefaultHud.dispose();
 
         assert map == null;
         assert mapRenderer == null;
-        assert collisionEntities.size == 0 : collisionEntities;
+        assert collisionEntities.size() == 0 : collisionEntities;
+        assert battlePoints.size() == 0 : battlePoints;
+        assert GameInput.observersSize() == 0 : GameInput.getObserversCopy();
     }
 
     public static TextureAtlas getMainTextureAtlas() {

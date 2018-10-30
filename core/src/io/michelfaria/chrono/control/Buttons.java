@@ -9,5 +9,5 @@ package io.michelfaria.chrono.control;
 public enum Buttons {
 	DPAD_UP, DPAD_DOWN, DPAD_LEFT, DPAD_RIGHT,
 
-	ACTION, BACK
+	A, B, X
 }

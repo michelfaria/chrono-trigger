@@ -37,7 +37,7 @@ import static io.michelfaria.chrono.MapConstants.*;
  * be responsible for creating a single type of Actor. It uses the ActorFactory.getClass method to find out what kind of
  * Actor that Factory produces.
  */
-public class TiledMapStagePopulator {
+public final class TiledMapStagePopulator {
 
     private static List<ActorFactory<? extends Actor>> actorFactoryList = new ArrayList<>();
 
@@ -47,7 +47,9 @@ public class TiledMapStagePopulator {
         actorFactoryList.add(new EntryPoint.Factory());
     }
 
-    public static void populate(TiledMap map, Stage stage) {
+    private TiledMapStagePopulator() {}
+
+    public static void populateStage(TiledMap map, Stage stage) {
         MapLayers layers = map.getLayers();
 
         for (MapLayer layer : layers) {

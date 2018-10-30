@@ -232,7 +232,7 @@
   <object id="123" x="376" y="664.667">
    <properties>
     <property name="actor_type" value="battlept"/>
-    <property name="battle_id" type="int" value="0"/>
+    <property name="battle_id" type="int" value="10"/>
     <property name="battle_sub_id" type="int" value="1"/>
     <property name="battlept_type" value="PARTY"/>
    </properties>
@@ -241,7 +241,7 @@
   <object id="124" x="418.667" y="692.667">
    <properties>
     <property name="actor_type" value="battlept"/>
-    <property name="battle_id" type="int" value="0"/>
+    <property name="battle_id" type="int" value="10"/>
     <property name="battle_sub_id" type="int" value="0"/>
     <property name="battlept_type" value="PARTY"/>
    </properties>
@@ -250,7 +250,7 @@
   <object id="125" x="460.667" y="662.667">
    <properties>
     <property name="actor_type" value="battlept"/>
-    <property name="battle_id" type="int" value="0"/>
+    <property name="battle_id" type="int" value="10"/>
     <property name="battle_sub_id" type="int" value="2"/>
     <property name="battlept_type" value="PARTY"/>
    </properties>
@@ -259,7 +259,7 @@
   <object id="126" x="415.333" y="586">
    <properties>
     <property name="actor_type" value="battlept"/>
-    <property name="battle_id" type="int" value="0"/>
+    <property name="battle_id" type="int" value="10"/>
     <property name="battle_sub_id" type="int" value="1000"/>
     <property name="battlept_type" value="ENEMY"/>
    </properties>

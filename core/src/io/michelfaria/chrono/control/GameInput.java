@@ -12,6 +12,8 @@ import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class GameInput {
@@ -23,25 +25,28 @@ public final class GameInput {
         keyboardMappings.put(Buttons.DPAD_DOWN, Input.Keys.DOWN);
         keyboardMappings.put(Buttons.DPAD_LEFT, Input.Keys.LEFT);
         keyboardMappings.put(Buttons.DPAD_RIGHT, Input.Keys.RIGHT);
-        keyboardMappings.put(Buttons.ACTION, Input.Keys.X);
-        keyboardMappings.put(Buttons.BACK, Input.Keys.Z);
+        keyboardMappings.put(Buttons.A, Input.Keys.X);
+        keyboardMappings.put(Buttons.B, Input.Keys.Z);
+        keyboardMappings.put(Buttons.X, Input.Keys.A);
     }
 
     public static final Map<Buttons, Integer> controllerMappings = new HashMap<>();
 
     static {
-        controllerMappings.put(Buttons.ACTION, XboxController360.BUTTON_A);
-        controllerMappings.put(Buttons.BACK, XboxController360.BUTTON_B);
+        controllerMappings.put(Buttons.A, XboxController360.BUTTON_A);
+        controllerMappings.put(Buttons.B, XboxController360.BUTTON_B);
+        controllerMappings.put(Buttons.X, XboxController360.BUTTON_X);
     }
 
     public static final Map<Buttons, AtomicBoolean> buttonStateMap = new HashMap<>();
 
     static {
-        buttonStateMap.put(Buttons.ACTION, new AtomicBoolean(false));
-        buttonStateMap.put(Buttons.BACK, new AtomicBoolean(false));
+        buttonStateMap.put(Buttons.A, new AtomicBoolean(false));
+        buttonStateMap.put(Buttons.B, new AtomicBoolean(false));
+        buttonStateMap.put(Buttons.X, new AtomicBoolean(false));
     }
 
-    private static final List<GameInputObserver> observers = new ArrayList<>();
+    private static final Set<GameInputObserver> observers = ConcurrentHashMap.newKeySet();
 
     private GameInput() {
     }
@@ -87,11 +92,14 @@ public final class GameInput {
                 final AtomicBoolean storedState = buttonStateMap.get(button);
 
                 if (isButtonPressed && !storedState.get()) {
+                    Gdx.app.debug(GameInput.class.getName(), "Button pressed: " + button);
                     for (GameInputObserver observer : observers) {
                         observer.buttonPressed(i, button);
                     }
                     storedState.set(true);
+
                 } else if (!isButtonPressed && storedState.get()) {
+                    Gdx.app.debug(GameInput.class.getName(), "Button released: " + button);
                     for (GameInputObserver observer : observers) {
                         observer.buttonReleased(i, button);
                     }
@@ -103,6 +111,10 @@ public final class GameInput {
 
     public static void addObserver(GameInputObserver observer) {
         observers.add(observer);
+    }
+
+    public static void removeObserver(GameInputObserver observer) {
+        observers.remove(observer);
     }
 
     private static boolean isKeyboardKeyPressed(Buttons button) {
@@ -124,5 +136,13 @@ public final class GameInput {
         @Override
         public void buttonReleased(int controller, Buttons button) {
         }
+    }
+
+    public static int observersSize() {
+        return observers.size();
+    }
+
+    public static Set<GameInputObserver> getObserversCopy() {
+        return new HashSet<>(observers);
     }
 }

@@ -52,6 +52,15 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     protected CombatStats combatStats = new CombatStats();
     protected Weapon weapon = new WoodenSword();
 
+    GameInput.GameInputObserverAdapter gameInputObserver = new GameInput.GameInputObserverAdapter() {
+        @Override
+        public void buttonPressed(int controller, Buttons button) {
+            if (button == Buttons.A && Game.paused.get() == 0) {
+                emitInteraction();
+            }
+        }
+    };
+
     public PartyCharacter() {
         setWidth(16);
         setHeight(16);
@@ -59,14 +68,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
         Game.collisionEntities.add(this);
         Game.party.add(this);
 
-        GameInput.addObserver(new GameInput.GameInputObserverAdapter() {
-            @Override
-            public void buttonPressed(int controller, Buttons button) {
-                if (button == Buttons.ACTION && Game.paused.get() == 0) {
-                    emitInteraction();
-                }
-            }
-        });
+        GameInput.addObserver(gameInputObserver);
     }
 
     @Override
@@ -112,7 +114,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
                 yMoveSpeed = -walkSpeed;
                 facing = Direction.SOUTH;
             }
-            isRunning = isButtonPressed(0, Buttons.BACK);
+            isRunning = isButtonPressed(0, Buttons.B);
 
             if (isRunning) {
                 xMoveSpeed *= runSpeedMultiplier;
@@ -239,16 +241,6 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     }
 
     @Override
-    public boolean isCollisionEnabled() {
-        return isMainCharacter();
-    }
-
-    @Override
-    public CombatStats getCombatStats() {
-        return combatStats;
-    }
-
-    @Override
     public int calculateAttackDamage() {
         return Math.round((combatStats.power * 4f / 3f) + (weapon.getAttackDamage() * 5f / 9f));
     }
@@ -264,13 +256,24 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     }
 
     @Override
+    public void dispose() {
+        Game.collisionEntities.remove(this);
+        Game.party.removeValue(this, true);
+        GameInput.removeObserver(gameInputObserver);
+    }
+
+    @Override
     public int getId() {
         return Game.party.indexOf(this, true);
     }
 
     @Override
-    public void dispose() {
-        Game.collisionEntities.removeValue(this, true);
-        Game.party.removeValue(this, true);
+    public boolean isCollisionEnabled() {
+        return isMainCharacter();
+    }
+
+    @Override
+    public CombatStats getCombatStats() {
+        return combatStats;
     }
 }

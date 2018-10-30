@@ -6,8 +6,11 @@
 
 package io.michelfaria.chrono.actors;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.utils.Disposable;
+import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.interfaces.ActorFactory;
 
 import java.util.Objects;
@@ -37,7 +40,7 @@ import static io.michelfaria.chrono.MapConstants.*;
  * 3. b. In the case that a BattlePoint is assigned to an enemy, then the "subId" should be equal to that enemy's game
  * id.
  */
-public class BattlePoint extends Actor {
+public class BattlePoint extends Actor implements Disposable {
 
     public static float BATTLE_MOVE_DURATION = 1f;
 
@@ -50,7 +53,9 @@ public class BattlePoint extends Actor {
         this.subId = subId;
         this.type = type;
 
-        System.out.println(toString());
+        Game.battlePoints.add(this);
+
+        Gdx.app.debug(BattlePoint.class.getName(), this.toString());
     }
 
     @Override
@@ -62,6 +67,12 @@ public class BattlePoint extends Actor {
                 ", x=" + getX() +
                 ", y=" + getY() +
                 '}';
+    }
+
+    @Override
+    public void dispose() {
+        boolean contained = Game.battlePoints.remove(this);
+        assert contained;
     }
 
     public enum Type {

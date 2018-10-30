@@ -7,7 +7,6 @@
 package io.michelfaria.chrono.ui;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -27,6 +26,15 @@ public final class DefaultHud {
     private static DialogBoxGroup dialogBoxGroup;
     private static ScissorAnimator scissorAnimator;
 
+    private static GameInput.GameInputObserverAdapter gameInputObserver = new GameInput.GameInputObserverAdapter() {
+        @Override
+        public void buttonPressed(int controller, Buttons button) {
+            if (button == Buttons.A) {
+                closeDialogBox();
+            }
+        }
+    };
+
     static {
         viewport = new FitViewport(Game.VRESX, Game.VRESY);
         stage = new Stage(viewport, Game.batch);
@@ -39,15 +47,7 @@ public final class DefaultHud {
                                 GroupUtil.getWidth(dialogBoxGroup),
                                 GroupUtil.getHeight(dialogBoxGroup)),
                         viewport);
-
-        GameInput.addObserver(new GameInput.GameInputObserverAdapter() {
-            @Override
-            public void buttonPressed(int controller, Buttons button) {
-                if (button == Buttons.ACTION) {
-                    closeDialogBox();
-                }
-            }
-        });
+        GameInput.addObserver(gameInputObserver);
     }
 
     private DefaultHud() {
@@ -88,5 +88,9 @@ public final class DefaultHud {
 
     public static void resize(int width, int height) {
         viewport.update(width, height);
+    }
+
+    public static void dispose() {
+        GameInput.removeObserver(gameInputObserver);
     }
 }

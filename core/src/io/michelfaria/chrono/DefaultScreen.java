@@ -11,7 +11,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
@@ -19,12 +18,12 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import io.michelfaria.chrono.actors.Crono;
 import io.michelfaria.chrono.actors.PartyCharacter;
+import io.michelfaria.chrono.control.Buttons;
 import io.michelfaria.chrono.control.GameInput;
 import io.michelfaria.chrono.graphics.TileLayerRender;
 import io.michelfaria.chrono.logic.BattlePointsValidator;
 import io.michelfaria.chrono.logic.zindex.ActorZIndexUpdater;
 import io.michelfaria.chrono.ui.DefaultHud;
-import io.michelfaria.chrono.util.TiledMapUtil;
 
 import static com.badlogic.gdx.math.MathUtils.clamp;
 import static io.michelfaria.chrono.MapConstants.LAYER_FG_1;
@@ -60,6 +59,17 @@ public final class DefaultScreen implements Screen {
     private Viewport viewport;
     private Stage stage;
 
+    private GameInput.GameInputObserverAdapter gameInputObserver = new GameInput.GameInputObserverAdapter() {
+        @Override
+        public void buttonPressed(int controller, Buttons button) {
+            if (button == Buttons.X) {
+                Crono crono = new Crono();
+                Game.party.add(crono);
+                stage.addActor(crono);
+            }
+        }
+    };
+
     public DefaultScreen init() {
         Game.map = Game.tmxMapLoader.load(Assets.EXAMPLE_TMX);
         Game.mapRenderer = new OrthogonalTiledMapRenderer(Game.map);
@@ -68,13 +78,15 @@ public final class DefaultScreen implements Screen {
         viewport = new FitViewport(Game.VRESX, Game.VRESY, camera);
         stage = new Stage(viewport, Game.batch);
 
+        GameInput.addObserver(gameInputObserver);
+
         return this;
     }
 
     @Override
     public void show() {
         stage.addActor(new Crono());
-        TiledMapStagePopulator.populate(Game.map, stage);
+        TiledMapStagePopulator.populateStage(Game.map, stage);
         BattlePointsValidator.validateBattlePoints(stage.getActors());
     }
 
@@ -163,5 +175,6 @@ public final class DefaultScreen implements Screen {
                 ((Disposable) actor).dispose();
             }
         }
+        GameInput.removeObserver(gameInputObserver);
     }
 }
