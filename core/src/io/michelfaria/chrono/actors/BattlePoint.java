@@ -8,11 +8,17 @@ package io.michelfaria.chrono.actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapProperties;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Disposable;
 import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.interfaces.ActorFactory;
+import io.michelfaria.chrono.interfaces.Combatant;
+import io.michelfaria.chrono.logic.BattlePointsValidator;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import static io.michelfaria.chrono.MapConstants.*;
@@ -58,6 +64,16 @@ public class BattlePoint extends Actor implements Disposable {
         Gdx.app.debug(BattlePoint.class.getName(), this.toString());
     }
 
+    public List<BattlePoint> getAllInTheSameGroup() {
+        List<BattlePoint> battlePointGroup = new ArrayList<>();
+        for (BattlePoint battlePoint : Game.battlePoints) {
+            if (battlePoint.groupId == groupId) {
+                battlePointGroup.add(battlePoint);
+            }
+        }
+        return battlePointGroup;
+    }
+
     @Override
     public String toString() {
         return "BattlePoint{" +
@@ -71,8 +87,8 @@ public class BattlePoint extends Actor implements Disposable {
 
     @Override
     public void dispose() {
-        boolean contained = Game.battlePoints.remove(this);
-        assert contained;
+        boolean wasInCollection = Game.battlePoints.remove(this);
+        assert wasInCollection;
     }
 
     public enum Type {

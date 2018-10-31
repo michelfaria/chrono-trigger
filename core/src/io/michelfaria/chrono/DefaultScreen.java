@@ -11,7 +11,6 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
@@ -28,12 +27,12 @@ import io.michelfaria.chrono.logic.BattlePointsValidator;
 import io.michelfaria.chrono.logic.zindex.ActorZIndexUpdater;
 import io.michelfaria.chrono.ui.DefaultHud;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.badlogic.gdx.math.MathUtils.clamp;
 import static io.michelfaria.chrono.MapConstants.LAYER_FG_1;
 import static io.michelfaria.chrono.MapConstants.LAYER_FG_2;
+import static io.michelfaria.chrono.logic.BattlePointsValidator.MINIMUM_PARTY_BATTLEPOINTS_PER_GROUP;
 import static io.michelfaria.chrono.util.TiledMapUtil.mapPixelHeight;
 import static io.michelfaria.chrono.util.TiledMapUtil.mapPixelWidth;
 
@@ -190,47 +189,22 @@ public final class DefaultScreen implements Screen {
         GameInput.removeObserver(gameInputObserver);
     }
 
-    public void beginBattle(Combatant requesterCombatant) {
-        // Find matching BattlePoints with SubIDs that match the Combatant's ID
-
-        List<BattlePoint> matching = new ArrayList<>();
-        for (BattlePoint battlePoint : Game.battlePoints) {
-            if (battlePoint.subId == requesterCombatant.getId()) {
-                matching.add(battlePoint);
-            }
-        }
+    public void beginBattle(Combatant combatant) {
+        List<BattlePoint> matching = Combatant.findMatchingBattlePoints(combatant);
         if (matching.isEmpty()) {
-            throw new IllegalStateException("Cannot begin battle: No BattlePoints with SubID " + requesterCombatant.getId() + " found.");
+            throw new IllegalStateException("Cannot begin battle: No BattlePoints with SubID " + combatant.getId() + " found.");
         }
 
-        // Find the nearest BattlePoint to the requesting Combatant
-        BattlePoint closest = null;
-        if (matching.size() == 1) {
-            closest = matching.get(0);
-        } else {
-            assert matching.size() > 0;
-            float closestDistance = Float.MAX_VALUE;
-            for (BattlePoint battlePoint : matching) {
-                // Calculate the distance between the BattlePoint and the Combatant
-                float distance = Vector2.dst(battlePoint.getX(), battlePoint.getY(), requesterCombatant.getX(), requesterCombatant.getY());
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closest = battlePoint;
-                }
-            }
-        }
+        BattlePoint closest = Combatant.findClosestBattlePointFromList(combatant, matching);
         assert closest != null;
 
-        // Find all of the BattlePoints in the group
-        List<BattlePoint> battlePointGroup = new ArrayList<>();
-        for (BattlePoint battlePoint : Game.battlePoints) {
-            if (battlePoint.groupId == closest.groupId) {
-                battlePointGroup.add(battlePoint);
-            }
-        }
-        assert battlePointGroup.size() >= BattlePointsValidator.MINIMUM_PARTY_BATTLEPOINTS_PER_GROUP : battlePointGroup.size();
+        List<BattlePoint> battlePointGroup = closest.getAllInTheSameGroup();
+        assert battlePointGroup.size() >= MINIMUM_PARTY_BATTLEPOINTS_PER_GROUP : battlePointGroup.size();
 
-        // Call the Combatants to battle
+        this.callCombatantsToBattle(battlePointGroup);
+    }
+
+    private void callCombatantsToBattle(List<BattlePoint> battlePointGroup) {
         int called = 0;
         for (Actor actor : stage.getActors()) {
             if (actor instanceof Combatant) {
@@ -255,6 +229,7 @@ public final class DefaultScreen implements Screen {
                 }
             }
         }
-        assert called <= battlePointGroup.size() && called > 0 : "called=" + called + ",battlePointGroup.size()=" + battlePointGroup.size();
+        assert called <= battlePointGroup.size() && called > 0
+                : "called=" + called + ",battlePointGroup.size()=" + battlePointGroup.size();
     }
 }
