@@ -6,6 +6,7 @@
 
 package io.michelfaria.chrono.actors;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -35,9 +36,11 @@ import static io.michelfaria.chrono.logic.collision.CollisionEntityMover.moveCol
 public abstract class PartyCharacter extends Actor implements CollisionEntity, Combatant, Disposable {
 
     protected AnimationManager animationManager = new AnimationManager();
+
     {
         animationManager.setCurrentAnimation(IDLE_SOUTH);
     }
+
     protected Direction facing = Direction.SOUTH;
 
     protected boolean isBattling = false;
@@ -55,7 +58,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     GameInput.GameInputObserverAdapter gameInputObserver = new GameInput.GameInputObserverAdapter() {
         @Override
         public void buttonPressed(int controller, Buttons button) {
-            if (button == Buttons.A && Game.paused.get() == 0) {
+            if (button == Buttons.A && Game.paused.get() == 0 && isInputEnabled()) {
                 emitInteraction();
             }
         }
@@ -78,10 +81,11 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
 
     @Override
     public void act(float delta) {
+        super.act(delta);
         stateTime += delta;
-        if (isMainCharacter()) {
+        if (isInputEnabled()) {
             handleInput(delta);
-        } else {
+        } else if (!isBattling) {
             actFollower(delta);
         }
         updateAnimation();
@@ -89,7 +93,9 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     }
 
     protected void handleInput(float delta) {
+        assert isInputEnabled();
         assert isMainCharacter();
+
         if (Game.paused.get() == 0) {
             float xMoveSpeed = 0;
             float yMoveSpeed = 0;
@@ -131,6 +137,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     protected void actFollower(float delta) {
         int nextPartyMemberIndex = Game.party.indexOf(this, true) - 1;
         assert nextPartyMemberIndex >= 0;
+
         PartyCharacter nextPartyMember = Game.party.get(nextPartyMemberIndex);
 
         if (nextPartyMember.moveHistory.size() > 0) {
@@ -204,6 +211,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
 
     protected void emitInteraction() {
         assert isMainCharacter();
+        assert isInputEnabled();
 
         Rectangle interactionRegion = ActorUtil.getActorRectangle(this);
         switch (facing) {
@@ -225,6 +233,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
 
     protected void interactWithRegion(Rectangle region) {
         assert isMainCharacter();
+        assert isInputEnabled();
 
         Array<CollisionEntity> arr = CollisionChecker.entityCollisions(this, region);
         for (CollisionEntity ent : arr) {
@@ -240,6 +249,10 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
         return Game.party.get(0) == this;
     }
 
+    public boolean isInputEnabled() {
+        return isMainCharacter() && !isBattling;
+    }
+
     @Override
     public int calculateAttackDamage() {
         return Math.round((combatStats.power * 4f / 3f) + (weapon.getAttackDamage() * 5f / 9f));
@@ -247,12 +260,11 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
 
     @Override
     public void goToBattle(BattlePoint battlePoint) {
-        addAction(Actions.sequence(
-                Actions.moveTo(battlePoint.getX(), battlePoint.getY(), BattlePoint.BATTLE_MOVE_DURATION),
-                Actions.run(() -> {
-                    System.out.println("moved");
-                })
-        ));
+        isBattling = true;
+        addAction(
+                Actions.sequence(
+                        Actions.moveTo(battlePoint.getX(), battlePoint.getY(), BattlePoint.BATTLE_MOVE_DURATION),
+                        Actions.run(() -> Gdx.app.debug(PartyCharacter.class.getName(), "PartyCharacter moved to BattlePoint"))));
     }
 
     @Override

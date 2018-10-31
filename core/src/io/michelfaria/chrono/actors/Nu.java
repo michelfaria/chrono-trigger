@@ -6,20 +6,21 @@
 
 package io.michelfaria.chrono.actors;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Disposable;
+import io.michelfaria.chrono.DefaultScreen;
 import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.animation.AnimationData;
 import io.michelfaria.chrono.animation.AnimationId;
 import io.michelfaria.chrono.animation.AnimationManager;
-import io.michelfaria.chrono.interfaces.ActorFactory;
-import io.michelfaria.chrono.interfaces.CollisionEntity;
-import io.michelfaria.chrono.interfaces.Identifiable;
-import io.michelfaria.chrono.interfaces.Interactible;
+import io.michelfaria.chrono.interfaces.*;
+import io.michelfaria.chrono.logic.CombatStats;
 import io.michelfaria.chrono.ui.DefaultHud;
 
 import java.util.Map;
@@ -29,10 +30,11 @@ import static io.michelfaria.chrono.animation.AnimationId.*;
 import static io.michelfaria.chrono.animation.AnimationMaker.makeAnimation;
 import static io.michelfaria.chrono.textures.NuTRD.*;
 
-public class Nu extends Actor implements CollisionEntity, Interactible, Identifiable, Disposable {
+public class Nu extends Actor implements CollisionEntity, Interactible, Identifiable, Disposable, Combatant {
 
-    private final int id;
+    private int id;
     private final AnimationManager animationManager = new AnimationManager();
+    private CombatStats combatStats = new CombatStats();
 
     private float stateTime = 0f;
 
@@ -90,7 +92,7 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
         if (id == -1) {
             DefaultHud.openDialogBox("I am a Nu! I am at x:" + getX() + " and y: " + getY());
         } else if (id == 1000) {
-            // send battle request
+            DefaultScreen.getInstance().beginBattle(this);
         }
     }
 
@@ -111,6 +113,24 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
     @Override
     public void dispose() {
         Game.collisionEntities.remove(this);
+    }
+
+    @Override
+    public CombatStats getCombatStats() {
+        return this.combatStats;
+    }
+
+    @Override
+    public int calculateAttackDamage() {
+        return 1;
+    }
+
+    @Override
+    public void goToBattle(BattlePoint battlePoint) {
+        addAction(
+                Actions.sequence(
+                        Actions.moveTo(battlePoint.getX(), battlePoint.getY(), BattlePoint.BATTLE_MOVE_DURATION),
+                        Actions.run(() -> Gdx.app.debug(Nu.class.getName(), "Nu moved to BattlePoint"))));
     }
 
     public static class NuFactory implements ActorFactory<Nu> {

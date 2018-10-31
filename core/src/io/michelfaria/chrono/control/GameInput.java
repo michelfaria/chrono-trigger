@@ -10,10 +10,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.Controllers;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class GameInput {
@@ -46,7 +49,7 @@ public final class GameInput {
         buttonStateMap.put(Buttons.X, new AtomicBoolean(false));
     }
 
-    private static final Set<GameInputObserver> observers = ConcurrentHashMap.newKeySet();
+    private static final Queue<GameInputObserver> observers = new PriorityBlockingQueue<>();
 
     private GameInput() {
     }
@@ -122,13 +125,26 @@ public final class GameInput {
                 Objects.requireNonNull(keyboardMappings.get(button), "No keyboard mapping for button: " + button));
     }
 
-    public interface GameInputObserver {
+    public static int observersSize() {
+        return observers.size();
+    }
+
+    public static Set<GameInputObserver> getObserversCopy() {
+        return new HashSet<>(observers);
+    }
+
+    public interface GameInputObserver extends Comparable<GameInputObserver> {
         void buttonPressed(int controller, Buttons button);
 
         void buttonReleased(int controller, Buttons button);
+
+        int getPriority();
     }
 
     public static class GameInputObserverAdapter implements GameInputObserver {
+
+        protected int priority = 0;
+
         @Override
         public void buttonPressed(int controller, Buttons button) {
         }
@@ -136,13 +152,15 @@ public final class GameInput {
         @Override
         public void buttonReleased(int controller, Buttons button) {
         }
-    }
 
-    public static int observersSize() {
-        return observers.size();
-    }
+        @Override
+        public int getPriority() {
+            return priority;
+        }
 
-    public static Set<GameInputObserver> getObserversCopy() {
-        return new HashSet<>(observers);
+        @Override
+        public int compareTo(@NotNull GameInput.GameInputObserver o) {
+            return Integer.compare(o.getPriority(), priority);
+        }
     }
 }

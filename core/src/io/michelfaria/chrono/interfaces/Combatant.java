@@ -9,7 +9,7 @@ package io.michelfaria.chrono.interfaces;
 import io.michelfaria.chrono.actors.BattlePoint;
 import io.michelfaria.chrono.logic.CombatStats;
 
-public interface Combatant extends Identifiable {
+public interface Combatant extends Identifiable, Positionable {
 
 	CombatStats getCombatStats();
 

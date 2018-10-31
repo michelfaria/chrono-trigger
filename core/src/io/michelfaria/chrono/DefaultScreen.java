@@ -11,19 +11,25 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import io.michelfaria.chrono.actors.BattlePoint;
 import io.michelfaria.chrono.actors.Crono;
 import io.michelfaria.chrono.actors.PartyCharacter;
 import io.michelfaria.chrono.control.Buttons;
 import io.michelfaria.chrono.control.GameInput;
 import io.michelfaria.chrono.graphics.TileLayerRender;
+import io.michelfaria.chrono.interfaces.Combatant;
 import io.michelfaria.chrono.logic.BattlePointsValidator;
 import io.michelfaria.chrono.logic.zindex.ActorZIndexUpdater;
 import io.michelfaria.chrono.ui.DefaultHud;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.badlogic.gdx.math.MathUtils.clamp;
 import static io.michelfaria.chrono.MapConstants.LAYER_FG_1;
@@ -60,6 +66,10 @@ public final class DefaultScreen implements Screen {
     private Stage stage;
 
     private GameInput.GameInputObserverAdapter gameInputObserver = new GameInput.GameInputObserverAdapter() {
+        {
+            priority = 1;
+        }
+
         @Override
         public void buttonPressed(int controller, Buttons button) {
             if (button == Buttons.X) {
@@ -166,7 +176,10 @@ public final class DefaultScreen implements Screen {
 
     @Override
     public void dispose() {
+        assert Game.map != null;
+        assert Game.mapRenderer != null;
         Game.map.dispose();
+        Game.mapRenderer.dispose();
         Game.map = null;
         Game.mapRenderer = null;
         for (Actor actor : stage.getActors()) {
@@ -175,5 +188,73 @@ public final class DefaultScreen implements Screen {
             }
         }
         GameInput.removeObserver(gameInputObserver);
+    }
+
+    public void beginBattle(Combatant requesterCombatant) {
+        // Find matching BattlePoints with SubIDs that match the Combatant's ID
+
+        List<BattlePoint> matching = new ArrayList<>();
+        for (BattlePoint battlePoint : Game.battlePoints) {
+            if (battlePoint.subId == requesterCombatant.getId()) {
+                matching.add(battlePoint);
+            }
+        }
+        if (matching.isEmpty()) {
+            throw new IllegalStateException("Cannot begin battle: No BattlePoints with SubID " + requesterCombatant.getId() + " found.");
+        }
+
+        // Find the nearest BattlePoint to the requesting Combatant
+        BattlePoint closest = null;
+        if (matching.size() == 1) {
+            closest = matching.get(0);
+        } else {
+            assert matching.size() > 0;
+            float closestDistance = Float.MAX_VALUE;
+            for (BattlePoint battlePoint : matching) {
+                // Calculate the distance between the BattlePoint and the Combatant
+                float distance = Vector2.dst(battlePoint.getX(), battlePoint.getY(), requesterCombatant.getX(), requesterCombatant.getY());
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closest = battlePoint;
+                }
+            }
+        }
+        assert closest != null;
+
+        // Find all of the BattlePoints in the group
+        List<BattlePoint> battlePointGroup = new ArrayList<>();
+        for (BattlePoint battlePoint : Game.battlePoints) {
+            if (battlePoint.groupId == closest.groupId) {
+                battlePointGroup.add(battlePoint);
+            }
+        }
+        assert battlePointGroup.size() >= BattlePointsValidator.MINIMUM_PARTY_BATTLEPOINTS_PER_GROUP : battlePointGroup.size();
+
+        // Call the Combatants to battle
+        int called = 0;
+        for (Actor actor : stage.getActors()) {
+            if (actor instanceof Combatant) {
+                if (actor instanceof PartyCharacter) {
+                    PartyCharacter partyCharacter = (PartyCharacter) actor;
+                    int partyCharacterIndex = Game.party.indexOf(partyCharacter, true);
+                    assert partyCharacterIndex >= 0;
+                    for (BattlePoint battlePoint : battlePointGroup) {
+                        if (battlePoint.subId == partyCharacterIndex && battlePoint.type == BattlePoint.Type.PARTY) {
+                            partyCharacter.goToBattle(battlePoint);
+                            called++;
+                        }
+                    }
+                } else {
+                    Combatant combatant = (Combatant) actor;
+                    for (BattlePoint battlePoint : battlePointGroup) {
+                        if (battlePoint.subId == combatant.getId() && battlePoint.type == BattlePoint.Type.ENEMY) {
+                            combatant.goToBattle(battlePoint);
+                            called++;
+                        }
+                    }
+                }
+            }
+        }
+        assert called <= battlePointGroup.size() && called > 0 : "called=" + called + ",battlePointGroup.size()=" + battlePointGroup.size();
     }
 }
