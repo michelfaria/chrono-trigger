@@ -14,6 +14,7 @@ import com.badlogic.gdx.utils.Disposable;
 import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.interfaces.ActorFactory;
 import io.michelfaria.chrono.interfaces.Combatant;
+import io.michelfaria.chrono.interfaces.Positionable;
 import io.michelfaria.chrono.logic.BattlePointsValidator;
 import org.jetbrains.annotations.NotNull;
 
@@ -46,9 +47,9 @@ import static io.michelfaria.chrono.MapConstants.*;
  * 3. b. In the case that a BattlePoint is assigned to an enemy, then the "subId" should be equal to that enemy's game
  * id.
  */
-public class BattlePoint extends Actor implements Disposable {
+public class BattlePoint extends Actor implements Disposable, Positionable {
 
-    public static float BATTLE_MOVE_DURATION = 1f;
+    public static float BATTLE_MOVE_DURATION = 1.5f;
 
     public final int groupId;
     public final int subId;
@@ -74,6 +75,15 @@ public class BattlePoint extends Actor implements Disposable {
         return battlePointGroup;
     }
 
+    public static BattlePoint findCamera(int battleGroup) {
+        for (BattlePoint battlePoint : Game.battlePoints) {
+            if (battlePoint.groupId == battleGroup && battlePoint.type == Type.CAMERA) {
+                return battlePoint;
+            }
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return "BattlePoint{" +
@@ -92,7 +102,7 @@ public class BattlePoint extends Actor implements Disposable {
     }
 
     public enum Type {
-        PARTY, ENEMY
+        PARTY, ENEMY, CAMERA
     }
 
     public static class Factory implements ActorFactory<BattlePoint> {

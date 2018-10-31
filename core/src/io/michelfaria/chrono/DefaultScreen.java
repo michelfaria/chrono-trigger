@@ -23,11 +23,14 @@ import io.michelfaria.chrono.control.Buttons;
 import io.michelfaria.chrono.control.GameInput;
 import io.michelfaria.chrono.graphics.TileLayerRender;
 import io.michelfaria.chrono.interfaces.Combatant;
+import io.michelfaria.chrono.interfaces.Positionable;
 import io.michelfaria.chrono.logic.BattlePointsValidator;
+import io.michelfaria.chrono.logic.BattleStatus;
 import io.michelfaria.chrono.logic.zindex.ActorZIndexUpdater;
 import io.michelfaria.chrono.ui.DefaultHud;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.badlogic.gdx.math.MathUtils.clamp;
 import static io.michelfaria.chrono.MapConstants.LAYER_FG_1;
@@ -63,6 +66,8 @@ public final class DefaultScreen implements Screen {
     private OrthographicCamera camera;
     private Viewport viewport;
     private Stage stage;
+
+    private Positionable cameraTarget;
 
     private GameInput.GameInputObserverAdapter gameInputObserver = new GameInput.GameInputObserverAdapter() {
         {
@@ -109,7 +114,8 @@ public final class DefaultScreen implements Screen {
         //
         stage.act();
 
-        // Update camera
+        //
+        updateCameraTarget();
         updateCamera();
         Game.mapRenderer.setView(camera);
 
@@ -135,10 +141,33 @@ public final class DefaultScreen implements Screen {
         DefaultHud.draw();
     }
 
+    private void updateCameraTarget() {
+        if (BattleStatus.isBattling() && !(cameraTarget instanceof BattlePoint)) {
+            Integer battleGroup = BattleStatus.getBattleGroup();
+
+            // Because if BattleStatus.isBattling returns true, then there _should_ be a battleGroup
+            assert battleGroup != null;
+
+            BattlePoint cameraPoint = BattlePoint.findCamera(battleGroup);
+            assert cameraPoint != null;
+
+            cameraTarget = cameraPoint;
+        } else if (!BattleStatus.isBattling() && !(cameraTarget instanceof PartyCharacter)) {
+            cameraTarget = Game.party.get(0);
+        }
+    }
+
     private void updateCamera() {
-        final PartyCharacter leader = Game.party.get(0);
-        camera.position.x = leader.getX() + leader.getWidth() / 2;
-        camera.position.y = leader.getY() + leader.getHeight() / 2;
+        assert cameraTarget != null;
+        if (BattleStatus.isBattling()) {
+            assert cameraTarget instanceof BattlePoint;
+            assert ((BattlePoint) cameraTarget).type == BattlePoint.Type.CAMERA;
+        } else {
+            assert cameraTarget instanceof PartyCharacter;
+        }
+
+        camera.position.x = cameraTarget.getX() + cameraTarget.getWidth() / 2;
+        camera.position.y = cameraTarget.getY() + cameraTarget.getHeight() / 2;
 
         int mapWidth = mapPixelWidth(Game.map);
         int mapHeight = mapPixelHeight(Game.map);

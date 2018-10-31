@@ -23,6 +23,7 @@ import io.michelfaria.chrono.interfaces.Combatant;
 import io.michelfaria.chrono.interfaces.Interactible;
 import io.michelfaria.chrono.interfaces.Weapon;
 import io.michelfaria.chrono.items.WoodenSword;
+import io.michelfaria.chrono.logic.BattleStatus;
 import io.michelfaria.chrono.logic.CombatStats;
 import io.michelfaria.chrono.logic.FloatPair;
 import io.michelfaria.chrono.logic.MoveHistory;
@@ -43,7 +44,6 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
 
     protected Direction facing = Direction.SOUTH;
 
-    protected boolean isBattling = false;
     protected boolean isMoving = false;
     protected boolean isRunning = false;
 
@@ -85,9 +85,10 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
         stateTime += delta;
         if (isInputEnabled()) {
             handleInput(delta);
-        } else if (!isBattling) {
+        } else if (!BattleStatus.isBattling()) {
             actFollower(delta);
         }
+        updateMovementAttributes();
         updateAnimation();
         moveHistory.add(getX(), getY());
     }
@@ -146,23 +147,34 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
             setY(last.b);
         }
 
+        if (getX() != moveHistory.getPrevX() || getY() != moveHistory.getPrevY()) {
+            isMoving = true;
+            isRunning = nextPartyMember.isRunning;
+        } else {
+            isMoving = false;
+            isRunning = false;
+        }
+    }
+
+    protected void updateMovementAttributes() {
+        int acc = 0;
         if (getX() > moveHistory.getPrevX()) {
             facing = Direction.EAST;
+            acc++;
         } else if (getX() < moveHistory.getPrevX()) {
             facing = Direction.WEST;
+            acc++;
         }
         if (getY() > moveHistory.getPrevY()) {
             facing = Direction.NORTH;
+            acc++;
         } else if (getY() < moveHistory.getPrevY()) {
             facing = Direction.SOUTH;
+            acc++;
         }
-
-        if (getX() != moveHistory.getPrevX() || getY() != moveHistory.getPrevY()) {
-            this.isMoving = true;
-            this.isRunning = nextPartyMember.isRunning;
-        } else {
-            this.isMoving = false;
-            this.isRunning = false;
+        isMoving = acc > 0;
+        if (isMoving && BattleStatus.isBattling()) {
+            isRunning = true;
         }
     }
 
@@ -250,7 +262,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     }
 
     public boolean isInputEnabled() {
-        return isMainCharacter() && !isBattling;
+        return isMainCharacter() && !BattleStatus.isBattling();
     }
 
     @Override
@@ -260,11 +272,14 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
 
     @Override
     public void goToBattle(BattlePoint battlePoint) {
-        isBattling = true;
+        BattleStatus.setBattleGroup(battlePoint.groupId);
         addAction(
                 Actions.sequence(
                         Actions.moveTo(battlePoint.getX(), battlePoint.getY(), BattlePoint.BATTLE_MOVE_DURATION),
-                        Actions.run(() -> Gdx.app.debug(PartyCharacter.class.getName(), "PartyCharacter moved to BattlePoint"))));
+                        Actions.run(() -> {
+                            Gdx.app.debug(PartyCharacter.class.getName(), "PartyCharacter moved to BattlePoint");
+                            facing = Direction.NORTH;
+                        })));
     }
 
     @Override

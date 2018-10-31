@@ -44,6 +44,7 @@ public final class BattlePointsValidator {
         Map<Integer, List<BattlePoint>> groups = compileGroups(battlePoints);
         ensureGroupsHaveAtLeastThreePartyTypeBattlePoints(groups);
         ensureGroupsHaveUniqueSubIds(groups);
+        ensureGroupsHasOneCameraBattlePoint(groups);
     }
 
     /**
@@ -118,6 +119,20 @@ public final class BattlePointsValidator {
                     throw new IllegalStateException("Duplicate subId " + battlePoint.subId + " in group "
                             + entry.getKey() + ". Violating BattlePoint: " + battlePoint);
                 }
+            }
+        }
+    }
+
+    private static void ensureGroupsHasOneCameraBattlePoint(Map<Integer, List<BattlePoint>> groups) {
+        for (Map.Entry<Integer, List<BattlePoint>> entry : groups.entrySet()) {
+            int cameraPoints = 0;
+            for (BattlePoint battlePoint : entry.getValue()) {
+                if (battlePoint.type == BattlePoint.Type.CAMERA) {
+                    cameraPoints++;
+                }
+            }
+            if (cameraPoints != 1) {
+                throw new IllegalStateException("Group (id: " + entry.getKey() + ") has " + cameraPoints + " camera points, when there should be exactly 1.");
             }
         }
     }

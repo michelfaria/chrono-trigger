@@ -6,7 +6,7 @@
 
 package io.michelfaria.chrono.interfaces;
 
-public interface Positionable {
+public interface Positionable extends Sizable {
     float getX();
 
     void setX(float x);
@@ -14,4 +14,22 @@ public interface Positionable {
     float getY();
 
     void setY(float y);
+
+    @Override
+    default float getWidth() {
+        return 0;
+    }
+
+    @Override
+    default float getHeight() {
+        return 0;
+    }
+
+    @Override
+    default void setWidth(float width) {
+    }
+
+    @Override
+    default void setHeight(float height) {
+    }
 }
