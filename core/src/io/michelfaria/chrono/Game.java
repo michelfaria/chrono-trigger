@@ -24,17 +24,26 @@ import io.michelfaria.chrono.control.GameInput;
 import io.michelfaria.chrono.graphics.TileLayerRenderer;
 import io.michelfaria.chrono.interfaces.CollisionEntity;
 import io.michelfaria.chrono.interfaces.Combatant;
-import io.michelfaria.chrono.logic.BattlePointsValidator;
+import io.michelfaria.chrono.logic.battle.BattleCoordinator;
+import io.michelfaria.chrono.logic.battle.BattlePointsValidator;
+import io.michelfaria.chrono.logic.battle.BattleStatus;
 import io.michelfaria.chrono.logic.collision.CollisionChecker;
 import io.michelfaria.chrono.logic.collision.CollisionEntityMover;
 import io.michelfaria.chrono.ui.MenuBoxes;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public final class Game extends com.badlogic.gdx.Game {
+
+    public static boolean debug;
+    static {
+        String x = System.getProperty("debug");
+        debug = x != null && x.equals("true");
+    }
 
     public static class Context {
         /*
@@ -59,14 +68,15 @@ public final class Game extends com.badlogic.gdx.Game {
          */
         public Set<CollisionEntity> collisionEntities = new HashSet<>();
         public Array<PartyCharacter> party = new Array<>(Actor.class);
+        public Set<Combatant> combatants = new HashSet<>();
         public Set<BattlePoint> battlePoints = new HashSet<>();
         public AtomicInteger paused = new AtomicInteger(0);
+        public BattleStatus battleStatus = new BattleStatus();
 
         /*
          * Dynamic Methods
          */
         public Consumer<String> openDialogBox = null;
-        public Consumer<Combatant> beginBattle = null;
 
         /*
          * Strategies
@@ -77,6 +87,8 @@ public final class Game extends com.badlogic.gdx.Game {
         public TiledMapStagePopulator tiledMapStagePopulator = new TiledMapStagePopulator(this);
         public BattlePointsValidator battlePointsValidator = new BattlePointsValidator();
         public MenuBoxes menuBoxes = new MenuBoxes(this);
+        public MusicManager musicManager = new MusicManager();
+        public BattleCoordinator battleCoordinator = new BattleCoordinator(this);
 
         private Context() {}
 
@@ -87,12 +99,14 @@ public final class Game extends com.badlogic.gdx.Game {
         private void dispose() {
             batch.dispose();
             assetManager.dispose();
+            musicManager.dispose();
 
             assert map == null;
             assert mapRenderer == null;
             assert collisionEntities.size() == 0 : collisionEntities;
             assert battlePoints.size() == 0 : battlePoints;
             assert gameInput.observersSize() == 0 : gameInput.getObserversCopy();
+            assert combatants.size() == 0 : combatants;
         }
     }
 
@@ -101,7 +115,7 @@ public final class Game extends com.badlogic.gdx.Game {
 
     @Override
     public void create() {
-        Gdx.app.setLogLevel(Application.LOG_DEBUG);
+        if (debug) Gdx.app.setLogLevel(Application.LOG_DEBUG);
 
         ctx = new Context();
 
@@ -113,6 +127,7 @@ public final class Game extends com.badlogic.gdx.Game {
 
         ctx.assetManager.load(Assets.CHRONO_ATLAS);
         ctx.assetManager.load(Assets.FONT);
+        ctx.assetManager.load(Assets.BATTLE_MUSIC);
 
         ctx.assetManager.finishLoading();
 

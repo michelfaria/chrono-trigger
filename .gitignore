@@ -4,6 +4,7 @@
 /core/assets/font.fnt
 /core/assets/textures/*.png
 /core/assets/tilesets/*.png
+/core/assets/music/*
 /img/
 
 ## KDE

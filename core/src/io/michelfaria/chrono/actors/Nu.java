@@ -14,14 +14,12 @@ import com.badlogic.gdx.maps.MapProperties;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Disposable;
-import io.michelfaria.chrono.DefaultScreen;
 import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.animation.AnimationData;
 import io.michelfaria.chrono.animation.AnimationId;
 import io.michelfaria.chrono.animation.AnimationManager;
 import io.michelfaria.chrono.interfaces.*;
-import io.michelfaria.chrono.logic.CombatStats;
-import io.michelfaria.chrono.ui.DefaultHud;
+import io.michelfaria.chrono.logic.battle.CombatStats;
 
 import java.util.Map;
 
@@ -61,6 +59,7 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
         setHeight(16);
 
         ctx.collisionEntities.add(this);
+        ctx.combatants.add(this);
     }
 
     @Override
@@ -94,7 +93,7 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
         if (id == -1) {
             ctx.openDialogBox.accept("I am a Nu! I am at x:" + getX() + " and y: " + getY());
         } else if (id == 1000) {
-            ctx.beginBattle.accept(this);
+            ctx.battleCoordinator.beginBattle(this);
         }
     }
 
@@ -113,11 +112,6 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
     }
 
     @Override
-    public void dispose() {
-        ctx.collisionEntities.remove(this);
-    }
-
-    @Override
     public CombatStats getCombatStats() {
         return this.combatStats;
     }
@@ -128,14 +122,24 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
     }
 
     @Override
-    public void goToBattle(BattlePoint battlePoint) {
+    public void goToBattle(BattlePoint battlePoint, Runnable done) {
         addAction(
                 Actions.sequence(
                         Actions.moveTo(battlePoint.getX(), battlePoint.getY(), BattlePoint.BATTLE_MOVE_DURATION),
-                        Actions.run(() -> Gdx.app.debug(Nu.class.getName(), "Nu moved to BattlePoint"))));
+                        Actions.run(() -> {
+                            Gdx.app.debug(Nu.class.getName(), "Nu moved to BattlePoint");
+                            done.run();
+                        })));
+    }
+
+    @Override
+    public void dispose() {
+        ctx.collisionEntities.remove(this);
+        ctx.combatants.remove(this);
     }
 
     public static class NuFactory implements ActorFactory<Nu> {
+
 
         private Game.Context ctx;
 

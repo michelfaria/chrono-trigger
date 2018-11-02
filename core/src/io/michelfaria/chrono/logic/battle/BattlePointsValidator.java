@@ -1,10 +1,10 @@
 /*
- * Developed by Michel Faria on 10/29/18 8:57 PM.
- * Last modified 10/28/18 11:15 AM.
+ * Developed by Michel Faria on 11/2/18 5:14 PM.
+ * Last modified 11/2/18 4:31 PM.
  * Copyright (c) 2018. All rights reserved.
  */
 
-package io.michelfaria.chrono.logic;
+package io.michelfaria.chrono.logic.battle;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Array;

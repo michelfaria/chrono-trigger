@@ -8,6 +8,7 @@ package io.michelfaria.chrono;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -23,16 +24,16 @@ import io.michelfaria.chrono.control.Buttons;
 import io.michelfaria.chrono.control.GameInput;
 import io.michelfaria.chrono.interfaces.Combatant;
 import io.michelfaria.chrono.interfaces.Positionable;
-import io.michelfaria.chrono.logic.BattleStatus;
 import io.michelfaria.chrono.logic.zindex.ActorZIndexUpdater;
 import io.michelfaria.chrono.ui.DefaultHud;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.badlogic.gdx.math.MathUtils.clamp;
 import static io.michelfaria.chrono.MapConstants.LAYER_FG_1;
 import static io.michelfaria.chrono.MapConstants.LAYER_FG_2;
-import static io.michelfaria.chrono.logic.BattlePointsValidator.MINIMUM_PARTY_BATTLEPOINTS_PER_GROUP;
+import static io.michelfaria.chrono.logic.battle.BattlePointsValidator.MINIMUM_PARTY_BATTLEPOINTS_PER_GROUP;
 import static io.michelfaria.chrono.util.TiledMapUtil.mapPixelHeight;
 import static io.michelfaria.chrono.util.TiledMapUtil.mapPixelWidth;
 
@@ -73,8 +74,6 @@ public final class DefaultScreen implements Screen {
             }
         };
         ctx.gameInput.addObserver(gameInputObserver);
-
-        ctx.beginBattle = this::beginBattle;
     }
 
     @Override
@@ -123,8 +122,8 @@ public final class DefaultScreen implements Screen {
     }
 
     private void updateCameraTarget() {
-        if (BattleStatus.isBattling() && !(cameraTarget instanceof BattlePoint)) {
-            Integer battleGroup = BattleStatus.getBattleGroup();
+        if (ctx.battleStatus.isBattling() && !(cameraTarget instanceof BattlePoint)) {
+            Integer battleGroup = ctx.battleStatus.getBattleGroup();
 
             // Because if BattleStatus.isBattling returns true, then there _should_ be a battleGroup
             assert battleGroup != null;
@@ -133,14 +132,14 @@ public final class DefaultScreen implements Screen {
             assert cameraPoint != null;
 
             cameraTarget = cameraPoint;
-        } else if (!BattleStatus.isBattling() && !(cameraTarget instanceof PartyCharacter)) {
+        } else if (!ctx.battleStatus.isBattling() && !(cameraTarget instanceof PartyCharacter)) {
             cameraTarget = ctx.party.get(0);
         }
     }
 
     private void updateCamera() {
         assert cameraTarget != null;
-        if (BattleStatus.isBattling()) {
+        if (ctx.battleStatus.isBattling()) {
             assert cameraTarget instanceof BattlePoint;
             assert ((BattlePoint) cameraTarget).type == BattlePoint.Type.CAMERA;
         } else {
@@ -183,50 +182,6 @@ public final class DefaultScreen implements Screen {
 
     }
 
-    public void beginBattle(Combatant combatant) {
-        List<BattlePoint> matching = Combatant.findMatchingBattlePoints(combatant, ctx);
-        if (matching.isEmpty()) {
-            throw new IllegalStateException("Cannot begin battle: No BattlePoints with SubID " + combatant.getId() + " found.");
-        }
-
-        BattlePoint closest = Combatant.findClosestBattlePointFromList(combatant, matching);
-        assert closest != null;
-
-        List<BattlePoint> battlePointGroup = closest.getAllInTheSameGroup();
-        assert battlePointGroup.size() >= MINIMUM_PARTY_BATTLEPOINTS_PER_GROUP : battlePointGroup.size();
-
-        this.callCombatantsToBattle(battlePointGroup);
-    }
-
-    private void callCombatantsToBattle(List<BattlePoint> battlePointGroup) {
-        int called = 0;
-        for (Actor actor : stage.getActors()) {
-            if (actor instanceof Combatant) {
-                if (actor instanceof PartyCharacter) {
-                    PartyCharacter partyCharacter = (PartyCharacter) actor;
-                    int partyCharacterIndex = ctx.party.indexOf(partyCharacter, true);
-                    assert partyCharacterIndex >= 0;
-                    for (BattlePoint battlePoint : battlePointGroup) {
-                        if (battlePoint.subId == partyCharacterIndex && battlePoint.type == BattlePoint.Type.PARTY) {
-                            partyCharacter.goToBattle(battlePoint);
-                            called++;
-                        }
-                    }
-                } else {
-                    Combatant combatant = (Combatant) actor;
-                    for (BattlePoint battlePoint : battlePointGroup) {
-                        if (battlePoint.subId == combatant.getId() && battlePoint.type == BattlePoint.Type.ENEMY) {
-                            combatant.goToBattle(battlePoint);
-                            called++;
-                        }
-                    }
-                }
-            }
-        }
-        assert called <= battlePointGroup.size() && called > 0
-                : "called=" + called + ",battlePointGroup.size()=" + battlePointGroup.size();
-    }
-
     @Override
     public void dispose() {
         hud.dispose();
@@ -241,7 +196,7 @@ public final class DefaultScreen implements Screen {
                 ((Disposable) actor).dispose();
             }
         }
+        stage.dispose();
         ctx.gameInput.removeObserver(gameInputObserver);
-        ctx.beginBattle = null;
     }
 }

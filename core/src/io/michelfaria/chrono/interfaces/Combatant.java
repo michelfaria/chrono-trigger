@@ -9,7 +9,7 @@ package io.michelfaria.chrono.interfaces;
 import com.badlogic.gdx.math.Vector2;
 import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.actors.BattlePoint;
-import io.michelfaria.chrono.logic.CombatStats;
+import io.michelfaria.chrono.logic.battle.CombatStats;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ public interface Combatant extends Identifiable, Positionable {
 
 	int calculateAttackDamage();
 
-	void goToBattle(BattlePoint battlePoint);
+	void goToBattle(BattlePoint battlePoint, Runnable done);
 
     static List<BattlePoint> findMatchingBattlePoints(Combatant requesterCombatant, Game.Context ctx) {
         List<BattlePoint> matching = new ArrayList<>();

@@ -23,8 +23,7 @@ import io.michelfaria.chrono.interfaces.Combatant;
 import io.michelfaria.chrono.interfaces.Interactible;
 import io.michelfaria.chrono.interfaces.Weapon;
 import io.michelfaria.chrono.items.WoodenSword;
-import io.michelfaria.chrono.logic.BattleStatus;
-import io.michelfaria.chrono.logic.CombatStats;
+import io.michelfaria.chrono.logic.battle.CombatStats;
 import io.michelfaria.chrono.logic.FloatPair;
 import io.michelfaria.chrono.logic.MoveHistory;
 import io.michelfaria.chrono.util.ActorUtil;
@@ -75,6 +74,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
 
         ctx.collisionEntities.add(this);
         ctx.party.add(this);
+        ctx.combatants.add(this);
         ctx.gameInput.addObserver(gameInputObserver);
     }
 
@@ -89,7 +89,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
         stateTime += delta;
         if (isInputEnabled()) {
             handleInput(delta);
-        } else if (!BattleStatus.isBattling()) {
+        } else if (!ctx.battleStatus.isBattling()) {
             actFollower(delta);
         }
         updateMovementAttributes();
@@ -177,7 +177,9 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
             acc++;
         }
         isMoving = acc > 0;
-        if (isMoving && BattleStatus.isBattling()) {
+
+        // Party character needs to always run if they're engaged in battle
+        if (isMoving && ctx.battleStatus.isBattling()) {
             isRunning = true;
         }
     }
@@ -266,7 +268,8 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     }
 
     public boolean isInputEnabled() {
-        return isMainCharacter() && !BattleStatus.isBattling();
+        return isMainCharacter()
+                && !ctx.battleStatus.isBattling(); // The characters shouldn't be able to move while in-battle
     }
 
     @Override
@@ -275,14 +278,15 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     }
 
     @Override
-    public void goToBattle(BattlePoint battlePoint) {
-        BattleStatus.setBattleGroup(battlePoint.groupId);
+    public void goToBattle(BattlePoint battlePoint, Runnable done) {
+        ctx.battleStatus.setBattleGroup(battlePoint.groupId);
         addAction(
                 Actions.sequence(
                         Actions.moveTo(battlePoint.getX(), battlePoint.getY(), BattlePoint.BATTLE_MOVE_DURATION),
                         Actions.run(() -> {
                             Gdx.app.debug(PartyCharacter.class.getName(), "PartyCharacter moved to BattlePoint");
                             facing = Direction.NORTH;
+                            done.run();
                         })));
     }
 
@@ -290,6 +294,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     public void dispose() {
         ctx.collisionEntities.remove(this);
         ctx.party.removeValue(this, true);
+        ctx.combatants.remove(this);
         ctx.gameInput.removeObserver(gameInputObserver);
     }
 

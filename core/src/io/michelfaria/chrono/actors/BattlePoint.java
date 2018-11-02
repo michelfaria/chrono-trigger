@@ -8,15 +8,11 @@ package io.michelfaria.chrono.actors;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.maps.MapProperties;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.utils.Disposable;
 import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.interfaces.ActorFactory;
-import io.michelfaria.chrono.interfaces.Combatant;
 import io.michelfaria.chrono.interfaces.Positionable;
-import io.michelfaria.chrono.logic.BattlePointsValidator;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
