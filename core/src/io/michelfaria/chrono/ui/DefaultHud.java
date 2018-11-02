@@ -21,12 +21,14 @@ import io.michelfaria.chrono.util.GroupUtil;
 @SuppressWarnings("FieldCanBeLocal")
 public final class DefaultHud {
 
-    private static Viewport viewport;
-    private static Stage stage;
-    private static DialogBoxGroup dialogBoxGroup;
-    private static ScissorAnimator scissorAnimator;
+    private Game.Context ctx;
 
-    private static GameInput.GameInputObserverAdapter gameInputObserver = new GameInput.GameInputObserverAdapter() {
+    private Viewport viewport;
+    private Stage stage;
+    private DialogBoxGroup dialogBoxGroup;
+    private ScissorAnimator scissorAnimator;
+
+    private GameInput.GameInputObserverAdapter gameInputObserver = new GameInput.GameInputObserverAdapter() {
         @Override
         public void buttonPressed(int controller, Buttons button) {
             if (button == Buttons.A) {
@@ -35,10 +37,12 @@ public final class DefaultHud {
         }
     };
 
-    static {
-        viewport = new FitViewport(Game.VRESX, Game.VRESY);
-        stage = new Stage(viewport, Game.batch);
-        dialogBoxGroup = new DialogBoxGroup();
+    public DefaultHud(Game.Context ctx) {
+        this.ctx = ctx;
+
+        viewport = new FitViewport(ctx.VRESX, ctx.VRESY);
+        stage = new Stage(viewport, ctx.batch);
+        dialogBoxGroup = new DialogBoxGroup(ctx);
         scissorAnimator =
                 new ScissorAnimator(
                         new Rectangle(
@@ -47,50 +51,50 @@ public final class DefaultHud {
                                 GroupUtil.getWidth(dialogBoxGroup),
                                 GroupUtil.getHeight(dialogBoxGroup)),
                         viewport);
-        GameInput.addObserver(gameInputObserver);
+        ctx.gameInput.addObserver(gameInputObserver);
+
+        ctx.openDialogBox = this::openDialogBox;
     }
 
-    private DefaultHud() {
-    }
-
-    public static void draw() {
-        Game.batch.setProjectionMatrix(stage.getCamera().combined);
+    public void draw() {
+        ctx.batch.setProjectionMatrix(stage.getCamera().combined);
         stage.draw();
 
-        Game.batch.begin();
-        scissorAnimator.scissor(() -> dialogBoxGroup.draw(Game.batch, 1));
-        Game.batch.end();
+        ctx.batch.begin();
+        scissorAnimator.scissor(() -> dialogBoxGroup.draw(ctx.batch, 1));
+        ctx.batch.end();
     }
 
-    public static void update() {
+    public void update() {
         stage.act();
         dialogBoxGroup.act(Gdx.graphics.getDeltaTime());
     }
 
-    public static void openDialogBox(String text) {
+    public void openDialogBox(String text) {
         if (text != null) {
             dialogBoxGroup.text = text;
         }
-        Game.paused.incrementAndGet();
+        ctx.paused.incrementAndGet();
         scissorAnimator.open();
     }
 
-    public static boolean isDialogBoxOpen() {
+    public boolean isDialogBoxOpen() {
         return scissorAnimator.getSpriteState() == ScissorAnimator.AnimationState.OPENED;
     }
 
-    public static void closeDialogBox() {
+    public void closeDialogBox() {
         if (isDialogBoxOpen()) {
-            Game.paused.decrementAndGet();
+            ctx.paused.decrementAndGet();
             scissorAnimator.close();
         }
     }
 
-    public static void resize(int width, int height) {
+    public void resize(int width, int height) {
         viewport.update(width, height);
     }
 
-    public static void dispose() {
-        GameInput.removeObserver(gameInputObserver);
+    public void dispose() {
+        ctx.gameInput.removeObserver(gameInputObserver);
+        ctx.openDialogBox = null;
     }
 }

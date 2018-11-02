@@ -51,23 +51,26 @@ public class BattlePoint extends Actor implements Disposable, Positionable {
 
     public static float BATTLE_MOVE_DURATION = 1.5f;
 
+    private Game.Context ctx;
+
     public final int groupId;
     public final int subId;
     public final Type type;
 
-    private BattlePoint(int groupId, int subId, Type type) {
+    private BattlePoint(Game.Context ctx, int groupId, int subId, Type type) {
+        this.ctx = ctx;
         this.groupId = groupId;
         this.subId = subId;
         this.type = type;
 
-        Game.battlePoints.add(this);
+        ctx.battlePoints.add(this);
 
         Gdx.app.debug(BattlePoint.class.getName(), this.toString());
     }
 
     public List<BattlePoint> getAllInTheSameGroup() {
         List<BattlePoint> battlePointGroup = new ArrayList<>();
-        for (BattlePoint battlePoint : Game.battlePoints) {
+        for (BattlePoint battlePoint : ctx.battlePoints) {
             if (battlePoint.groupId == groupId) {
                 battlePointGroup.add(battlePoint);
             }
@@ -75,8 +78,8 @@ public class BattlePoint extends Actor implements Disposable, Positionable {
         return battlePointGroup;
     }
 
-    public static BattlePoint findCamera(int battleGroup) {
-        for (BattlePoint battlePoint : Game.battlePoints) {
+    public static BattlePoint findCameraForGroup(Game.Context ctx, int battleGroup) {
+        for (BattlePoint battlePoint : ctx.battlePoints) {
             if (battlePoint.groupId == battleGroup && battlePoint.type == Type.CAMERA) {
                 return battlePoint;
             }
@@ -97,7 +100,7 @@ public class BattlePoint extends Actor implements Disposable, Positionable {
 
     @Override
     public void dispose() {
-        boolean wasInCollection = Game.battlePoints.remove(this);
+        boolean wasInCollection = ctx.battlePoints.remove(this);
         assert wasInCollection;
     }
 
@@ -106,6 +109,13 @@ public class BattlePoint extends Actor implements Disposable, Positionable {
     }
 
     public static class Factory implements ActorFactory<BattlePoint> {
+
+        private Game.Context ctx;
+
+        public Factory(Game.Context ctx) {
+            this.ctx = ctx;
+        }
+
         @Override
         public BattlePoint make(MapProperties props) {
             int groupId = (Integer) Objects.requireNonNull(props.get(PROP_BATTLEPT_BATTLEID), "Group id not found");
@@ -113,7 +123,7 @@ public class BattlePoint extends Actor implements Disposable, Positionable {
             Type type = Type.valueOf(
                     Objects.requireNonNull(
                             (String) props.get(PROP_BATTLEPT_TYPE), "Battle point type not found"));
-            return new BattlePoint(groupId, subId, type);
+            return new BattlePoint(ctx, groupId, subId, type);
         }
 
         @Override

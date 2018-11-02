@@ -21,16 +21,13 @@ import io.michelfaria.chrono.actors.Crono;
 import io.michelfaria.chrono.actors.PartyCharacter;
 import io.michelfaria.chrono.control.Buttons;
 import io.michelfaria.chrono.control.GameInput;
-import io.michelfaria.chrono.graphics.TileLayerRender;
 import io.michelfaria.chrono.interfaces.Combatant;
 import io.michelfaria.chrono.interfaces.Positionable;
-import io.michelfaria.chrono.logic.BattlePointsValidator;
 import io.michelfaria.chrono.logic.BattleStatus;
 import io.michelfaria.chrono.logic.zindex.ActorZIndexUpdater;
 import io.michelfaria.chrono.ui.DefaultHud;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.badlogic.gdx.math.MathUtils.clamp;
 import static io.michelfaria.chrono.MapConstants.LAYER_FG_1;
@@ -41,75 +38,59 @@ import static io.michelfaria.chrono.util.TiledMapUtil.mapPixelWidth;
 
 public final class DefaultScreen implements Screen {
 
-    private static DefaultScreen defaultScreen = null;
-
-    private DefaultScreen() {
-    }
-
-    public static DefaultScreen getInstance() {
-        if (defaultScreen == null) {
-            defaultScreen = new DefaultScreen();
-        }
-        return defaultScreen;
-    }
-
-    public static void disposeInstance() {
-        if (defaultScreen != null) {
-            defaultScreen.dispose();
-            defaultScreen = null;
-        }
-    }
+    private Game.Context ctx;
+    private DefaultHud hud;
 
     /*
     Scene2D
      */
+
     private OrthographicCamera camera;
     private Viewport viewport;
     private Stage stage;
-
     private Positionable cameraTarget;
 
-    private GameInput.GameInputObserverAdapter gameInputObserver = new GameInput.GameInputObserverAdapter() {
-        {
-            priority = 1;
-        }
+    private GameInput.GameInputObserverAdapter gameInputObserver;
 
-        @Override
-        public void buttonPressed(int controller, Buttons button) {
-            if (button == Buttons.X) {
-                Crono crono = new Crono();
-                stage.addActor(crono);
-            }
-        }
-    };
+    public DefaultScreen(Game.Context ctx) {
+        this.ctx = ctx;
+        this.hud = new DefaultHud(ctx);
 
-    public DefaultScreen init() {
-        Game.map = Game.tmxMapLoader.load(Assets.EXAMPLE_TMX);
-        Game.mapRenderer = new OrthogonalTiledMapRenderer(Game.map);
+        ctx.map = ctx.tmxMapLoader.load(Assets.EXAMPLE_TMX);
+        ctx.mapRenderer = new OrthogonalTiledMapRenderer(ctx.map);
 
         camera = new OrthographicCamera();
-        viewport = new FitViewport(Game.VRESX, Game.VRESY, camera);
-        stage = new Stage(viewport, Game.batch);
+        viewport = new FitViewport(ctx.VRESX, ctx.VRESY, camera);
+        stage = new Stage(viewport, ctx.batch);
 
-        GameInput.addObserver(gameInputObserver);
+        gameInputObserver = new GameInput.GameInputObserverAdapter() {
+            @Override
+            public void buttonPressed(int controller, Buttons button) {
+                if (button == Buttons.X) {
+                    Crono crono = new Crono(ctx);
+                    stage.addActor(crono);
+                }
+            }
+        };
+        ctx.gameInput.addObserver(gameInputObserver);
 
-        return this;
+        ctx.beginBattle = this::beginBattle;
     }
 
     @Override
     public void show() {
-        stage.addActor(new Crono());
-        TiledMapStagePopulator.populateStage(Game.map, stage);
-        BattlePointsValidator.validateBattlePoints(stage.getActors());
+        stage.addActor(new Crono(ctx));
+        ctx.tiledMapStagePopulator.populateStage(ctx.map, stage);
+        ctx.battlePointsValidator.validateBattlePoints(stage.getActors());
     }
 
     @Override
     public void render(float delta) {
-        Game.fpsLogger.log();
+        ctx.fpsLogger.log();
 
         //
-        GameInput.tick();
-        DefaultHud.update();
+        ctx.gameInput.tick();
+        hud.update();
 
         //
         stage.act();
@@ -117,7 +98,7 @@ public final class DefaultScreen implements Screen {
         //
         updateCameraTarget();
         updateCamera();
-        Game.mapRenderer.setView(camera);
+        ctx.mapRenderer.setView(camera);
 
         //
         ActorZIndexUpdater.updateActorsZIndex(stage.getActors());
@@ -127,18 +108,18 @@ public final class DefaultScreen implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         // Render the foreground that goes behind the sprites
-        TileLayerRender.renderTileLayer(LAYER_FG_2);
+        ctx.tileLayerRenderer.renderTileLayer(LAYER_FG_2);
 
         // Draw the stage
         // (Stages open the batch and close it again)
-        Game.batch.setProjectionMatrix(camera.combined);
+        ctx.batch.setProjectionMatrix(camera.combined);
         stage.draw();
 
         // Render the foreground that goes in front of the sprites
-        TileLayerRender.renderTileLayer(LAYER_FG_1);
+        ctx.tileLayerRenderer.renderTileLayer(LAYER_FG_1);
 
         // Draw HUD last
-        DefaultHud.draw();
+        hud.draw();
     }
 
     private void updateCameraTarget() {
@@ -148,12 +129,12 @@ public final class DefaultScreen implements Screen {
             // Because if BattleStatus.isBattling returns true, then there _should_ be a battleGroup
             assert battleGroup != null;
 
-            BattlePoint cameraPoint = BattlePoint.findCamera(battleGroup);
+            BattlePoint cameraPoint = BattlePoint.findCameraForGroup(ctx, battleGroup);
             assert cameraPoint != null;
 
             cameraTarget = cameraPoint;
         } else if (!BattleStatus.isBattling() && !(cameraTarget instanceof PartyCharacter)) {
-            cameraTarget = Game.party.get(0);
+            cameraTarget = ctx.party.get(0);
         }
     }
 
@@ -169,8 +150,8 @@ public final class DefaultScreen implements Screen {
         camera.position.x = cameraTarget.getX() + cameraTarget.getWidth() / 2;
         camera.position.y = cameraTarget.getY() + cameraTarget.getHeight() / 2;
 
-        int mapWidth = mapPixelWidth(Game.map);
-        int mapHeight = mapPixelHeight(Game.map);
+        int mapWidth = mapPixelWidth(ctx.map);
+        int mapHeight = mapPixelHeight(ctx.map);
         float cameraHalfWidth = camera.viewportWidth / 2;
         float cameraHalfHeight = camera.viewportHeight / 2;
 
@@ -184,7 +165,7 @@ public final class DefaultScreen implements Screen {
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
-        DefaultHud.resize(width, height);
+        hud.resize(width, height);
     }
 
     @Override
@@ -202,24 +183,8 @@ public final class DefaultScreen implements Screen {
 
     }
 
-    @Override
-    public void dispose() {
-        assert Game.map != null;
-        assert Game.mapRenderer != null;
-        Game.map.dispose();
-        Game.mapRenderer.dispose();
-        Game.map = null;
-        Game.mapRenderer = null;
-        for (Actor actor : stage.getActors()) {
-            if (actor instanceof Disposable) {
-                ((Disposable) actor).dispose();
-            }
-        }
-        GameInput.removeObserver(gameInputObserver);
-    }
-
     public void beginBattle(Combatant combatant) {
-        List<BattlePoint> matching = Combatant.findMatchingBattlePoints(combatant);
+        List<BattlePoint> matching = Combatant.findMatchingBattlePoints(combatant, ctx);
         if (matching.isEmpty()) {
             throw new IllegalStateException("Cannot begin battle: No BattlePoints with SubID " + combatant.getId() + " found.");
         }
@@ -239,7 +204,7 @@ public final class DefaultScreen implements Screen {
             if (actor instanceof Combatant) {
                 if (actor instanceof PartyCharacter) {
                     PartyCharacter partyCharacter = (PartyCharacter) actor;
-                    int partyCharacterIndex = Game.party.indexOf(partyCharacter, true);
+                    int partyCharacterIndex = ctx.party.indexOf(partyCharacter, true);
                     assert partyCharacterIndex >= 0;
                     for (BattlePoint battlePoint : battlePointGroup) {
                         if (battlePoint.subId == partyCharacterIndex && battlePoint.type == BattlePoint.Type.PARTY) {
@@ -260,5 +225,23 @@ public final class DefaultScreen implements Screen {
         }
         assert called <= battlePointGroup.size() && called > 0
                 : "called=" + called + ",battlePointGroup.size()=" + battlePointGroup.size();
+    }
+
+    @Override
+    public void dispose() {
+        hud.dispose();
+        assert ctx.map != null;
+        assert ctx.mapRenderer != null;
+        ctx.map.dispose();
+        ctx.mapRenderer.dispose();
+        ctx.map = null;
+        ctx.mapRenderer = null;
+        for (Actor actor : stage.getActors()) {
+            if (actor instanceof Disposable) {
+                ((Disposable) actor).dispose();
+            }
+        }
+        ctx.gameInput.removeObserver(gameInputObserver);
+        ctx.beginBattle = null;
     }
 }

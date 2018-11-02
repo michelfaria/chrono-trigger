@@ -17,7 +17,7 @@ public final class BattlePointsValidator {
 
     public static int MINIMUM_PARTY_BATTLEPOINTS_PER_GROUP = 3;
 
-    private BattlePointsValidator() {
+    public BattlePointsValidator() {
     }
 
     /**
@@ -25,7 +25,7 @@ public final class BattlePointsValidator {
      * <p>
      * To understand what constitutes a valid BattlePoint, see {@link BattlePoint}.
      */
-    public static void validateBattlePoints(Array<Actor> actors) {
+    public void validateBattlePoints(Array<Actor> actors) {
         List<BattlePoint> battlePoints = new ArrayList<>();
         List<Identifiable> identifiables = new ArrayList<>();
 
@@ -50,7 +50,7 @@ public final class BattlePointsValidator {
     /**
      * Ensures the BattlePoint provided has exactly one Identifiable with an "id" that matches its "subId".
      */
-    private static void ensureBattlePointHasMatchingIndentifiable(BattlePoint battlePoint, List<Identifiable> identifiables) {
+    private void ensureBattlePointHasMatchingIndentifiable(BattlePoint battlePoint, List<Identifiable> identifiables) {
         if (battlePoint.type == BattlePoint.Type.ENEMY) {
             // Ensure each battle point has _only_ *one* actor where the BattlePoint.subId is equal to the Actor's id
             List<Identifiable> matches = new ArrayList<>();
@@ -73,7 +73,7 @@ public final class BattlePointsValidator {
     /**
      * Separates the provided BattlePoints into groups.
      */
-    private static Map<Integer, List<BattlePoint>> compileGroups(List<BattlePoint> battlePoints) {
+    private Map<Integer, List<BattlePoint>> compileGroups(List<BattlePoint> battlePoints) {
         Map<Integer, List<BattlePoint>> map = new HashMap<>();
 
         for (BattlePoint battlePoint : battlePoints) {
@@ -92,7 +92,7 @@ public final class BattlePointsValidator {
     /**
      * Ensures each individual BattlePoint group has at least 3 PARTY BattlePoints.
      */
-    private static void ensureGroupsHaveAtLeastThreePartyTypeBattlePoints(Map<Integer, List<BattlePoint>> groups) {
+    private void ensureGroupsHaveAtLeastThreePartyTypeBattlePoints(Map<Integer, List<BattlePoint>> groups) {
         for (Map.Entry<Integer, List<BattlePoint>> entry : groups.entrySet()) {
             int partyBattlePoints = 0;
             for (BattlePoint battlePoint : entry.getValue()) {
@@ -111,7 +111,7 @@ public final class BattlePointsValidator {
     /**
      * Ensures each battle point in each group has an unique subId.
      */
-    private static void ensureGroupsHaveUniqueSubIds(Map<Integer, List<BattlePoint>> groups) {
+    private void ensureGroupsHaveUniqueSubIds(Map<Integer, List<BattlePoint>> groups) {
         for (Map.Entry<Integer, List<BattlePoint>> entry : groups.entrySet()) {
             Set<Integer> subIdSet = new HashSet<>();
             for (BattlePoint battlePoint : entry.getValue()) {
@@ -123,7 +123,7 @@ public final class BattlePointsValidator {
         }
     }
 
-    private static void ensureGroupsHasOneCameraBattlePoint(Map<Integer, List<BattlePoint>> groups) {
+    private void ensureGroupsHasOneCameraBattlePoint(Map<Integer, List<BattlePoint>> groups) {
         for (Map.Entry<Integer, List<BattlePoint>> entry : groups.entrySet()) {
             int cameraPoints = 0;
             for (BattlePoint battlePoint : entry.getValue()) {

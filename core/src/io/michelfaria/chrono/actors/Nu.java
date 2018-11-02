@@ -32,16 +32,18 @@ import static io.michelfaria.chrono.textures.NuTRD.*;
 
 public class Nu extends Actor implements CollisionEntity, Interactible, Identifiable, Disposable, Combatant {
 
+    private Game.Context ctx;
     private int id;
-    private final AnimationManager animationManager = new AnimationManager();
+    private AnimationManager animationManager = new AnimationManager();
     private CombatStats combatStats = new CombatStats();
 
     private float stateTime = 0f;
 
-    public Nu(int id) {
+    public Nu(Game.Context ctx, int id) {
+        this.ctx = ctx;
         this.id = id;
 
-        final TextureAtlas atlas = Game.getMainTextureAtlas();
+        final TextureAtlas atlas = ctx.getMainTextureAtlas();
         final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.getAnimations();
 
         animations.put(IDLE_NORTH, makeAnimation(atlas, NU_IDLE_NORTH));
@@ -58,7 +60,7 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
         setWidth(16);
         setHeight(16);
 
-        Game.collisionEntities.add(this);
+        ctx.collisionEntities.add(this);
     }
 
     @Override
@@ -90,9 +92,9 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
     @Override
     public void interact() {
         if (id == -1) {
-            DefaultHud.openDialogBox("I am a Nu! I am at x:" + getX() + " and y: " + getY());
+            ctx.openDialogBox.accept("I am a Nu! I am at x:" + getX() + " and y: " + getY());
         } else if (id == 1000) {
-            DefaultScreen.getInstance().beginBattle(this);
+            ctx.beginBattle.accept(this);
         }
     }
 
@@ -112,7 +114,7 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
 
     @Override
     public void dispose() {
-        Game.collisionEntities.remove(this);
+        ctx.collisionEntities.remove(this);
     }
 
     @Override
@@ -134,10 +136,17 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
     }
 
     public static class NuFactory implements ActorFactory<Nu> {
+
+        private Game.Context ctx;
+
+        public NuFactory(Game.Context ctx) {
+            this.ctx = ctx;
+        }
+
         @Override
         public Nu make(MapProperties props) {
             Integer id = (Integer) props.get(PROP_ACTOR_ID);
-            return new Nu(id == null ? -1 : id);
+            return new Nu(ctx, id == null ? -1 : id);
         }
 
         @Override

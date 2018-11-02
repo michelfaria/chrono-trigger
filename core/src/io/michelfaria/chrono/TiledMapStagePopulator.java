@@ -39,17 +39,19 @@ import static io.michelfaria.chrono.MapConstants.*;
  */
 public final class TiledMapStagePopulator {
 
-    private static List<ActorFactory<? extends Actor>> actorFactoryList = new ArrayList<>();
+    private Game.Context ctx;
 
-    static {
-        actorFactoryList.add(new Nu.NuFactory());
-        actorFactoryList.add(new BattlePoint.Factory());
+    private List<ActorFactory<? extends Actor>> actorFactoryList = new ArrayList<>();
+
+    public TiledMapStagePopulator(Game.Context ctx) {
+        this.ctx = ctx;
+
+        actorFactoryList.add(new Nu.NuFactory(ctx));
+        actorFactoryList.add(new BattlePoint.Factory(ctx));
         actorFactoryList.add(new EntryPoint.Factory());
     }
 
-    private TiledMapStagePopulator() {}
-
-    public static void populateStage(TiledMap map, Stage stage) {
+    public void populateStage(TiledMap map, Stage stage) {
         MapLayers layers = map.getLayers();
 
         for (MapLayer layer : layers) {
@@ -66,7 +68,7 @@ public final class TiledMapStagePopulator {
      * @param layer The map layer to create Actors from
      * @param stage The stage to add Actor(s) to
      */
-    private static void populateEntityLayer(MapLayer layer, Stage stage) {
+    private void populateEntityLayer(MapLayer layer, Stage stage) {
         Array<RectangleMapObject> objects = layer.getObjects()
                 .getByType(RectangleMapObject.class); // In libGDX, Points are seen as zero-length rectangles
 
@@ -105,7 +107,7 @@ public final class TiledMapStagePopulator {
      * @param props      The map properties pertaining to the Actor
      * @throws IllegalStateException If there is no Factory for the specified Actor Class in this instance's actorFactoryList
      */
-    private static Actor createActor(Class<? extends Actor> actorClass, MapProperties props) {
+    private Actor createActor(Class<? extends Actor> actorClass, MapProperties props) {
         Actor actor = null;
         for (ActorFactory<?> actorFactory : actorFactoryList) {
             if (actorFactory.actorClass().equals(actorClass)) {
@@ -124,7 +126,7 @@ public final class TiledMapStagePopulator {
      * If there is no Class that represents the "actorType", it will throw an IllegalStateException.
      */
     @NotNull
-    private static Class<? extends Actor> getActorClass(String actorType) {
+    private Class<? extends Actor> getActorClass(String actorType) {
         Class<? extends Actor> actorClass = ACTORTYPE_ACTORCLASS_MAP.get(actorType);
         if (actorClass == null) {
             throw new IllegalStateException(actorType + " does not exist in the actor/class map.");
@@ -136,7 +138,7 @@ public final class TiledMapStagePopulator {
      * Returns the value of the "actor type" field of a Tiled Map Object's properties.
      */
     @NotNull
-    private static String getActorType(MapProperties props) {
+    private String getActorType(MapProperties props) {
         String actorType = (String) props.get(PROP_ACTOR_TYPE);
         if (actorType == null) {
             throw new IllegalStateException("Object in the entity layer does not have the " + PROP_ACTOR_TYPE

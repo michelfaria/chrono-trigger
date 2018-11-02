@@ -9,17 +9,20 @@ package io.michelfaria.chrono.ui;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import io.michelfaria.chrono.Game;
 
 public class BoxActor extends Actor {
 
+    private Game.Context ctx;
     private TextureRegion region;
 
-    public BoxActor() {
+    public BoxActor(Game.Context ctx) {
+        this.ctx = ctx;
         refresh();
     }
 
     public void refresh() {
-        region = MenuBoxes.getDialogBoxGraphic();
+        region = ctx.menuBoxes.getDialogBoxGraphic();
         setWidth(region.getRegionWidth());
         setHeight(region.getRegionHeight());
     }

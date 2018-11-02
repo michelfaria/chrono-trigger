@@ -20,8 +20,9 @@ import static io.michelfaria.chrono.textures.CronoTRD.*;
 
 public class Crono extends PartyCharacter {
 
-    public Crono() {
-        final TextureAtlas atlas = Game.getMainTextureAtlas();
+    public Crono(Game.Context ctx) {
+        super(ctx);
+        final TextureAtlas atlas = ctx.getMainTextureAtlas();
         final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.getAnimations();
         /*
          * Idle animations

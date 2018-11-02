@@ -23,13 +23,13 @@ public class DialogBoxGroup extends Group {
 
     public String text = "Hello world!";
 
-    public DialogBoxGroup() {
-        boxActor = new BoxActor();
+    public DialogBoxGroup(Game.Context ctx) {
+        boxActor = new BoxActor(ctx);
         addActor(boxActor);
 
         // Set up label style
         labelStyle = new Label.LabelStyle();
-        labelStyle.font = Game.assetManager.get(Assets.FONT);
+        labelStyle.font = ctx.assetManager.get(Assets.FONT);
         labelStyle.font.getData().setScale(0.5f);
         labelStyle.fontColor = Color.WHITE;
 

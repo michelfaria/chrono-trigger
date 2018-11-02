@@ -22,14 +22,17 @@ import static io.michelfaria.chrono.MapConstants.LAYER_COLLISION;
 @ParametersAreNonnullByDefault
 public final class CollisionChecker {
 
-    private CollisionChecker() {
+    private Game.Context ctx;
+
+    public CollisionChecker(Game.Context ctx) {
+        this.ctx = ctx;
     }
 
     /**
      * Returns all collisions made by the specified CollisionEntity with other CollisionEntities and the map's collidable
      * layer.
      */
-    public static Array<CollisionEntity> collisions(CollisionEntity entity) {
+    public Array<CollisionEntity> collisions(CollisionEntity entity) {
         return collisions(entity, null);
     }
 
@@ -40,7 +43,7 @@ public final class CollisionChecker {
      * If a rectangle is specified, then the Rectangle will be used for checking for collisions instead of the
      * CollisionEntity's rectangle.
      */
-    public static Array<CollisionEntity> collisions(CollisionEntity entity, @Nullable Rectangle rectangle) {
+    public Array<CollisionEntity> collisions(CollisionEntity entity, @Nullable Rectangle rectangle) {
         if (!entity.isCollisionEnabled()) {
             return new Array<>(CollisionEntity.class);
         }
@@ -63,14 +66,14 @@ public final class CollisionChecker {
      *
      * @implNote The entity parameter is just used to ensure that the entity does not collide with itself.
      */
-    public static Array<CollisionEntity> entityCollisions(CollisionEntity entity, @Nullable Rectangle rectangle) {
+    public Array<CollisionEntity> entityCollisions(CollisionEntity entity, @Nullable Rectangle rectangle) {
         if (rectangle == null) {
             rectangle = entity.getRectangle();
         }
 
         Array<CollisionEntity> collisionEntities = new Array<>(CollisionEntity.class);
 
-        for (CollisionEntity otherEntity : Game.collisionEntities) {
+        for (CollisionEntity otherEntity : ctx.collisionEntities) {
             if (entity != otherEntity
                     && otherEntity.isCollisionEnabled()
                     && intersectRectangles(rectangle, otherEntity.getRectangle(), new Rectangle())) {
@@ -83,12 +86,12 @@ public final class CollisionChecker {
     /**
      * Returns all collisions made by the specified Rectangle with the map's collidable layer.
      */
-    public static Array<CollisionEntity> mapCollisions(Rectangle rectangle) {
-        if (Game.map == null) {
+    public Array<CollisionEntity> mapCollisions(Rectangle rectangle) {
+        if (ctx.map == null) {
             return new Array<>(CollisionEntity.class);
         }
 
-        MapLayer collisionLayer = Game.map.getLayers().get(LAYER_COLLISION);
+        MapLayer collisionLayer = ctx.map.getLayers().get(LAYER_COLLISION);
 
         Array<RectangleMapObject> rectangles = collisionLayer.getObjects().getByType(RectangleMapObject.class);
         Array<CollisionEntity> collisionEntities = new Array<>(CollisionEntity.class);

@@ -27,14 +27,13 @@ import io.michelfaria.chrono.logic.BattleStatus;
 import io.michelfaria.chrono.logic.CombatStats;
 import io.michelfaria.chrono.logic.FloatPair;
 import io.michelfaria.chrono.logic.MoveHistory;
-import io.michelfaria.chrono.logic.collision.CollisionChecker;
 import io.michelfaria.chrono.util.ActorUtil;
 
 import static io.michelfaria.chrono.animation.AnimationId.*;
-import static io.michelfaria.chrono.control.GameInput.isButtonPressed;
-import static io.michelfaria.chrono.logic.collision.CollisionEntityMover.moveCollisionEntityBy;
 
 public abstract class PartyCharacter extends Actor implements CollisionEntity, Combatant, Disposable {
+
+    protected Game.Context ctx;
 
     protected AnimationManager animationManager = new AnimationManager();
 
@@ -55,23 +54,28 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     protected CombatStats combatStats = new CombatStats();
     protected Weapon weapon = new WoodenSword();
 
-    GameInput.GameInputObserverAdapter gameInputObserver = new GameInput.GameInputObserverAdapter() {
-        @Override
-        public void buttonPressed(int controller, Buttons button) {
-            if (button == Buttons.A && Game.paused.get() == 0 && isInputEnabled()) {
-                emitInteraction();
-            }
-        }
-    };
+    protected GameInput.GameInputObserverAdapter gameInputObserver;
 
-    public PartyCharacter() {
+    public PartyCharacter(Game.Context ctx) {
+        this.ctx = ctx;
         setWidth(16);
         setHeight(16);
 
-        Game.collisionEntities.add(this);
-        Game.party.add(this);
+        gameInputObserver = new GameInput.GameInputObserverAdapter() {
+            {
+                priority = 1;
+            }
+            @Override
+            public void buttonPressed(int controller, Buttons button) {
+                if (button == Buttons.A && ctx.paused.get() == 0 && isInputEnabled()) {
+                    emitInteraction();
+                }
+            }
+        };
 
-        GameInput.addObserver(gameInputObserver);
+        ctx.collisionEntities.add(this);
+        ctx.party.add(this);
+        ctx.gameInput.addObserver(gameInputObserver);
     }
 
     @Override
@@ -97,31 +101,31 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
         assert isInputEnabled();
         assert isMainCharacter();
 
-        if (Game.paused.get() == 0) {
+        if (ctx.paused.get() == 0) {
             float xMoveSpeed = 0;
             float yMoveSpeed = 0;
 
-            if (isButtonPressed(0, Buttons.DPAD_LEFT)) {
+            if (ctx.gameInput.isButtonPressed(0, Buttons.DPAD_LEFT)) {
                 isMoving = true;
                 xMoveSpeed = -walkSpeed;
                 facing = Direction.WEST;
             }
-            if (isButtonPressed(0, Buttons.DPAD_RIGHT)) {
+            if (ctx.gameInput.isButtonPressed(0, Buttons.DPAD_RIGHT)) {
                 isMoving = true;
                 xMoveSpeed = walkSpeed;
                 facing = Direction.EAST;
             }
-            if (isButtonPressed(0, Buttons.DPAD_UP)) {
+            if (ctx.gameInput.isButtonPressed(0, Buttons.DPAD_UP)) {
                 isMoving = true;
                 yMoveSpeed = walkSpeed;
                 facing = Direction.NORTH;
             }
-            if (isButtonPressed(0, Buttons.DPAD_DOWN)) {
+            if (ctx.gameInput.isButtonPressed(0, Buttons.DPAD_DOWN)) {
                 isMoving = true;
                 yMoveSpeed = -walkSpeed;
                 facing = Direction.SOUTH;
             }
-            isRunning = isButtonPressed(0, Buttons.B);
+            isRunning = ctx.gameInput.isButtonPressed(0, Buttons.B);
 
             if (isRunning) {
                 xMoveSpeed *= runSpeedMultiplier;
@@ -130,16 +134,16 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
             if (xMoveSpeed == 0 && yMoveSpeed == 0) {
                 isMoving = false;
             } else {
-                moveCollisionEntityBy(this, xMoveSpeed, yMoveSpeed);
+                ctx.collisionEntityMover.moveCollisionEntityBy(this, xMoveSpeed, yMoveSpeed);
             }
         }
     }
 
     protected void actFollower(float delta) {
-        int nextPartyMemberIndex = Game.party.indexOf(this, true) - 1;
+        int nextPartyMemberIndex = ctx.party.indexOf(this, true) - 1;
         assert nextPartyMemberIndex >= 0;
 
-        PartyCharacter nextPartyMember = Game.party.get(nextPartyMemberIndex);
+        PartyCharacter nextPartyMember = ctx.party.get(nextPartyMemberIndex);
 
         if (nextPartyMember.moveHistory.size() > 0) {
             FloatPair last = nextPartyMember.moveHistory.getLast();
@@ -188,12 +192,12 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
         AnimationId west;
         AnimationId east;
 
-        if (isRunning && isMoving && Game.paused.get() == 0) {
+        if (isRunning && isMoving && ctx.paused.get() == 0) {
             north = RUN_NORTH;
             south = RUN_SOUTH;
             west = RUN_WEST;
             east = RUN_EAST;
-        } else if (isMoving && Game.paused.get() == 0) {
+        } else if (isMoving && ctx.paused.get() == 0) {
             north = WALK_NORTH;
             south = WALK_SOUTH;
             west = WALK_WEST;
@@ -247,7 +251,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
         assert isMainCharacter();
         assert isInputEnabled();
 
-        Array<CollisionEntity> arr = CollisionChecker.entityCollisions(this, region);
+        Array<CollisionEntity> arr = ctx.collisionChecker.entityCollisions(this, region);
         for (CollisionEntity ent : arr) {
             if (ent instanceof Interactible) {
                 Interactible in = (Interactible) ent;
@@ -258,7 +262,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     }
 
     public boolean isMainCharacter() {
-        return Game.party.get(0) == this;
+        return ctx.party.get(0) == this;
     }
 
     public boolean isInputEnabled() {
@@ -284,14 +288,14 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
 
     @Override
     public void dispose() {
-        Game.collisionEntities.remove(this);
-        Game.party.removeValue(this, true);
-        GameInput.removeObserver(gameInputObserver);
+        ctx.collisionEntities.remove(this);
+        ctx.party.removeValue(this, true);
+        ctx.gameInput.removeObserver(gameInputObserver);
     }
 
     @Override
     public int getId() {
-        return Game.party.indexOf(this, true);
+        return ctx.party.indexOf(this, true);
     }
 
     @Override

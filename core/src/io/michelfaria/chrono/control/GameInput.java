@@ -21,9 +21,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class GameInput {
 
-    public static final Map<Buttons, Integer> keyboardMappings = new HashMap<>();
+    public final Map<Buttons, Integer> keyboardMappings = new HashMap<>();
 
-    static {
+    {
         keyboardMappings.put(Buttons.DPAD_UP, Input.Keys.UP);
         keyboardMappings.put(Buttons.DPAD_DOWN, Input.Keys.DOWN);
         keyboardMappings.put(Buttons.DPAD_LEFT, Input.Keys.LEFT);
@@ -33,28 +33,28 @@ public final class GameInput {
         keyboardMappings.put(Buttons.X, Input.Keys.A);
     }
 
-    public static final Map<Buttons, Integer> controllerMappings = new HashMap<>();
+    public final Map<Buttons, Integer> controllerMappings = new HashMap<>();
 
-    static {
+    {
         controllerMappings.put(Buttons.A, XboxController360.BUTTON_A);
         controllerMappings.put(Buttons.B, XboxController360.BUTTON_B);
         controllerMappings.put(Buttons.X, XboxController360.BUTTON_X);
     }
 
-    public static final Map<Buttons, AtomicBoolean> buttonStateMap = new HashMap<>();
+    public final Map<Buttons, AtomicBoolean> buttonStateMap = new HashMap<>();
 
-    static {
+    {
         buttonStateMap.put(Buttons.A, new AtomicBoolean(false));
         buttonStateMap.put(Buttons.B, new AtomicBoolean(false));
         buttonStateMap.put(Buttons.X, new AtomicBoolean(false));
     }
 
-    private static final Queue<GameInputObserver> observers = new PriorityBlockingQueue<>();
+    private final Queue<GameInputObserver> observers = new PriorityBlockingQueue<>();
 
-    private GameInput() {
+    public GameInput() {
     }
 
-    public static boolean isButtonPressed(int controllerNumber, Buttons button) {
+    public boolean isButtonPressed(int controllerNumber, Buttons button) {
         if (controllerNumber == 0 && Controllers.getControllers().size == 0) {
             // No controllers - use keyboard
             return isKeyboardKeyPressed(button);
@@ -84,7 +84,7 @@ public final class GameInput {
     /**
      * Update the observers if any new button changes happened
      */
-    public static void tick() {
+    public void tick() {
         for (Buttons button : buttonStateMap.keySet()) {
             int amountInputs = Controllers.getControllers().size;
             // Minimum amount of inputs is 1
@@ -112,24 +112,24 @@ public final class GameInput {
         }
     }
 
-    public static void addObserver(GameInputObserver observer) {
+    public void addObserver(GameInputObserver observer) {
         observers.add(observer);
     }
 
-    public static void removeObserver(GameInputObserver observer) {
+    public void removeObserver(GameInputObserver observer) {
         observers.remove(observer);
     }
 
-    private static boolean isKeyboardKeyPressed(Buttons button) {
+    private boolean isKeyboardKeyPressed(Buttons button) {
         return Gdx.input.isKeyPressed(
                 Objects.requireNonNull(keyboardMappings.get(button), "No keyboard mapping for button: " + button));
     }
 
-    public static int observersSize() {
+    public int observersSize() {
         return observers.size();
     }
 
-    public static Set<GameInputObserver> getObserversCopy() {
+    public Set<GameInputObserver> getObserversCopy() {
         return new HashSet<>(observers);
     }
 

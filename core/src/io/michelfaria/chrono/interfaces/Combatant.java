@@ -22,9 +22,9 @@ public interface Combatant extends Identifiable, Positionable {
 
 	void goToBattle(BattlePoint battlePoint);
 
-    static List<BattlePoint> findMatchingBattlePoints(Combatant requesterCombatant) {
+    static List<BattlePoint> findMatchingBattlePoints(Combatant requesterCombatant, Game.Context ctx) {
         List<BattlePoint> matching = new ArrayList<>();
-        for (BattlePoint battlePoint : Game.battlePoints) {
+        for (BattlePoint battlePoint : ctx.battlePoints) {
             if (battlePoint.subId == requesterCombatant.getId()) {
                 matching.add(battlePoint);
             }

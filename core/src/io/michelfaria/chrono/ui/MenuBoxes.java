@@ -14,22 +14,25 @@ import io.michelfaria.chrono.util.TextureTools;
 
 public final class MenuBoxes {
 
-    public static TRD[] boxes = {UITRD.UI_DIALOGBOX_0};
-    public static int currentBox = 0;
+    private Game.Context ctx;
 
-    private MenuBoxes() {
+    public TRD[] boxes = {UITRD.UI_DIALOGBOX_0};
+    public int currentBox = 0;
+
+    public MenuBoxes(Game.Context ctx) {
+        this.ctx = ctx;
     }
 
-    public static void setBox(int box) {
+    public void setBox(int box) {
         if (box > boxes.length) {
             throw new IllegalArgumentException("Index " + box + " not available in array of size " + boxes.length);
         }
         currentBox = box;
     }
 
-    public static TextureRegion getDialogBoxGraphic() {
+    public TextureRegion getDialogBoxGraphic() {
         assert currentBox < boxes.length;
         assert boxes[currentBox] != null;
-        return TextureTools.findRegion(Game.getMainTextureAtlas(), boxes[currentBox].regionName);
+        return TextureTools.findRegion(ctx.getMainTextureAtlas(), boxes[currentBox].regionName);
     }
 }

@@ -21,64 +21,108 @@ import com.badlogic.gdx.utils.Array;
 import io.michelfaria.chrono.actors.BattlePoint;
 import io.michelfaria.chrono.actors.PartyCharacter;
 import io.michelfaria.chrono.control.GameInput;
+import io.michelfaria.chrono.graphics.TileLayerRenderer;
 import io.michelfaria.chrono.interfaces.CollisionEntity;
-import io.michelfaria.chrono.ui.DefaultHud;
+import io.michelfaria.chrono.interfaces.Combatant;
+import io.michelfaria.chrono.logic.BattlePointsValidator;
+import io.michelfaria.chrono.logic.collision.CollisionChecker;
+import io.michelfaria.chrono.logic.collision.CollisionEntityMover;
+import io.michelfaria.chrono.ui.MenuBoxes;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 
 public final class Game extends com.badlogic.gdx.Game {
 
-    public static final int VRESX = 256;
-    public static final int VRESY = 224;
+    public static class Context {
+        /*
+         * Constants
+         */
+        public final int VRESX = 256;
+        public final int VRESY = 224;
 
-    public static Batch batch;
-    public static TmxMapLoader tmxMapLoader;
-    public static AssetManager assetManager;
-    public static FPSLogger fpsLogger;
+        /*
+         * General
+         */
+        public Batch batch;
+        public TmxMapLoader tmxMapLoader;
+        public AssetManager assetManager;
+        public FPSLogger fpsLogger;
+        public GameInput gameInput;
+        public TiledMap map;
+        public OrthogonalTiledMapRenderer mapRenderer;
 
-    public static TiledMap map;
-    public static OrthogonalTiledMapRenderer mapRenderer;
+        /*
+         * State
+         */
+        public Set<CollisionEntity> collisionEntities = new HashSet<>();
+        public Array<PartyCharacter> party = new Array<>(Actor.class);
+        public Set<BattlePoint> battlePoints = new HashSet<>();
+        public AtomicInteger paused = new AtomicInteger(0);
 
-    public static Set<CollisionEntity> collisionEntities = new HashSet<>();
-    public static Array<PartyCharacter> party = new Array<>(Actor.class);
-    public static Set<BattlePoint> battlePoints = new HashSet<>();
+        /*
+         * Dynamic Methods
+         */
+        public Consumer<String> openDialogBox = null;
+        public Consumer<Combatant> beginBattle = null;
 
-    public static AtomicInteger paused = new AtomicInteger(0);
+        /*
+         * Strategies
+         */
+        public CollisionChecker collisionChecker = new CollisionChecker(this);
+        public TileLayerRenderer tileLayerRenderer = new TileLayerRenderer(this);
+        public CollisionEntityMover collisionEntityMover = new CollisionEntityMover(this);
+        public TiledMapStagePopulator tiledMapStagePopulator = new TiledMapStagePopulator(this);
+        public BattlePointsValidator battlePointsValidator = new BattlePointsValidator();
+        public MenuBoxes menuBoxes = new MenuBoxes(this);
+
+        private Context() {}
+
+        public TextureAtlas getMainTextureAtlas() {
+            return assetManager.get(Assets.CHRONO_ATLAS);
+        }
+
+        private void dispose() {
+            batch.dispose();
+            assetManager.dispose();
+
+            assert map == null;
+            assert mapRenderer == null;
+            assert collisionEntities.size() == 0 : collisionEntities;
+            assert battlePoints.size() == 0 : battlePoints;
+            assert gameInput.observersSize() == 0 : gameInput.getObserversCopy();
+        }
+    }
+
+    private Context ctx;
+    private DefaultScreen screen;
 
     @Override
     public void create() {
         Gdx.app.setLogLevel(Application.LOG_DEBUG);
 
-        batch = new SpriteBatch();
-        tmxMapLoader = new TmxMapLoader();
-        assetManager = new AssetManager();
-        fpsLogger = new FPSLogger();
+        ctx = new Context();
 
-        assetManager.load(Assets.CHRONO_ATLAS);
-        assetManager.load(Assets.FONT);
+        ctx.batch = new SpriteBatch();
+        ctx.tmxMapLoader = new TmxMapLoader();
+        ctx.assetManager = new AssetManager();
+        ctx.fpsLogger = new FPSLogger();
+        ctx.gameInput = new GameInput();
 
-        assetManager.finishLoading();
+        ctx.assetManager.load(Assets.CHRONO_ATLAS);
+        ctx.assetManager.load(Assets.FONT);
 
-        setScreen(DefaultScreen.getInstance().init());
+        ctx.assetManager.finishLoading();
+
+        screen = new DefaultScreen(ctx);
+        setScreen(screen);
     }
 
     @Override
     public void dispose() {
-        batch.dispose();
-        assetManager.dispose();
-        DefaultScreen.disposeInstance();
-        DefaultHud.dispose();
-
-        assert map == null;
-        assert mapRenderer == null;
-        assert collisionEntities.size() == 0 : collisionEntities;
-        assert battlePoints.size() == 0 : battlePoints;
-        assert GameInput.observersSize() == 0 : GameInput.getObserversCopy();
-    }
-
-    public static TextureAtlas getMainTextureAtlas() {
-        return assetManager.get(Assets.CHRONO_ATLAS);
+        screen.dispose();
+        ctx.dispose();
     }
 }

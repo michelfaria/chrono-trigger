@@ -12,7 +12,10 @@ import io.michelfaria.chrono.interfaces.CollisionEntity;
 
 public final class CollisionEntityMover {
 
-    private CollisionEntityMover() {
+    private Game.Context ctx;
+
+    public CollisionEntityMover(Game.Context ctx) {
+        this.ctx = ctx;
     }
 
     /**
@@ -20,7 +23,7 @@ public final class CollisionEntityMover {
      *
      * @return If the entity moved successfully, it will return true.
      */
-    public static boolean moveCollisionEntityBy(CollisionEntity entity, float xMoveSpeed, float yMoveSpeed) {
+    public boolean moveCollisionEntityBy(CollisionEntity entity, float xMoveSpeed, float yMoveSpeed) {
         final float x = entity.getX();
         final float y = entity.getY();
         final float width = entity.getWidth();
@@ -28,13 +31,13 @@ public final class CollisionEntityMover {
 
         final Rectangle futureXRectangle = new Rectangle(x + xMoveSpeed, y, width, height);
 
-        if (CollisionChecker.collisions(entity, futureXRectangle).size > 0) {
+        if (ctx.collisionChecker.collisions(entity, futureXRectangle).size > 0) {
             xMoveSpeed = 0;
         }
 
         final Rectangle futureYRectangle = new Rectangle(x, y + yMoveSpeed, width, height);
 
-        if (CollisionChecker.collisions(entity, futureYRectangle).size > 0) {
+        if (ctx.collisionChecker.collisions(entity, futureYRectangle).size > 0) {
             yMoveSpeed = 0;
         }
         if (xMoveSpeed != 0 || yMoveSpeed != 0) {
