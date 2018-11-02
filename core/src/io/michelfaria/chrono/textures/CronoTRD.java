@@ -25,5 +25,13 @@ public final class CronoTRD {
             CRONO_RUN_WEST = new TRD("crono-run-east", 6, 1, 0.1f, null, flipHorizontal),
             CRONO_RUN_EAST = new TRD("crono-run-east", 6, 1, 0.1f),
 
-    CRONO_BATTLE_NORTH = new TRD("crono-battle-north", 6, 1, 0.2f);
+    CRONO_BATTLE_NORTH = new TRD("crono-battle-north", 6, 1, 0.2f),
+            CRONO_BATTLE_SOUTH = new TRD("crono-battle-south", 6, 1, 0.2f),
+            CRONO_BATTLE_WEST = new TRD("crono-battle-east", 6, 1, 0.2f, null, flipHorizontal),
+            CRONO_BATTLE_EAST = new TRD("crono-battle-east", 6, 1, 0.2f),
+
+    CRONO_ATTACK_NORTH = new TRD("crono-attack-north", 6, 1, 0.2f),
+            CRONO_ATTACK_SOUTH = new TRD("crono-attack-south", 6, 1, 0.2f),
+            CRONO_ATTACK_WEST = new TRD("crono-attack-east", 6, 1, 0.2f, null, flipHorizontal),
+            CRONO_ATTACK_EAST = new TRD("crono-attack-east", 6, 1, 0.2f);
 }

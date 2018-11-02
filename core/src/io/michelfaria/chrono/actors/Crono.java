@@ -10,11 +10,11 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.animation.AnimationData;
-import io.michelfaria.chrono.animation.AnimationId;
+import io.michelfaria.chrono.animation.GenericAnimationId;
 
 import java.util.Map;
 
-import static io.michelfaria.chrono.animation.AnimationId.*;
+import static io.michelfaria.chrono.animation.GenericAnimationId.*;
 import static io.michelfaria.chrono.animation.AnimationMaker.makeAnimation;
 import static io.michelfaria.chrono.textures.CronoTRD.*;
 
@@ -23,7 +23,7 @@ public class Crono extends PartyCharacter {
     public Crono(Game.Context ctx) {
         super(ctx);
         final TextureAtlas atlas = ctx.getMainTextureAtlas();
-        final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.getAnimations();
+        final Map<GenericAnimationId, AnimationData<TextureRegion>> animations = animationManager.getAnimations();
         /*
          * Idle animations
          */
@@ -45,6 +45,13 @@ public class Crono extends PartyCharacter {
         animations.put(RUN_SOUTH, makeAnimation(atlas, CRONO_RUN_SOUTH));
         animations.put(RUN_WEST, makeAnimation(atlas, CRONO_RUN_WEST));
         animations.put(RUN_EAST, makeAnimation(atlas, CRONO_RUN_EAST));
+        /*
+         * Battle animations
+         */
+        animations.put(BATTLE_NORTH, makeAnimation(atlas, CRONO_BATTLE_NORTH));
+        animations.put(BATTLE_SOUTH, makeAnimation(atlas, CRONO_BATTLE_SOUTH));
+        animations.put(BATTLE_WEST, makeAnimation(atlas, CRONO_BATTLE_WEST));
+        animations.put(BATTLE_EAST, makeAnimation(atlas, CRONO_BATTLE_EAST));
     }
 
     @Override

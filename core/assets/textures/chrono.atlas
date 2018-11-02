@@ -4,100 +4,135 @@ size: 1024,128
 format: RGBA8888
 filter: Nearest,Nearest
 repeat: none
+crono-attack-east
+  rotate: false
+  xy: 473, 38
+  size: 93, 48
+  orig: 93, 48
+  offset: 0, 0
+  index: -1
+crono-attack-north
+  rotate: false
+  xy: 932, 40
+  size: 60, 48
+  orig: 60, 48
+  offset: 0, 0
+  index: -1
+crono-attack-south
+  rotate: false
+  xy: 669, 27
+  size: 57, 55
+  orig: 57, 55
+  offset: 0, 0
+  index: -1
+crono-battle-east
+  rotate: false
+  xy: 4, 8
+  size: 180, 32
+  orig: 180, 32
+  offset: 0, 0
+  index: -1
 crono-battle-north
   rotate: false
-  xy: 264, 53
+  xy: 572, 92
   size: 132, 32
   orig: 132, 32
   offset: 0, 0
   index: -1
+crono-battle-south
+  rotate: false
+  xy: 436, 90
+  size: 132, 34
+  orig: 132, 34
+  offset: 0, 0
+  index: -1
 crono-idle-east
   rotate: false
-  xy: 985, 89
+  xy: 996, 54
   size: 14, 34
   orig: 14, 34
   offset: 0, 0
   index: -1
 crono-idle-north
   rotate: false
-  xy: 965, 90
+  xy: 188, 7
   size: 16, 33
   orig: 16, 33
   offset: 0, 0
   index: -1
 crono-idle-south
   rotate: false
-  xy: 945, 88
+  xy: 400, 50
   size: 16, 35
   orig: 16, 35
   offset: 0, 0
   index: -1
 crono-run-east
   rotate: false
-  xy: 4, 4
+  xy: 264, 89
   size: 168, 35
   orig: 168, 35
   offset: 0, 0
   index: -1
 crono-run-north
   rotate: false
-  xy: 400, 85
+  xy: 708, 86
   size: 108, 38
   orig: 108, 38
   offset: 0, 0
   index: -1
 crono-run-south
   rotate: false
-  xy: 512, 88
+  xy: 820, 89
   size: 108, 35
   orig: 108, 35
   offset: 0, 0
   index: -1
 crono-walk-east
   rotate: false
-  xy: 264, 89
+  xy: 264, 51
   size: 132, 34
   orig: 132, 34
   offset: 0, 0
   index: -1
 crono-walk-north
   rotate: false
-  xy: 624, 88
+  xy: 264, 12
   size: 108, 35
   orig: 108, 35
   offset: 0, 0
   index: -1
 crono-walk-south
   rotate: false
-  xy: 736, 89
+  xy: 820, 51
   size: 108, 34
   orig: 108, 34
   offset: 0, 0
   index: -1
 nu-walk-east
   rotate: false
-  xy: 176, 7
+  xy: 932, 92
   size: 78, 32
   orig: 78, 32
   offset: 0, 0
   index: -1
 nu-walk-north
   rotate: false
-  xy: 848, 91
+  xy: 376, 4
   size: 93, 32
   orig: 93, 32
   offset: 0, 0
   index: -1
 nu-walk-south
   rotate: false
-  xy: 400, 50
+  xy: 572, 57
   size: 93, 31
   orig: 93, 31
   offset: 0, 0
   index: -1
 ui-dialogbox-0
   rotate: false
-  xy: 4, 43
+  xy: 4, 44
   size: 256, 80
   orig: 256, 80
   offset: 0, 0

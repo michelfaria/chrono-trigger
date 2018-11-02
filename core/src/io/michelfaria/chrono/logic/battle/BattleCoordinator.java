@@ -6,16 +6,18 @@
 
 package io.michelfaria.chrono.logic.battle;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import io.michelfaria.chrono.Assets;
 import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.actors.BattlePoint;
 import io.michelfaria.chrono.actors.PartyCharacter;
 import io.michelfaria.chrono.interfaces.Combatant;
+import io.michelfaria.chrono.interfaces.Positionable;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static io.michelfaria.chrono.logic.battle.BattlePointsValidator.MINIMUM_PARTY_BATTLEPOINTS_PER_GROUP;
@@ -33,12 +35,12 @@ public class BattleCoordinator {
         assert ctx.battleStatus.combatantsReady.get() == 0;
         assert ctx.battleStatus.combatants.size == 0;
 
-        List<BattlePoint> matching = Combatant.findMatchingBattlePoints(combatant, ctx);
+        List<BattlePoint> matching = findMatchingBattlePoints(combatant, ctx);
         if (matching.isEmpty()) {
             throw new IllegalStateException("Cannot begin battle: No BattlePoints with SubID " + combatant.getId() + " found.");
         }
 
-        BattlePoint closest = Combatant.findClosestBattlePointFromList(combatant, matching);
+        BattlePoint closest = Positionable.findClosest(combatant, matching);
         assert closest != null;
 
         List<BattlePoint> battlePointGroup = closest.getAllInTheSameGroup();
@@ -64,17 +66,8 @@ public class BattleCoordinator {
         };
 
         for (Combatant combatant : ctx.combatants) {
-            int id;
-            BattlePoint.Type type = BattlePoint.Type.ENEMY;
-
-            if (combatant instanceof PartyCharacter) {
-                final PartyCharacter partyCharacter = (PartyCharacter) combatant;
-                id = ctx.party.indexOf(partyCharacter, true);
-                type = BattlePoint.Type.PARTY;
-                assert id >= 0;
-            } else {
-                id = combatant.getId();
-            }
+            final int id = combatant.getId();
+            final BattlePoint.Type type = combatant.getBattlePointType();
 
             for (BattlePoint battlePoint : battlePointGroup) {
                 if (battlePoint.subId == id && battlePoint.type == type) {
@@ -117,4 +110,71 @@ public class BattleCoordinator {
             assert ctx.party.size == partyCharsCalled : partyCharsCalled;
         }
     }
+
+    public Combatant getClosestEnemy(PartyCharacter partyChar) {
+        assert ctx.battleStatus.isBattling();
+        assert ctx.battleStatus.getBattleGroup() != null;
+
+        BattlePoint partyCharBp = findBattlePoint(partyChar, ctx.battleStatus.getBattleGroup());
+        assert partyCharBp != null;
+
+        Set<Combatant> allEnemiesInBattle = getAllEnemiesInBattle();
+        assert allEnemiesInBattle.size() > 0;
+
+        Combatant closest = Positionable.findClosest(partyChar, allEnemiesInBattle);
+        assert closest != null;
+        return closest;
+    }
+
+    private Set<Combatant> getAllEnemiesInBattle() {
+        assert ctx.battleStatus.isBattling();
+        assert ctx.battleStatus.getBattleGroup() != null;
+
+        Set<Combatant> result = new HashSet<>();
+        for (Combatant combatant : ctx.combatants) {
+            if (combatant.getBattlePointType() != BattlePoint.Type.ENEMY) {
+                continue;
+            }
+            for (BattlePoint battlePoint : ctx.battlePoints) {
+                if (battlePoint.groupId != ctx.battleStatus.getBattleGroup() || battlePoint.subId != combatant.getId()) {
+                    continue;
+                }
+                boolean add = result.add(combatant);
+                if (!add) {
+                    throw new IllegalStateException("Tried adding a duplicate enemy to the in-battle list");
+                }
+                break;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Find the BattlePoint for a Combatant, but filter the specified battle group.
+     */
+    private BattlePoint findBattlePoint(Combatant combatant, int battleGroup) {
+        for (BattlePoint el : ctx.battlePoints) {
+            final int lookForId = combatant.getId();
+            final BattlePoint.Type type = combatant.getBattlePointType();
+
+            if (el.groupId == battleGroup && el.subId == lookForId && el.type == type) {
+                return el;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Returns the BattlePoints that the specified Combatant is qualified for.
+     */
+    public static List<BattlePoint> findMatchingBattlePoints(Combatant requesterCombatant, Game.Context ctx) {
+        List<BattlePoint> matching = new ArrayList<>();
+        for (BattlePoint battlePoint : ctx.battlePoints) {
+            if (battlePoint.subId == requesterCombatant.getId()) {
+                matching.add(battlePoint);
+            }
+        }
+        return matching;
+    }
+
 }

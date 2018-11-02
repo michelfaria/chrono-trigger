@@ -1,12 +1,12 @@
 /*
- * Developed by Michel Faria on 10/25/18 7:45 PM.
- * Last modified 10/25/18 7:38 PM.
+ * Developed by Michel Faria on 11/2/18 7:58 PM.
+ * Last modified 11/2/18 7:58 PM.
  * Copyright (c) 2018. All rights reserved.
  */
 
 package io.michelfaria.chrono.animation;
 
-public enum AnimationId {
+public enum GenericAnimationId {
     IDLE_NORTH,
     IDLE_SOUTH,
     IDLE_WEST,
@@ -18,5 +18,9 @@ public enum AnimationId {
     RUN_NORTH,
     RUN_SOUTH,
     RUN_WEST,
-    RUN_EAST
+    RUN_EAST,
+    BATTLE_NORTH,
+    BATTLE_SOUTH,
+    BATTLE_WEST,
+    BATTLE_EAST
 }

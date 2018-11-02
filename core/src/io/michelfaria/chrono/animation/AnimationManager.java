@@ -20,11 +20,11 @@ import java.util.Map;
  * Container for animation map and current playing animation.
  * Draws animation on coordinates.
  */
-public class AnimationManager {
+public class AnimationManager<Key> {
 
-    private final Map<AnimationId, AnimationData<TextureRegion>> animations = new HashMap<>();
+    private final Map<Key, AnimationData<TextureRegion>> animations = new HashMap<>();
 
-    private AnimationId currentAnimation = null;
+    private Key currentAnimation = null;
     private float stateTime = 0;
 
     /**
@@ -95,15 +95,15 @@ public class AnimationManager {
         return flipData.flip[flipIndex];
     }
 
-    public Map<AnimationId, AnimationData<TextureRegion>> getAnimations() {
+    public Map<Key, AnimationData<TextureRegion>> getAnimations() {
         return animations;
     }
 
-    public AnimationId getCurrentAnimation() {
+    public Key getCurrentAnimation() {
         return currentAnimation;
     }
 
-    public void setCurrentAnimation(AnimationId currentAnimation) {
+    public void setCurrentAnimation(Key currentAnimation) {
         this.currentAnimation = currentAnimation;
     }
 }

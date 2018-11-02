@@ -22,36 +22,7 @@ public interface Combatant extends Identifiable, Positionable {
 
 	void goToBattle(BattlePoint battlePoint, Runnable done);
 
-    static List<BattlePoint> findMatchingBattlePoints(Combatant requesterCombatant, Game.Context ctx) {
-        List<BattlePoint> matching = new ArrayList<>();
-        for (BattlePoint battlePoint : ctx.battlePoints) {
-            if (battlePoint.subId == requesterCombatant.getId()) {
-                matching.add(battlePoint);
-            }
-        }
-        return matching;
-    }
-
-    static BattlePoint findClosestBattlePointFromList(Combatant requesterCombatant, List<BattlePoint> battlePoints) {
-        if (battlePoints.size() == 0) {
-            throw new IllegalArgumentException("No BattlePoints provided");
-        }
-        BattlePoint closest = null;
-        if (battlePoints.size() == 1) {
-            return battlePoints.get(0);
-        } else {
-            assert battlePoints.size() > 0;
-            float closestDistance = Float.MAX_VALUE;
-            for (BattlePoint battlePoint : battlePoints) {
-                // Calculate the distance between the BattlePoint and the Combatant
-                float distance = Vector2.dst(battlePoint.getX(), battlePoint.getY(), requesterCombatant.getX(), requesterCombatant.getY());
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closest = battlePoint;
-                }
-            }
-        }
-        assert closest != null;
-        return closest;
+	default BattlePoint.Type getBattlePointType() {
+	    return BattlePoint.Type.ENEMY;
     }
 }

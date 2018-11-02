@@ -9,13 +9,14 @@ package io.michelfaria.chrono.actors;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import io.michelfaria.chrono.Game;
-import io.michelfaria.chrono.animation.AnimationId;
 import io.michelfaria.chrono.animation.AnimationManager;
+import io.michelfaria.chrono.animation.GenericAnimationId;
 import io.michelfaria.chrono.control.Buttons;
 import io.michelfaria.chrono.control.GameInput;
 import io.michelfaria.chrono.interfaces.CollisionEntity;
@@ -28,13 +29,13 @@ import io.michelfaria.chrono.logic.FloatPair;
 import io.michelfaria.chrono.logic.MoveHistory;
 import io.michelfaria.chrono.util.ActorUtil;
 
-import static io.michelfaria.chrono.animation.AnimationId.*;
+import static io.michelfaria.chrono.animation.GenericAnimationId.*;
 
 public abstract class PartyCharacter extends Actor implements CollisionEntity, Combatant, Disposable {
 
     protected Game.Context ctx;
 
-    protected AnimationManager animationManager = new AnimationManager();
+    protected AnimationManager<GenericAnimationId> animationManager = new AnimationManager<>();
 
     {
         animationManager.setCurrentAnimation(IDLE_SOUTH);
@@ -108,22 +109,18 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
             if (ctx.gameInput.isButtonPressed(0, Buttons.DPAD_LEFT)) {
                 isMoving = true;
                 xMoveSpeed = -walkSpeed;
-                facing = Direction.WEST;
             }
             if (ctx.gameInput.isButtonPressed(0, Buttons.DPAD_RIGHT)) {
                 isMoving = true;
                 xMoveSpeed = walkSpeed;
-                facing = Direction.EAST;
             }
             if (ctx.gameInput.isButtonPressed(0, Buttons.DPAD_UP)) {
                 isMoving = true;
                 yMoveSpeed = walkSpeed;
-                facing = Direction.NORTH;
             }
             if (ctx.gameInput.isButtonPressed(0, Buttons.DPAD_DOWN)) {
                 isMoving = true;
                 yMoveSpeed = -walkSpeed;
-                facing = Direction.SOUTH;
             }
             isRunning = ctx.gameInput.isButtonPressed(0, Buttons.B);
 
@@ -161,25 +158,33 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     }
 
     protected void updateMovementAttributes() {
-        int acc = 0;
-        if (getX() > moveHistory.getPrevX()) {
-            facing = Direction.EAST;
-            acc++;
-        } else if (getX() < moveHistory.getPrevX()) {
-            facing = Direction.WEST;
-            acc++;
-        }
-        if (getY() > moveHistory.getPrevY()) {
-            facing = Direction.NORTH;
-            acc++;
-        } else if (getY() < moveHistory.getPrevY()) {
-            facing = Direction.SOUTH;
-            acc++;
-        }
-        isMoving = acc > 0;
 
-        // Party character needs to always run if they're engaged in battle
+        if (ctx.battleStatus.isBattling()) {
+            Combatant closestEnemy = ctx.battleCoordinator.getClosestEnemy(this);
+            float angle = vec2().angle(closestEnemy.vec2());
+
+            //todo
+        } else {
+            int aux = 0;
+            if (getX() > moveHistory.getPrevX()) {
+                facing = Direction.EAST;
+                aux++;
+            } else if (getX() < moveHistory.getPrevX()) {
+                facing = Direction.WEST;
+                aux++;
+            }
+            if (getY() > moveHistory.getPrevY()) {
+                facing = Direction.NORTH;
+                aux++;
+            } else if (getY() < moveHistory.getPrevY()) {
+                facing = Direction.SOUTH;
+                aux++;
+            }
+            isMoving = aux > 0;
+        }
+
         if (isMoving && ctx.battleStatus.isBattling()) {
+            // Party character needs to always be running if they're engaged in battle
             isRunning = true;
         }
     }
@@ -189,12 +194,17 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
             animationManager.setCurrentAnimation(IDLE_SOUTH);
         }
 
-        AnimationId north;
-        AnimationId south;
-        AnimationId west;
-        AnimationId east;
+        GenericAnimationId north;
+        GenericAnimationId south;
+        GenericAnimationId west;
+        GenericAnimationId east;
 
-        if (isRunning && isMoving && ctx.paused.get() == 0) {
+        if (ctx.battleStatus.isBattling() && !isRunning) {
+            north = BATTLE_NORTH;
+            south = BATTLE_SOUTH;
+            west = BATTLE_WEST;
+            east = BATTLE_EAST;
+        } else if (isRunning && isMoving && ctx.paused.get() == 0) {
             north = RUN_NORTH;
             south = RUN_SOUTH;
             west = RUN_WEST;
@@ -285,7 +295,6 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
                         Actions.moveTo(battlePoint.getX(), battlePoint.getY(), BattlePoint.BATTLE_MOVE_DURATION),
                         Actions.run(() -> {
                             Gdx.app.debug(PartyCharacter.class.getName(), "PartyCharacter moved to BattlePoint");
-                            facing = Direction.NORTH;
                             done.run();
                         })));
     }
@@ -312,4 +321,10 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     public CombatStats getCombatStats() {
         return combatStats;
     }
+
+    @Override
+    public BattlePoint.Type getBattlePointType() {
+        return BattlePoint.Type.PARTY;
+    }
+
 }

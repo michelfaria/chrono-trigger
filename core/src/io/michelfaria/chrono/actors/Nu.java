@@ -16,23 +16,23 @@ import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Disposable;
 import io.michelfaria.chrono.Game;
 import io.michelfaria.chrono.animation.AnimationData;
-import io.michelfaria.chrono.animation.AnimationId;
 import io.michelfaria.chrono.animation.AnimationManager;
+import io.michelfaria.chrono.animation.GenericAnimationId;
 import io.michelfaria.chrono.interfaces.*;
 import io.michelfaria.chrono.logic.battle.CombatStats;
 
 import java.util.Map;
 
 import static io.michelfaria.chrono.MapConstants.PROP_ACTOR_ID;
-import static io.michelfaria.chrono.animation.AnimationId.*;
 import static io.michelfaria.chrono.animation.AnimationMaker.makeAnimation;
+import static io.michelfaria.chrono.animation.GenericAnimationId.*;
 import static io.michelfaria.chrono.textures.NuTRD.*;
 
 public class Nu extends Actor implements CollisionEntity, Interactible, Identifiable, Disposable, Combatant {
 
     private Game.Context ctx;
     private int id;
-    private AnimationManager animationManager = new AnimationManager();
+    private AnimationManager<GenericAnimationId> animationManager = new AnimationManager<>();
     private CombatStats combatStats = new CombatStats();
 
     private float stateTime = 0f;
@@ -42,7 +42,7 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
         this.id = id;
 
         final TextureAtlas atlas = ctx.getMainTextureAtlas();
-        final Map<AnimationId, AnimationData<TextureRegion>> animations = animationManager.getAnimations();
+        final Map<GenericAnimationId, AnimationData<TextureRegion>> animations = animationManager.getAnimations();
 
         animations.put(IDLE_NORTH, makeAnimation(atlas, NU_IDLE_NORTH));
         animations.put(IDLE_SOUTH, makeAnimation(atlas, NU_IDLE_SOUTH));
