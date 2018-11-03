@@ -8,7 +8,6 @@ package io.michelfaria.chrono;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -22,18 +21,13 @@ import io.michelfaria.chrono.actors.Crono;
 import io.michelfaria.chrono.actors.PartyCharacter;
 import io.michelfaria.chrono.control.Buttons;
 import io.michelfaria.chrono.control.GameInput;
-import io.michelfaria.chrono.interfaces.Combatant;
 import io.michelfaria.chrono.interfaces.Positionable;
 import io.michelfaria.chrono.logic.zindex.ActorZIndexUpdater;
 import io.michelfaria.chrono.ui.DefaultHud;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static com.badlogic.gdx.math.MathUtils.clamp;
 import static io.michelfaria.chrono.MapConstants.LAYER_FG_1;
 import static io.michelfaria.chrono.MapConstants.LAYER_FG_2;
-import static io.michelfaria.chrono.logic.battle.BattlePointsValidator.MINIMUM_PARTY_BATTLEPOINTS_PER_GROUP;
 import static io.michelfaria.chrono.util.TiledMapUtil.mapPixelHeight;
 import static io.michelfaria.chrono.util.TiledMapUtil.mapPixelWidth;
 
@@ -122,24 +116,24 @@ public final class DefaultScreen implements Screen {
     }
 
     private void updateCameraTarget() {
-        if (ctx.battleStatus.isBattling() && !(cameraTarget instanceof BattlePoint)) {
+        if (ctx.battleStatus.isEngaged() && !(cameraTarget instanceof BattlePoint)) {
             Integer battleGroup = ctx.battleStatus.getBattleGroup();
 
-            // Because if BattleStatus.isBattling returns true, then there _should_ be a battleGroup
+            // Because if BattleStatus.isEngaged returns true, then there _should_ be a battleGroup
             assert battleGroup != null;
 
             BattlePoint cameraPoint = BattlePoint.findCameraForGroup(ctx, battleGroup);
             assert cameraPoint != null;
 
             cameraTarget = cameraPoint;
-        } else if (!ctx.battleStatus.isBattling() && !(cameraTarget instanceof PartyCharacter)) {
+        } else if (!ctx.battleStatus.isEngaged() && !(cameraTarget instanceof PartyCharacter)) {
             cameraTarget = ctx.party.get(0);
         }
     }
 
     private void updateCamera() {
         assert cameraTarget != null;
-        if (ctx.battleStatus.isBattling()) {
+        if (ctx.battleStatus.isEngaged()) {
             assert cameraTarget instanceof BattlePoint;
             assert ((BattlePoint) cameraTarget).type == BattlePoint.Type.CAMERA;
         } else {

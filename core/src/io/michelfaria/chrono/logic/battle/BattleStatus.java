@@ -6,21 +6,32 @@
 
 package io.michelfaria.chrono.logic.battle;
 
-import com.badlogic.gdx.utils.Array;
 import io.michelfaria.chrono.interfaces.Combatant;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class BattleStatus {
     @Nullable
     private Integer battleGroup;
 
-    public Array<Combatant> combatants = new Array<>(Combatant.class);
+    public Set<Combatant> combatantsInBattle = new HashSet<>();
     public AtomicInteger combatantsReady = new AtomicInteger(0);
 
-    public boolean isBattling() {
+    /**
+     * To be engaged: is to be in a battle state, but not necessarily ready to fight.
+     */
+    public boolean isEngaged() {
         return battleGroup != null;
+    }
+
+    /**
+     * To be battling: is to be in a battle state and ready to fight.
+     */
+    public boolean isBattling() {
+        return isEngaged() && combatantsInBattle.size() == combatantsReady.get();
     }
 
     public void setBattleGroup(@Nullable Integer battleGroup) {
@@ -33,7 +44,7 @@ public class BattleStatus {
 
     public void reset() {
         battleGroup = null;
-        combatants = new Array<>(Combatant.class);
+        combatantsInBattle = new HashSet<>();
         combatantsReady = new AtomicInteger(0);
     }
 }

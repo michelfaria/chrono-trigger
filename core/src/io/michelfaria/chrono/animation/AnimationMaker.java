@@ -23,12 +23,11 @@ public final class AnimationMaker {
 
         final Array<TextureRegion> textureRegions = TextureTools.splitTextureRegion(atlas, trd);
 
-        if (trd.assembly != null) {
-            return makeAnimationWithAssemblyInstructions(textureRegions, trd);
-        } else {
-            final Animation<TextureRegion> animation
-                    = new Animation<>(trd.speed, textureRegions, Animation.PlayMode.LOOP);
+        if (trd.assembly == null) {
+            final Animation<TextureRegion> animation = new Animation<>(trd.speed, textureRegions, trd.playMode);
             return new AnimationData<>(animation, trd);
+        } else {
+            return makeAnimationWithAssemblyInstructions(textureRegions, trd);
         }
     }
 
@@ -45,8 +44,7 @@ public final class AnimationMaker {
         }
         assert assembled.size > 0;
 
-        final Animation<TextureRegion> animation
-                = new Animation<>(trd.speed, assembled, Animation.PlayMode.LOOP);
+        final Animation<TextureRegion> animation = new Animation<>(trd.speed, assembled, trd.playMode);
         return new AnimationData<>(animation, trd);
     }
 }

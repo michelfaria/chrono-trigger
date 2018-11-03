@@ -104,6 +104,9 @@ public class AnimationManager<Key> {
     }
 
     public void setCurrentAnimation(Key currentAnimation) {
-        this.currentAnimation = currentAnimation;
+        if (currentAnimation != this.currentAnimation) {
+            stateTime = 0;
+            this.currentAnimation = currentAnimation;
+        }
     }
 }

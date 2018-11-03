@@ -9,7 +9,6 @@ package io.michelfaria.chrono.actors;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.Array;
@@ -28,6 +27,7 @@ import io.michelfaria.chrono.logic.battle.CombatStats;
 import io.michelfaria.chrono.logic.FloatPair;
 import io.michelfaria.chrono.logic.MoveHistory;
 import io.michelfaria.chrono.util.ActorUtil;
+import io.michelfaria.chrono.util.Vec2Util;
 
 import static io.michelfaria.chrono.animation.GenericAnimationId.*;
 
@@ -65,6 +65,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
             {
                 priority = 1;
             }
+
             @Override
             public void buttonPressed(int controller, Buttons button) {
                 if (button == Buttons.A && ctx.paused.get() == 0 && isInputEnabled()) {
@@ -75,7 +76,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
 
         ctx.collisionEntities.add(this);
         ctx.party.add(this);
-        ctx.combatants.add(this);
+        ctx.combatantInstances.add(this);
         ctx.gameInput.addObserver(gameInputObserver);
     }
 
@@ -90,7 +91,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
         stateTime += delta;
         if (isInputEnabled()) {
             handleInput(delta);
-        } else if (!ctx.battleStatus.isBattling()) {
+        } else if (!ctx.battleStatus.isEngaged()) {
             actFollower(delta);
         }
         updateMovementAttributes();
@@ -107,86 +108,90 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
             float yMoveSpeed = 0;
 
             if (ctx.gameInput.isButtonPressed(0, Buttons.DPAD_LEFT)) {
-                isMoving = true;
                 xMoveSpeed = -walkSpeed;
             }
             if (ctx.gameInput.isButtonPressed(0, Buttons.DPAD_RIGHT)) {
-                isMoving = true;
                 xMoveSpeed = walkSpeed;
             }
             if (ctx.gameInput.isButtonPressed(0, Buttons.DPAD_UP)) {
-                isMoving = true;
                 yMoveSpeed = walkSpeed;
             }
             if (ctx.gameInput.isButtonPressed(0, Buttons.DPAD_DOWN)) {
-                isMoving = true;
                 yMoveSpeed = -walkSpeed;
             }
-            isRunning = ctx.gameInput.isButtonPressed(0, Buttons.B);
 
             if (isRunning) {
                 xMoveSpeed *= runSpeedMultiplier;
                 yMoveSpeed *= runSpeedMultiplier;
             }
-            if (xMoveSpeed == 0 && yMoveSpeed == 0) {
-                isMoving = false;
-            } else {
+            if (xMoveSpeed != 0 || yMoveSpeed != 0) {
                 ctx.collisionEntityMover.moveCollisionEntityBy(this, xMoveSpeed, yMoveSpeed);
             }
         }
     }
 
     protected void actFollower(float delta) {
-        int nextPartyMemberIndex = ctx.party.indexOf(this, true) - 1;
-        assert nextPartyMemberIndex >= 0;
-
-        PartyCharacter nextPartyMember = ctx.party.get(nextPartyMemberIndex);
-
+        final PartyCharacter nextPartyMember = getNextPartyMember();
         if (nextPartyMember.moveHistory.size() > 0) {
             FloatPair last = nextPartyMember.moveHistory.getLast();
             setX(last.a);
             setY(last.b);
         }
-
-        if (getX() != moveHistory.getPrevX() || getY() != moveHistory.getPrevY()) {
-            isMoving = true;
-            isRunning = nextPartyMember.isRunning;
-        } else {
-            isMoving = false;
-            isRunning = false;
-        }
     }
 
     protected void updateMovementAttributes() {
+        int aux = 0;
+        if (getX() > moveHistory.getPrevX()) {
+            facing = Direction.EAST;
+            aux++;
+        } else if (getX() < moveHistory.getPrevX()) {
+            facing = Direction.WEST;
+            aux++;
+        }
+        if (getY() > moveHistory.getPrevY()) {
+            facing = Direction.NORTH;
+            aux++;
+        } else if (getY() < moveHistory.getPrevY()) {
+            facing = Direction.SOUTH;
+            aux++;
+        }
+        isMoving = aux > 0;
 
         if (ctx.battleStatus.isBattling()) {
             Combatant closestEnemy = ctx.battleCoordinator.getClosestEnemy(this);
-            float angle = vec2().angle(closestEnemy.vec2());
-
-            //todo
-        } else {
-            int aux = 0;
-            if (getX() > moveHistory.getPrevX()) {
-                facing = Direction.EAST;
-                aux++;
-            } else if (getX() < moveHistory.getPrevX()) {
+            float angle = (int) Vec2Util.angle(vec2(), closestEnemy.vec2());
+            if (angle > 135) {
                 facing = Direction.WEST;
-                aux++;
-            }
-            if (getY() > moveHistory.getPrevY()) {
+            } else if (angle > 45) {
                 facing = Direction.NORTH;
-                aux++;
-            } else if (getY() < moveHistory.getPrevY()) {
+            } else if (angle > -45) {
+                facing = Direction.EAST;
+            } else if (angle > -135) {
                 facing = Direction.SOUTH;
-                aux++;
+            } else {
+                facing = Direction.WEST;
             }
-            isMoving = aux > 0;
         }
 
-        if (isMoving && ctx.battleStatus.isBattling()) {
-            // Party character needs to always be running if they're engaged in battle
-            isRunning = true;
+        if (isMainCharacter()) {
+            if (isMoving && ctx.battleStatus.isEngaged()) {
+                // Party character needs to always be running if they're engaged in battle
+                isRunning = true;
+            } else {
+                isRunning = ctx.gameInput.isButtonPressed(0, Buttons.B);
+            }
+        } else {
+            final PartyCharacter nextPartyMember = getNextPartyMember();
+            isRunning = nextPartyMember.isRunning;
         }
+
+    }
+
+    protected PartyCharacter getNextPartyMember() {
+        final int nextPartyMemberIndex = ctx.party.indexOf(this, true) - 1;
+        assert nextPartyMemberIndex >= 0;
+        assert ctx.party.get(nextPartyMemberIndex) != this;
+        return ctx.party.get(nextPartyMemberIndex);
     }
 
     protected void updateAnimation() {
@@ -199,7 +204,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
         GenericAnimationId west;
         GenericAnimationId east;
 
-        if (ctx.battleStatus.isBattling() && !isRunning) {
+        if (ctx.battleStatus.isBattling() && !isMoving) {
             north = BATTLE_NORTH;
             south = BATTLE_SOUTH;
             west = BATTLE_WEST;
@@ -279,7 +284,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
 
     public boolean isInputEnabled() {
         return isMainCharacter()
-                && !ctx.battleStatus.isBattling(); // The characters shouldn't be able to move while in-battle
+                && !ctx.battleStatus.isEngaged(); // The characters shouldn't be able to move while in-battle
     }
 
     @Override
@@ -303,7 +308,7 @@ public abstract class PartyCharacter extends Actor implements CollisionEntity, C
     public void dispose() {
         ctx.collisionEntities.remove(this);
         ctx.party.removeValue(this, true);
-        ctx.combatants.remove(this);
+        ctx.combatantInstances.remove(this);
         ctx.gameInput.removeObserver(gameInputObserver);
     }
 

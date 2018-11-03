@@ -32,7 +32,6 @@ import io.michelfaria.chrono.logic.collision.CollisionEntityMover;
 import io.michelfaria.chrono.ui.MenuBoxes;
 
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -68,7 +67,7 @@ public final class Game extends com.badlogic.gdx.Game {
          */
         public Set<CollisionEntity> collisionEntities = new HashSet<>();
         public Array<PartyCharacter> party = new Array<>(Actor.class);
-        public Set<Combatant> combatants = new HashSet<>();
+        public Set<Combatant> combatantInstances = new HashSet<>();
         public Set<BattlePoint> battlePoints = new HashSet<>();
         public AtomicInteger paused = new AtomicInteger(0);
         public BattleStatus battleStatus = new BattleStatus();
@@ -106,7 +105,7 @@ public final class Game extends com.badlogic.gdx.Game {
             assert collisionEntities.size() == 0 : collisionEntities;
             assert battlePoints.size() == 0 : battlePoints;
             assert gameInput.observersSize() == 0 : gameInput.getObserversCopy();
-            assert combatants.size() == 0 : combatants;
+            assert combatantInstances.size() == 0 : combatantInstances;
         }
     }
 

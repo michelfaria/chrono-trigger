@@ -31,9 +31,9 @@ public class BattleCoordinator {
     }
 
     public void beginBattle(Combatant combatant) {
-        assert !ctx.battleStatus.isBattling();
+        assert !ctx.battleStatus.isEngaged();
         assert ctx.battleStatus.combatantsReady.get() == 0;
-        assert ctx.battleStatus.combatants.size == 0;
+        assert ctx.battleStatus.combatantsInBattle.size() == 0;
 
         List<BattlePoint> matching = findMatchingBattlePoints(combatant, ctx);
         if (matching.isEmpty()) {
@@ -65,13 +65,13 @@ public class BattleCoordinator {
             }
         };
 
-        for (Combatant combatant : ctx.combatants) {
+        for (Combatant combatant : ctx.combatantInstances) {
             final int id = combatant.getId();
             final BattlePoint.Type type = combatant.getBattlePointType();
 
             for (BattlePoint battlePoint : battlePointGroup) {
                 if (battlePoint.subId == id && battlePoint.type == type) {
-                    ctx.battleStatus.combatants.add(combatant);
+                    ctx.battleStatus.combatantsInBattle.add(combatant);
                     combatant.goToBattle(battlePoint, done);
                     called.incrementAndGet();
 
@@ -112,7 +112,7 @@ public class BattleCoordinator {
     }
 
     public Combatant getClosestEnemy(PartyCharacter partyChar) {
-        assert ctx.battleStatus.isBattling();
+        assert ctx.battleStatus.isEngaged();
         assert ctx.battleStatus.getBattleGroup() != null;
 
         BattlePoint partyCharBp = findBattlePoint(partyChar, ctx.battleStatus.getBattleGroup());
@@ -127,11 +127,11 @@ public class BattleCoordinator {
     }
 
     private Set<Combatant> getAllEnemiesInBattle() {
-        assert ctx.battleStatus.isBattling();
+        assert ctx.battleStatus.isEngaged();
         assert ctx.battleStatus.getBattleGroup() != null;
 
         Set<Combatant> result = new HashSet<>();
-        for (Combatant combatant : ctx.combatants) {
+        for (Combatant combatant : ctx.battleStatus.combatantsInBattle) {
             if (combatant.getBattlePointType() != BattlePoint.Type.ENEMY) {
                 continue;
             }

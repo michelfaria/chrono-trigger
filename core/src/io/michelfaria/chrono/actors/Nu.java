@@ -59,7 +59,7 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
         setHeight(16);
 
         ctx.collisionEntities.add(this);
-        ctx.combatants.add(this);
+        ctx.combatantInstances.add(this);
     }
 
     @Override
@@ -135,7 +135,7 @@ public class Nu extends Actor implements CollisionEntity, Interactible, Identifi
     @Override
     public void dispose() {
         ctx.collisionEntities.remove(this);
-        ctx.combatants.remove(this);
+        ctx.combatantInstances.remove(this);
     }
 
     public static class NuFactory implements ActorFactory<Nu> {
